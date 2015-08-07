@@ -17,9 +17,10 @@
 #' @return A named list of Black-Scholes option prices and Greeks.
 #'
 #' @details Numerical derivatives are calculated using a simple
-#' difference. This creates readily apparent problems in edge cases. A
-#' future version should make use of the package numDeriv or some
-#' other more sophisticated calculation.
+#' difference. This can create numerical problems in edge cases. It
+#' might be good to use the package numDeriv or some other more
+#' sophisticated calculation, but the current approach works well with
+#' vectorization.
 #' 
 #' @usage
 #' bsopt(s, k, v, r, tt, d)
@@ -44,10 +45,15 @@
 #' @examples
 #' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
 #' greeks(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
+#' greeks(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))[c('Delta', 'Gamma'), ]
 #' greeks2(bscall(s, k, v, r, tt, d))
 #' bsopt(s, k, v, r, tt, d)
+#' bsopt(s, c(35, 40, 45), v, r, tt, d)
+#' bsopt(s, c(35, 40, 45), v, r, tt, d)[['Call']][c('Delta', 'Gamma'), ]
 #'
-#' # plot Greeks for calls and puts for 500 different stock prices
+#' ## plot Greeks for calls and puts for 500 different stock prices
+#' ## Unfortunately, this plot will most likely not display in RStudio;
+#' ## it will generate a "figure margins too large" error
 #' k <- 100; v <- 0.30; r <- 0.08; tt <- 2; d <- 0
 #' S <- seq(.5, 250, by=.5)
 #' x <- bsopt(S, k, v, r, tt, d)
@@ -59,9 +65,7 @@
 #' }
 
 bsopt <- function(s, k, v, r, tt, d) {
-    ## Black-Scholes put and call values. Note that if input value is
-    ## a vector, function will return a named matrix.
-    ## This is over 10 times faster than bsOpt (using microbenchmark)
+    ## Black-Scholes put and call values. 
     xc <- greeks(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
     xp <- greeks(bsput, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
     return(list(Call=xc, Put=xp))
@@ -90,10 +94,10 @@ greeks <- function(fn, ...) {
                      "Psi", "Elasticity")
     funcname <- as.character(match.call()[[2]])
 
-    ## In the following, this tests to see if there is variation in
-    ## any inputs (is xmaxlength > 1). If so, is there variation in
-    ## more than one input (length(maxarg) > 1). The column names are
-    ## constructed as appropriate in each case.
+    ## The following tests to see if there is variation in any inputs
+    ## (is xmaxlength > 1). If so, is there variation in more than one
+    ## input (length(maxarg) > 1)? The column names are constructed as
+    ## appropriate in each case, showing varying input values by column.
 
     ## are any parameters input as vectors?
     xlength <- lapply(x, length) ## how many of each input?
@@ -149,7 +153,6 @@ greeks2 <- function(f) {
                   nrow=numcols,ncol=numrows))
     rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
                      "Psi", "Elasticity")
-#    funcname <- as.character(match.call()[[2]])
 
     ## In the following, this tests to see if there is variation in
     ## any inputs (is xmaxlength > 1). If so, is there variation in
@@ -178,7 +181,7 @@ greeks2 <- function(f) {
 .FirstDer <- function(fn, pos, arglist) {
     ## compute first derivative of function fn
     ## arglist must be a list
-    epsilon <- 1e-05 #0.000001
+    epsilon <- 1e-04 
     xup <- xdn <- arglist
     xup[[pos]] <- xup[[pos]] + epsilon
     xdn[[pos]] <- xdn[[pos]] - epsilon
@@ -192,7 +195,7 @@ greeks2 <- function(f) {
     ##   compute second derivative of function fn
     if (is.list(c(...))) arglist <- c(...)
     else arglist <- list(...)
-    epsilon <- 5e-04 #0.0005
+    epsilon <- 5e-04 
     xup <- xdn <- arglist
     xup[[pos]] <- xup[[pos]] + epsilon
     xdn[[pos]] <- xdn[[pos]] - epsilon
@@ -204,7 +207,9 @@ greeks2 <- function(f) {
 .checkListRecycle <- function(x) {
     ## function tests whether list of vectors can work with recylcing
     ## without throwing a warning. We can do this by unlisting the
-    ## elements, summing them, and checking for an error
+    ## elements, summing them, and checking for an error. (The summing
+    ## will require recycling to work; if it doesn't, there is a
+    ## mismatch in the number of entries.)
     tryCatch(
         {tmp <- 0; for (i in seq_along(x)) tmp <- tmp+unlist(x[[i]])},
         warning = function(c) {

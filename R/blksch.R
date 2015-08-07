@@ -45,13 +45,15 @@
 #' underlying asset, \emph{or} (equivalently) as the payment received
 #' if the owner were to lend the asset.
 #'
-#' In other packages, for example fOption, the dividend yield is
-#' replaced by the generalized cost of carry, which is the net payment
-#' required to fund a position in the underlying asset. If the
-#' interest rate is 10\% and the dividend yield is 3\%, the
-#' generalized cost of carry is 7\% (the part of the interest payment
-#' not funded by the dividend payment). Thus, using the \code{GBS}
-#' function from fOptions, these two expressions return the same price:
+#' There are other option pricing packages available for R, and these
+#' may use different conventions for specifying inputs. In fOptions,
+#' the dividend yield is replaced by the generalized cost of carry,
+#' which is the net payment required to fund a position in the
+#' underlying asset. If the interest rate is 10\% and the dividend
+#' yield is 3\%, the generalized cost of carry is 7\% (the part of the
+#' interest payment not funded by the dividend payment). Thus, using
+#' the \code{GBS} function from fOptions, these two expressions return
+#' the same price:
 #'
 #' \code{bscall(s, k, v, r, tt, d)}
 #'

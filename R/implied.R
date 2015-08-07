@@ -43,7 +43,7 @@
 #' bsputimps(s, k, v, r, tt, d, 4)
 #' 
 
-tol <- .Machine$double.eps^0.5
+.tol <- .Machine$double.eps^0.5
 
 bscallimpvol <- function(s, k, r, tt, d, price) {
     ## this function is not vectorized
@@ -56,7 +56,7 @@ bscallimpvol <- function(s, k, r, tt, d, price) {
         f <- function(v, s, k, r, tt, d, price) {
             return(bscall(s, k, v, r, tt, d) - price)
         }
-        x <- uniroot(f, c(0.001,1000), s, k, r, tt, d, price, tol=tol)
+        x <- uniroot(f, c(0.001,1000), s, k, r, tt, d, price, tol=.tol)
         return(x$root)
     }
 }
@@ -73,7 +73,7 @@ bscallimps <- function(s, k, v, r, tt, d, price) {
     f <- function(s, k, v, r, tt, d, price) {
         return(bscall(s, k, v, r, tt, d) - price)
     }
-    x <- uniroot(f, c(0.001,10000), k, v, r, tt, d, price, tol=tol)
+    x <- uniroot(f, c(0.001,10000), k, v, r, tt, d, price, tol=.tol)
     return(x$root)
 }
 
@@ -81,7 +81,7 @@ bsputimps <- function(s, k, v, r, tt, d, price) {
     f <- function(s, k, v, r, tt, d, price) {
         return(bsput(s, k, v, r, tt, d) - price)
     }
-    x <- uniroot(f, c(0.001,10000), k, v, r, tt, d, price, tol=tol)
+    x <- uniroot(f, c(0.001,10000), k, v, r, tt, d, price, tol=.tol)
     return(x$root)
 }
 

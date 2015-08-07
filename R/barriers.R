@@ -14,7 +14,7 @@
 #' \item "in" and "out" refer to claims that knock in or out
 #' }
 #'
-#' For example for standard barrier options, \code{calldownin} refers
+#' For example, for standard barrier options, \code{calldownin} refers
 #' to a knock-in call for which the barrier is below the current
 #' price, while \code{putdownout} refers to a knock-out put for which
 #' the barrier is below the current asset price.
@@ -27,8 +27,8 @@
 #' immediately ("ur" or "dr") or at expiration ("drdeferred" and
 #' "urdeferred")
 #' 
-#' \code{bscall(s, k, v, r, tt, d)
-#'   = assetcall(s, k, v, r, tt, d) - k*cashcall(s, k, v, r, tt, d)}
+#' \code{callupin(s, k, v, r, tt, d, H)
+#'   = assetuicall(s, k, v, r, tt, d, H) - k*cashuicall(s, k, v, r, tt, d, H)}
 #' @name barriers
 #' @aliases callupin callupout putupin putupout calldownin calldownout
 #' putdownin putdownout cashuicall cashuiput cashdicall cashdiput
