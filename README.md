@@ -59,7 +59,7 @@ for (i in c('Call', 'Put')) {
 ```
 
 This small bit of code computes and plots all call and put Greeks for
-500 options. It's a great illustration of how powerful R can be.
+500 options. This is 16 plots in all.  It's a great illustration of how powerful R can be.
 
 ### Galton board or quincunx
 
@@ -67,7 +67,7 @@ The [Galton board](http://mathworld.wolfram.com/GaltonBoard.html) is a
 pegboard that illustrates the central limit theorem. Balls drop from
 the top and randomly fall right or left, providing a physical
 simulation of a binomial
-distribution.^[My physicist brother-in-law tells me that real-life Galton boards don't typically generate a normal distribution because, among other things, balls acquire momentum in the direction of their original travel. The distribution is thus likely to be fat-tailed.]
+distribution. (My physicist brother-in-law tells me that real-life Galton boards don't typically generate a normal distribution because, among other things, balls acquire momentum in the direction of their original travel. The distribution is thus likely to be fatter-tailed than normal.)
 
 You can see the Galton board in action with `quincunx()`.
 
