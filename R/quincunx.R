@@ -8,21 +8,28 @@
 #' the distribution approaches normality. This device is called a
 #' quincunx. See \url{http://www.mathsisfun.com/data/quincunx.html}
 #'
+#'
 #' @param n  Integer The number of peg levels, default is 3
 #' @param numballs Integer The number of balls dropped, default is 20
 #' @param delay Numeric Number of seconds between ball drops. Set
 #' delay > 0 to see animation with \code{delay} seconds between
 #' dropped balls. If \code{delay < 0}, the simulation will run to
-#' completion without delays. If \code{delay <- 0}, the user must
-#' hit#' <return> for the next ball to drop. Default is 0.1 second.
+#' completion without delays. If \code{delay == 0}, the user must
+#' hit#' <return> for the next ball to drop. The default is 0.1 second
+#' and can be set with the \code{delay} parameter.
 #' @param probright Numeric The probability the ball bounces to the
 #' right; default is 0.5
 #' @param plottrue Boolean If \code{TRUE}, the display will indicate
 #' bin levels if the distribution were normal. Default is TRUE
 #'
 #' @examples
-#' quincunx()
+#' 
+#' ## These examples will not display correctly within RStudio unless
+#' ## the plot window is large
+#' quincunx(delay=0)
 #' quincunx(n=10, numballs=200, delay=0)
+#' quincunx(n=20, numballs=200, delay=0, probright=0.7)
+
 quincunx <- function(n=3, numballs=20, delay=0.1,
                      probright=0.5, plottrue=TRUE) {
     ## inputs: n: number of binomial steps, number of balls, 
@@ -48,7 +55,9 @@ quincunx <- function(n=3, numballs=20, delay=0.1,
         tbl[s[nlev-1]+1] <- tbl[s[nlev-1]+1] + 1
         if (delay != 0 | j==numballs) {
             peglook <- function(a, b)
-                c(rep(a, factorial(n)), rep(b, n+1))
+                c(rep(a, n*(n+1)/2), rep(b, n+1))
+            ## Need last row of plot to look different, so vectorize
+            ## characteristics
             plot(x, y, axes=FALSE, xlab='', ylab='',
                  pch=peglook(1, 0),
                  cex=peglook(1, 1.25),
@@ -68,3 +77,4 @@ quincunx <- function(n=3, numballs=20, delay=0.1,
         points(h, num, cex=3, xlim=c(0, n), pch=1)
     }
 }
+

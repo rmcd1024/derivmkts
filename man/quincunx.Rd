@@ -15,8 +15,9 @@ quincunx(n = 3, numballs = 20, delay = 0.1, probright = 0.5,
 \item{delay}{Numeric Number of seconds between ball drops. Set
 delay > 0 to see animation with \code{delay} seconds between
 dropped balls. If \code{delay < 0}, the simulation will run to
-completion without delays. If \code{delay <- 0}, the user must
-hit#' <return> for the next ball to drop. Default is 0.1 second.}
+completion without delays. If \code{delay == 0}, the user must
+hit#' <return> for the next ball to drop. The default is 0.1 second
+and can be set with the \code{delay} parameter.}
 
 \item{probright}{Numeric The probability the ball bounces to the
 right; default is 0.5}
@@ -32,7 +33,10 @@ the distribution approaches normality. This device is called a
 quincunx. See \url{http://www.mathsisfun.com/data/quincunx.html}
 }
 \examples{
-quincunx()
+## These examples will not display correctly within RStudio unless
+## the plot window is large
+quincunx(delay=0)
 quincunx(n=10, numballs=200, delay=0)
+quincunx(n=20, numballs=200, delay=0, probright=0.7)
 }
 
