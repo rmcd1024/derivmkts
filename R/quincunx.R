@@ -15,7 +15,7 @@
 #' delay > 0 to see animation with \code{delay} seconds between
 #' dropped balls. If \code{delay < 0}, the simulation will run to
 #' completion without delays. If \code{delay == 0}, the user must
-#' hit#' <return> for the next ball to drop. The default is 0.1 second
+#' hit <return> for the next ball to drop. The default is 0.1 second
 #' and can be set with the \code{delay} parameter.
 #' @param probright Numeric The probability the ball bounces to the
 #' right; default is 0.5

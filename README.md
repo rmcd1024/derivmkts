@@ -3,16 +3,16 @@
 
 This is a collection of option pricing functions for a course in
 financial derivatives. The names of the functions mostly match those
-in my book *Derivatives Markets*, which is why the package is named
-what it is. This is the first version; I expect to add many functions
+in my book *Derivatives Markets*, which explains the package name.
+This is the first version; I expect to add many functions
 over time. Depending upon the level of the course, this package may or
 may not be helpful for students. I hope that at a minimum it will be
 helpful for instructors.
 
-There are of course other option pricing packages, notably RQuantLib
-and fOptions.  I don't claim to add significant functionality to
-those. This package does, however, have a few aspects that might be
-unique, which I describe below.
+There are of course other option pricing packages for R, notably
+RQuantLib and fOptions.  I don't claim to add significant
+functionality to those. This package does, however, have a few aspects
+that might be unique, which I describe below.
 
 ## Things of note
 
