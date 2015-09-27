@@ -1,6 +1,6 @@
 Package: derivmkts
 Title: functions and R code to accompany Derivatives Markets
-Version: 0.0.0.9000
+Version: 0.1.0.9000
 Authors@R: c(person("Robert", "McDonald", email = "rmcd1024@gmail.com",
      role = c("aut", "cre")))
 Maintainer: Robert McDonald <rmcd1024@gmail.com>
