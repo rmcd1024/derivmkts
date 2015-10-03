@@ -76,6 +76,11 @@ for (i in imptestfns[3:4]) {
 ## Greeks tests
 ############################################################
 
+## Note that I have reversed the names: "greeks" in the package now
+## uses the function call method and hence corresponds to "Greeks2" in
+## options.R, while "greeks2" uses the list and hence corresponds to
+## "Greeks"
+
 greeksvals <- list()
 greeksinputs <- list(s=s, k=kseq, v=v, r=r, tt=tt, d=d)
 greeksinputsH <- list(s=s, k=kseq, v=v, r=r, tt=tt, d=d, H=Hseq2)
@@ -88,8 +93,8 @@ greeksvals2[['bscall']] <- Greeks2(bscall(s=s, k=kseq, v=v,
 greeksvals2[['assetuicall']] <- Greeks2(AssetUICall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d, H=Hseq2))
 
-binomvalsEurC <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d,
-                             nstep, putOpt=FALSE, American=FALSE)
+binomvalsEurC <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d, nstep,
+                             putOpt=FALSE, American=FALSE)
 binomvalsEurP <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d,
                              nstep, putOpt=TRUE, American=FALSE)
 binomvalsAmC <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d,

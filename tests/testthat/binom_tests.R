@@ -3,28 +3,33 @@
 test_that('binom EC works', {
               correct <- binomvalsEurC
               unknown <- binomopt(s=s, k=k, v=v, r=r, tt=tt, d=d,
-                             nstep, putopt=FALSE, american=FALSE)$price
+                             nstep, putopt=FALSE, american=FALSE,
+                             returnparams=FALSE)
               expect_equal(correct, unknown, tolerance=tol)
           }
           )
 test_that('binom EP works', {
               correct <- binomvalsEurP
               unknown <- binomopt(s=s, k=k, v=v, r=r, tt=tt, d=d,
-                             nstep, putopt=TRUE, american=FALSE)$price
+                                  nstep, putopt=TRUE, american=FALSE,
+                                  returnparams=FALSE)
+
               expect_equal(correct, unknown, tolerance=tol)
           }
           )
 test_that('binom EP works', {
               correct <- binomvalsAmP
               unknown <- binomopt(s=s, k=k, v=v, r=r, tt=tt, d=d,
-                             nstep, putopt=TRUE, american=TRUE)$price
+                             nstep, putopt=TRUE, american=TRUE,
+                             returnparams=FALSE)
               expect_equal(correct, unknown, tolerance=tol)
           }
           )
 test_that('binom EP works', {
               correct <- binomvalsAmC
               unknown <- binomopt(s=s, k=k, v=v, r=r, tt=tt, d=d,
-                             nstep, putopt=FALSE, american=TRUE)$price
+                             nstep, putopt=FALSE, american=TRUE,
+                             returnparams=FALSE)
               expect_equal(correct, unknown, tolerance=tol)
           }
           )

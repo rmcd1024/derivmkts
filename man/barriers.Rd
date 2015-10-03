@@ -22,12 +22,20 @@
 \alias{cashuiput}
 \alias{cashuocall}
 \alias{cashuoput}
+\alias{dicall}
+\alias{diput}
+\alias{docall}
+\alias{doput}
 \alias{dr}
 \alias{drdeferred}
 \alias{putdownin}
 \alias{putdownout}
 \alias{putupin}
 \alias{putupout}
+\alias{uicall}
+\alias{uiput}
+\alias{uocall}
+\alias{uoput}
 \alias{ur}
 \alias{urdeferred}
 \title{Barrier option pricing}
@@ -40,6 +48,14 @@ calldownin(s, k, v, r, tt, d, H)
 calldownout(s, k, v, r, tt, d, H)
 putdownin(s, k, v, r, tt, d, H)
 putdownout(s, k, v, r, tt, d, H)
+uicall(s, k, v, r, tt, d, H)
+uocall(s, k, v, r, tt, d, H)
+dicall(s, k, v, r, tt, d, H)
+docall(s, k, v, r, tt, d, H)
+uiput(s, k, v, r, tt, d, H)
+uoput(s, k, v, r, tt, d, H)
+diput(s, k, v, r, tt, d, H)
+doput(s, k, v, r, tt, d, H)
 cashuicall(s, k, v, r, tt, d, H)
 cashuiput(s, k, v, r, tt, d, H)
 cashdicall(s, k, v, r, tt, d, H)
@@ -110,8 +126,8 @@ reached from above ("d") or below ("d"), and the payment can occur
 immediately ("ur" or "dr") or at expiration ("drdeferred" and
 "urdeferred")
 
-\code{callupin(s, k, v, r, tt, d, H)
-  = assetuicall(s, k, v, r, tt, d, H) - k*cashuicall(s, k, v, r, tt, d, H)}
+\code{callupin(s, k, v, r, tt, d, H) = assetuicall(s, k, v, r, tt,
+  d, H) - k*cashuicall(s, k, v, r, tt, d, H)}
 }
 \details{
 Returns a scalar or vector  of option prices, depending on

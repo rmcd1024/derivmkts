@@ -2,14 +2,14 @@
 #'
 #' @description The functions \code{greeks} and \code{greeks2} provide
 #' two different calling conventions for computing a full set of
-#' option Greeks. \code{greeks} requires the use of named list
-#' entries. \code{greeks2} simply requires entering a pricing function
-#' with parameters. The function \code{bsopt} calls \code{greeks} to
+#' option Greeks. \code{greeks} simply requires entering a pricing function
+#' with parameters. \code{greeks2} requires the use of named parameter
+#' entries. The function \code{bsopt} calls \code{greeks2} to
 #' produce a full set of prices and greeks for calls and puts. These
 #' functions are all vectorized, the only restriction being that the
 #' functions will produce an error if the recycling rule can not be
 #' used safely (that is, if parameter vector lengths are not integer
-#' multiples of one another.
+#' multiples of one another).
 #'
 #' @name greeks
 #' @aliases bsopt greeks greeks2
@@ -24,29 +24,29 @@
 #' 
 #' @usage
 #' bsopt(s, k, v, r, tt, d)
+#' greeks(f)
 #' # must used named list entries:
-#' greeks(fn, ...)
-#' greeks2(f)
-#'
+#' greeks2(fn, ...)
 #'
 #' @param s Stock price
 #' @param k Strike price of the option
 #' @param v Volatility of the stock, defined as the annualized
-#' standard deviation of the continuously-compounded return
+#'     standard deviation of the continuously-compounded return
 #' @param r Annual continuously-compounded risk-free interest rate
 #' @param tt Time to maturity in years
 #' @param d Dividend yield, annualized, continuously-compounded
 #' @param fn Pricing function name, not in quotes
-#' @param ... Pricing function inputs, may be named or not
 #' @param f Fully-specified option pricing function, including inputs
-#' which need not be named. For example, you can enter
-#' \code{greeks2(bscall(40, 40, .3, .08, .25, 0))}
+#'     which need not be named. For example, you can enter
+#'     \code{greeks(bscall(40, 40, .3, .08, .25, 0))}
+#' @param ... Pricing function inputs, must be named, may either be a
+#'     list or not
 #' 
 #' @examples
 #' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
-#' greeks(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
-#' greeks(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))[c('Delta', 'Gamma'), ]
-#' greeks2(bscall(s, k, v, r, tt, d))
+#' greeks(bscall(s, k, v, r, tt, d))
+#' greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
+#' greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))[c('Delta', 'Gamma'), ]
 #' bsopt(s, k, v, r, tt, d)
 #' bsopt(s, c(35, 40, 45), v, r, tt, d)
 #' bsopt(s, c(35, 40, 45), v, r, tt, d)[['Call']][c('Delta', 'Gamma'), ]
@@ -65,58 +65,13 @@
 #' }
 
 bsopt <- function(s, k, v, r, tt, d) {
-    ## Black-Scholes put and call values. 
-    xc <- greeks(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
-    xp <- greeks(bsput, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
+    ## Black-Scholes put and call values.
+    xc <- greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
+    xp <- greeks2(bsput, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
     return(list(Call=xc, Put=xp))
 }
 
-greeks <- function(fn, ...) {
-    ## Fix handling of inputs with different lengths
-    ## want to modify this function so that
-    if (is.list(c(...))) x <- c(...)
-    else x <- list(...)
-    ## make sure recycling rule will work, stop if not
-    .checkListRecycle(x)
-    prem  <-  do.call(fn, x)
-    delta <-  .FirstDer(fn, 's', x)
-    vega  <-  .FirstDer(fn, 'v', x)/100
-    rho   <-  .FirstDer(fn, 'r', x)/100
-    theta <- -.FirstDer(fn, 'tt', x)/365
-    psi   <-  .FirstDer(fn, 'd', x)/100
-    elast <-  x[['s']]*delta/prem
-    gamma <-  .SecondDer(fn, 1, x)
-    numcols <- length(prem)
-    numrows <- 8
-    y <- t(matrix(c(prem,delta,gamma,vega,rho,theta,psi,elast),
-                  nrow=numcols,ncol=numrows))
-    rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
-                     "Psi", "Elasticity")
-    funcname <- as.character(match.call()[[2]])
-
-    ## The following tests to see if there is variation in any inputs
-    ## (is xmaxlength > 1). If so, is there variation in more than one
-    ## input (length(maxarg) > 1)? The column names are constructed as
-    ## appropriate in each case, showing varying input values by column.
-
-    ## are any parameters input as vectors?
-    xlength <- lapply(x, length) ## how many of each input?
-    xmaxlength <- max(unlist(lapply(x, length))) ## max # of inputs
-    arggt1 <- which(xlength > 1)
-    if (xmaxlength == 1) {
-        colnames(y) <- funcname
-    } else {
-        ## if we get here, there are multiple inputs with length > 1
-        tmp <- NULL
-        for (i in arggt1) {
-            tmp <- paste(tmp, format(x[[i]], digits=3, trim=TRUE), sep='_')
-        }
-        colnames(y) <- paste(funcname, tmp, sep='')
-    }
-    return(y)
-}
-
-greeks2 <- function(f) {
+greeks <- function(f) {
     ## This version uses a standard function call
     args <- match.call()[[2]] ## get f and arguments
     funcname <- as.character(args[[1]])
@@ -176,6 +131,53 @@ greeks2 <- function(f) {
     }
     return(y)
 }
+
+
+greeks2 <- function(fn, ...) {
+    ## Fix handling of inputs with different lengths want to modify
+    ## this function so that inputs need not be named
+    if (is.list(c(...))) x <- c(...)
+    else x <- list(...)
+    ## make sure recycling rule will work, stop if not
+    .checkListRecycle(x)
+    prem  <-  do.call(fn, x)
+    delta <-  .FirstDer(fn, 's', x)
+    vega  <-  .FirstDer(fn, 'v', x)/100
+    rho   <-  .FirstDer(fn, 'r', x)/100
+    theta <- -.FirstDer(fn, 'tt', x)/365
+    psi   <-  .FirstDer(fn, 'd', x)/100
+    elast <-  x[['s']]*delta/prem
+    gamma <-  .SecondDer(fn, 1, x)
+    numcols <- length(prem)
+    numrows <- 8
+    y <- t(matrix(c(prem,delta,gamma,vega,rho,theta,psi,elast),
+                  nrow=numcols,ncol=numrows))
+    rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
+                     "Psi", "Elasticity")
+    funcname <- as.character(match.call()[[2]])
+
+    ## The following tests to see if there is variation in any inputs
+    ## (is xmaxlength > 1). If so, is there variation in more than one
+    ## input (length(maxarg) > 1)? The column names are constructed as
+    ## appropriate in each case, showing varying input values by column.
+
+    ## are any parameters input as vectors?
+    xlength <- lapply(x, length) ## how many of each input?
+    xmaxlength <- max(unlist(lapply(x, length))) ## max # of inputs
+    arggt1 <- which(xlength > 1)
+    if (xmaxlength == 1) {
+        colnames(y) <- funcname
+    } else {
+        ## if we get here, there are multiple inputs with length > 1
+        tmp <- NULL
+        for (i in arggt1) {
+            tmp <- paste(tmp, format(x[[i]], digits=3, trim=TRUE), sep='_')
+        }
+        colnames(y) <- paste(funcname, tmp, sep='')
+    }
+    return(y)
+}
+
 
 
 .FirstDer <- function(fn, pos, arglist) {

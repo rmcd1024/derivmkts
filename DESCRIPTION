@@ -1,13 +1,14 @@
 Package: derivmkts
 Title: functions and R code to accompany Derivatives Markets
 Version: 0.1.0.9000
+License: GPL (>= 2)
 Authors@R: c(person("Robert", "McDonald", email = "rmcd1024@gmail.com",
-     role = c("aut", "cre")))
+     role = c("aut", "cre", "cph")))
 Maintainer: Robert McDonald <rmcd1024@gmail.com>
 Description: This package contains routines that should
      be useful in teaching a course on financial derivatives.
 Depends: R (>= 3.0.0)
-Suggests: knitr
+Suggests: knitr,
+    rmarkdown
 VignetteBuilder: knitr
-License: GPL-2
 LazyData: true

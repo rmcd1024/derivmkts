@@ -7,9 +7,9 @@
 \title{Calculate option Greeks}
 \usage{
 bsopt(s, k, v, r, tt, d)
+greeks(f)
 # must used named list entries:
-greeks(fn, ...)
-greeks2(f)
+greeks2(fn, ...)
 }
 \arguments{
 \item{s}{Stock price}
@@ -27,11 +27,12 @@ standard deviation of the continuously-compounded return}
 
 \item{fn}{Pricing function name, not in quotes}
 
-\item{...}{Pricing function inputs, may be named or not}
-
 \item{f}{Fully-specified option pricing function, including inputs
 which need not be named. For example, you can enter
-\code{greeks2(bscall(40, 40, .3, .08, .25, 0))}}
+\code{greeks(bscall(40, 40, .3, .08, .25, 0))}}
+
+\item{...}{Pricing function inputs, must be named, may either be a
+    list or not}
 }
 \value{
 A named list of Black-Scholes option prices and Greeks.
@@ -39,14 +40,14 @@ A named list of Black-Scholes option prices and Greeks.
 \description{
 The functions \code{greeks} and \code{greeks2} provide
 two different calling conventions for computing a full set of
-option Greeks. \code{greeks} requires the use of named list
-entries. \code{greeks2} simply requires entering a pricing function
-with parameters. The function \code{bsopt} calls \code{greeks} to
+option Greeks. \code{greeks} simply requires entering a pricing function
+with parameters. \code{greeks2} requires the use of named parameter
+entries. The function \code{bsopt} calls \code{greeks2} to
 produce a full set of prices and greeks for calls and puts. These
 functions are all vectorized, the only restriction being that the
 functions will produce an error if the recycling rule can not be
 used safely (that is, if parameter vector lengths are not integer
-multiples of one another.
+multiples of one another).
 }
 \details{
 Numerical derivatives are calculated using a simple
@@ -57,9 +58,9 @@ vectorization.
 }
 \examples{
 s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
-greeks(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
-greeks(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))[c('Delta', 'Gamma'), ]
-greeks2(bscall(s, k, v, r, tt, d))
+greeks(bscall(s, k, v, r, tt, d))
+greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
+greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))[c('Delta', 'Gamma'), ]
 bsopt(s, k, v, r, tt, d)
 bsopt(s, c(35, 40, 45), v, r, tt, d)
 bsopt(s, c(35, 40, 45), v, r, tt, d)[['Call']][c('Delta', 'Gamma'), ]

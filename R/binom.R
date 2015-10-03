@@ -5,25 +5,28 @@
 #'
 #' @name binom
 #'
-#' @aliases binomopt binomplot
+#' @aliases binomopt binomplot binomial
 #'
-#' @return \code{binomopt} returns a list where \code{$price} is the
-#'     binomial option price and \code{$params} is a vector containing
-#'     the inputs and binomial parameters used to compute the option
-#'     price. Optionally, the list can contain the complete asset
-#'     price and option price trees., \code{binomplot} produces a
-#'     visual representation of the binomial tree.
+#' @return By default, \code{binomopt} returns the option price. If
+#'     \code{returnparams=TRUE}, it returns a list where \code{$price}
+#'     is the binomial option price and \code{$params} is a vector
+#'     containing the inputs and binomial parameters used to compute
+#'     the option price. Optionally, by specifying
+#'     \code{returntrees=TRUE}, the list can include the complete
+#'     asset price and option price trees. The function
+#'     \code{binomplot} produces a visual representation of the
+#'     binomial tree.
 #'
 #' @usage
 #' binomopt(s, k, v, r, tt, d, nstep = 10, american = TRUE,
 #'     putopt=FALSE, specifyupdn=FALSE, crr=FALSE, jarrowrudd=FALSE,
-#'     up=1.5, dn=1.5, returntrees=FALSE)
+#'     up=1.5, dn=1.5, returntrees=FALSE, returnparams=FALSE)
 #' 
 #' binomplot(s, k, v, r, tt, d, nstep, putopt=FALSE, american=TRUE,
 #'     plotvalues=FALSE, plotarrows=FALSE, drawstrike=TRUE,
-#'     probs=TRUE, pointsize=4, setylim=FALSE, ylimval=c(0,0),
+#'     pointsize=4, setylim=FALSE, ylimval=c(0,0),
 #'     saveplot = FALSE, saveplotfn='binomialplot.pdf',
-#'     printStock=FALSE, crr=FALSE, titles=TRUE, specifyupdn=FALSE,
+#'     crr=FALSE, jarrowrudd=FALSE, titles=TRUE, specifyupdn=FALSE,
 #'     up=1.5, dn=1.5)
 #'
 #'
@@ -37,20 +40,35 @@
 #' @param nstep Number of binomial steps. Default is \code{nstep = 10}
 #' @param american Boolean indicating if option is American
 #' @param putopt Boolean \code{TRUE} is the option is a put
-#' @param specifyupdn Boolean for manual entry of the binomial
-#'     parameters up and down. This overrides the crr and jarrowrudd
-#'     flags
+#' @param specifyupdn Boolean, if \code{TRUE}, manual entry of the
+#'     binomial parameters up and down. This overrides the \code{crr}
+#'     and \code{jarrowrudd} flags
+#' @param up,dn If \code{specifyupdn=TRUE}, up and down moves on the
+#'     binomial tree
 #' @param crr \code{TRUE} to use the Cox-Ross-Rubinstein tree
 #' @param jarrowrudd \code{TRUE} to use the Jarrow-Rudd tree
-#' @param up If \code{specifyupdn=TRUE}, up move on the binomial tree
-#' @param dn If \code{specifyupdn=TRUE}, down move on the binomial
-#'     tree
 #' @param returntrees If \code{returntrees=TRUE}, the list returned by
 #'     the function includes four trees: for the price of the
 #'     underlying asset (stree), the option price (oppricetree), where
 #'     the option is exercised (exertree), and the probability of
-#'     being at each node
+#'     being at each node. This parameter has no effect if
+#'     \code{returnparams=FALSE}, which is the default.
+#' @param returnparams Return the vector of inputs and computed
+#'     pricing parameters as well as the price
+#' @param plotvalues display asset prices at nodes
+#' @param plotarrows draw arrows connecting pricing nodes
+#' @param drawstrike draw horizontal line at the strike price
+#' @param pointsize CEX parameter for nodes
+#' @param setylim Boolean. If true, manually set ylim (error if ylim
+#'     is not set or if \code{c(0,0)} is used
+#' @param ylimval \code{c(low, high)} for ylimit of the plot
+#' @param saveplot boolean; save the plot to a pdf file named
+#'     \code{saveplotfn}
+#' @param saveplotfn file name for saved plot
+#' @param titles automatically supply appropriate main title and x-
+#'     and y-axis labels
 #' 
+#'  
 #' @details Returns an option price, a vector of the parameters used
 #'     to compute the price.  Optionally returns
 #'     the following \eqn{(\textrm{nstep}+1)\times (\textrm{nstep}+
@@ -89,8 +107,14 @@
 #'
 #' @examples
 #' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0; nstep=15
+#' 
 #' binomopt(s, k, v, r, tt, d, nstep, american=TRUE, putopt=TRUE)
+#' 
+#' binomopt(s, k, v, r, tt, d, nstep, american=TRUE, putopt=TRUE,
+#'     returnparams=TRUE)
+#' 
 #' binomplot(s, k, v, r, tt, d, nstep, american=TRUE, putopt=TRUE)
+#' 
 #' binomplot(s, k, v, r, tt, d, nstep, american=FALSE, putopt=TRUE)
 #' 
 #' 
@@ -99,7 +123,8 @@
 binomopt <- function(s, k, v, r, tt, d,
                      nstep=10, american = TRUE, putopt=FALSE,
                      specifyupdn=FALSE, crr=FALSE, jarrowrudd=FALSE,
-                     up=1.5, dn=1.5, returntrees=FALSE) {
+                     up=1.5, dn=1.5, returntrees=FALSE,
+                     returnparams=FALSE) {
     ## set up the binomial tree parameters
     
     h <- tt/nstep
@@ -138,6 +163,7 @@ binomopt <- function(s, k, v, r, tt, d,
             Vc[1:i,i] <- Vnc
         }
     }
+    if (!returnparams & !returntrees) return(price=Vc[1,1])
     params=c(s=s, k=k, v=v, r=r, tt=tt, d=d,
              nstep=nstep, p=p, up=up, dn=dn, h=h)
     if (returntrees) {
@@ -155,12 +181,13 @@ binomopt <- function(s, k, v, r, tt, d,
     }
 }
 
+
 binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
                       american=TRUE, plotvalues=FALSE,
-                      plotarrows=FALSE, drawstrike=TRUE, probs=TRUE,
+                      plotarrows=FALSE, drawstrike=TRUE, 
                       pointsize=4, setylim=FALSE, ylimval=c(0,0),
                       saveplot = FALSE, saveplotfn='binomialplot.pdf',
-                      printStock=FALSE, crr=FALSE, titles = TRUE,
+                      crr=FALSE, jarrowrudd=FALSE, titles = TRUE,
                       specifyupdn=FALSE, up=1.5, dn=1.5) {
     ## see binomopt for more details on tree
     ## construction. "plotvalues" shows stock price values;
@@ -172,13 +199,14 @@ binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
     ## an error
     ## 
     
-    if (setylim && ylimval==c(0,0))
+    if (setylim & sum(ylimval^2)==0)
         return(
             'Error: if setylim==TRUE, must enter values for ylimval')
-    
     y <- binomopt(s, k, v, r, tt, d, nstep, american, putopt,
-                  specifyupdn, crr, up=1.5, dn=1.5, returntrees=TRUE)
-    for (i in c('h', 'up', 'dn', 'p')) assign(i, y$params[i])
+                  specifyupdn, crr, jarrowrudd, up, dn,
+                  returnparams=TRUE, returntrees=TRUE)
+    h <- tt/nstep
+    for (i in c('up', 'dn', 'p')) assign(i, y$params[i])
     for (i in c('stree', 'exertree', 'oppricetree', 'probtree'))
         assign(i, y[['i']])
     nn <- 0:nstep

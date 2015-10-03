@@ -115,148 +115,148 @@ cashput <- function(s, k, v, r, tt, d) {
 .nd2 <- function(s, k, v, r, tt, d)
     pnorm(.d2(s, k, v, r, tt, d))
 
-
-greeks <- function(price, ...) {
-    ## Fix handling of inputs with different lengths
-    ## want to modify this function so that
-    if (is.list(c(...))) x <- c(...)
-    else x <- list(...)
-    ## make sure recycling rule will work, stop if not
-    .checkListRecycle(x)
-    prem  <-  do.call(price, x)
-    delta <-  .FirstDer(price, 's', x)
-    vega  <-  .FirstDer(price, 'v', x)/100
-    rho   <-  .FirstDer(price, 'r', x)/100
-    theta <- -.FirstDer(price, 'tt', x)/365
-    psi   <-  .FirstDer(price, 'd', x)/100
-    elast <-  x[['s']]*delta/prem
-    gamma <-  .SecondDer(price, 1, x)
-    numcols <- length(prem)
-    numrows <- 8
-    y <- t(matrix(c(prem,delta,gamma,vega,rho,theta,psi,elast),
-                  nrow=numcols,ncol=numrows))
-    rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
-                     "Psi", "Elasticity")
-    funcname <- as.character(match.call()[[2]])
-    
-    ## In the following, this tests to see if there is variation in
-    ## any inputs (is xmaxlength > 1). If so, is there variation in
-    ## more than one input (length(maxarg) > 1). The column names are
-    ## constructed as appropriate in each case.
-
-    ## are any parameters input as vectors?
-    xlength <- lapply(x, length) ## how many of each input?
-    xmaxlength <- max(unlist(lapply(x, length))) ## max # of inputs
-    arggt1 <- which(xlength > 1)
-    if (xmaxlength == 1) {
-        colnames(y) <- funcname
-    } else {
-        ## if we get here, there are multiple inputs with length > 1
-        tmp <- NULL
-        for (i in arggt1) {
-            tmp <- paste(tmp, format(x[[i]], digits=3, trim=TRUE), sep='_')
-        }
-        colnames(y) <- paste(funcname, tmp, sep='')
-    }
-    return(y)
-}
-
-greeks2 <- function(f) {
-    ## This version uses a standard function call
-    args <- match.call()[[2]] ## get f and arguments
-    funcname <- as.character(args[[1]]) 
-    args[[1]] <- NULL  ## eliminate function name, leaving only the
-                       ## function arguments
-    argnames <- formals(match.fun(funcname)) ## arguments of function
-    if (sum(names(args)=='') > 0) {
-        fnames <- names(formals(funcname)) ## get arguments to function
-        shared <- intersect(names(args), fnames)
-        names(args)[names(args)==''] <- setdiff(fnames, shared)
-    }
-
-    x <<- as.list(args)
-    ## Issue: When an argument is a vector, the list representation
-    ## stores the values as a language object (an unevaluated
-    ## call). In order to extract the values, need to use "eval
-    ## x[[i]]".  
-    for (i in 1:length(x)) x[[i]] <- eval(x[[i]])
-    .checkListRecycle(x)
-    prem  <-  do.call(funcname, x)
-    delta <-  .FirstDer(funcname, 's', x)
-    vega  <-  .FirstDer(funcname, 'v', x)/100
-    rho   <-  .FirstDer(funcname, 'r', x)/100
-    theta <- -.FirstDer(funcname, 'tt', x)/365
-    psi   <-  .FirstDer(funcname, 'd', x)/100
-    elast <-  x[['s']]*delta/prem
-    gamma <-  .SecondDer(funcname, 's', x)
-    numcols <- length(prem)
-    numrows <- 8
-    y <- t(matrix(c(prem,delta,gamma,vega,rho,theta,psi,elast),
-                  nrow=numcols,ncol=numrows))
-    rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
-                     "Psi", "Elasticity")
-#    funcname <- as.character(match.call()[[2]])
-
-    ## In the following, this tests to see if there is variation in
-    ## any inputs (is xmaxlength > 1). If so, is there variation in
-    ## more than one input (length(maxarg) > 1). The column names are
-    ## constructed as appropriate in each case.
-
-    ## are any parameters input as vectors?
-    xlength <- lapply(x, length) ## how many of each input?
-    xmaxlength <- max(unlist(lapply(x, length))) ## max # of inputs
-    arggt1 <- which(xlength > 1)
-    if (xmaxlength == 1) {
-        colnames(y) <- funcname
-    } else {
-        ## if we get here, there are multiple inputs with length > 1
-        tmp <- NULL
-        for (i in arggt1) {
-            tmp <- paste(tmp, format(x[[i]], digits=3, trim=TRUE),
-                         sep='_')
-        }
-        colnames(y) <- paste(funcname, tmp, sep='')
-    }
-    return(y)
-}
-
-
-.FirstDer <- function(fn, pos, arglist) {
-    ## compute first derivative of function fn
-    ## arglist must be a list
-    epsilon <- 0.000001
-    xup <- xdn <- arglist
-    xup[[pos]] <- xup[[pos]] + epsilon
-    xdn[[pos]] <- xdn[[pos]] - epsilon
-    yup <- do.call(fn, xup)
-    ydn <- do.call(fn, xdn)
-    return((yup-ydn)/(2*epsilon))
-}
-
-.SecondDer <- function(fn, pos, ...) {
-    ## this is original
-    ##   compute second derivative of function fn
-    if (is.list(c(...))) arglist <- c(...)
-    else arglist <- list(...)
-    epsilon <- 0.0005
-    xup <- xdn <- arglist
-    xup[[pos]] <- xup[[pos]] + epsilon
-    xdn[[pos]] <- xdn[[pos]] - epsilon
-    yup <- .FirstDer(fn, pos, xup)
-    ydn <- .FirstDer(fn, pos, xdn)
-    return((yup-ydn)/(2*epsilon))
-}
-
-.checkListRecycle <- function(x) {
-    ## function tests whether list of vectors can work with recylcing
-    ## without throwing a warning. We can do this by unlisting the
-    ## elements, summing them, and checking for an error
-    tryCatch(
-        {tmp <- 0; for (i in seq_along(x)) tmp <- tmp+unlist(x[[i]])},
-        warning = function(c) {
-            c$message <- paste("Input vector lengths are not",
-                               "integer multiples of one another")
-            stop(c)
-        }
-    )
-}
+##
+##greeks <- function(price, ...) {
+##    ## Fix handling of inputs with different lengths
+##    ## want to modify this function so that
+##    if (is.list(c(...))) x <- c(...)
+##    else x <- list(...)
+##    ## make sure recycling rule will work, stop if not
+##    .checkListRecycle(x)
+##    prem  <-  do.call(price, x)
+##    delta <-  .FirstDer(price, 's', x)
+##    vega  <-  .FirstDer(price, 'v', x)/100
+##    rho   <-  .FirstDer(price, 'r', x)/100
+##    theta <- -.FirstDer(price, 'tt', x)/365
+##    psi   <-  .FirstDer(price, 'd', x)/100
+##    elast <-  x[['s']]*delta/prem
+##    gamma <-  .SecondDer(price, 1, x)
+##    numcols <- length(prem)
+##    numrows <- 8
+##    y <- t(matrix(c(prem,delta,gamma,vega,rho,theta,psi,elast),
+##                  nrow=numcols,ncol=numrows))
+##    rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
+##                     "Psi", "Elasticity")
+##    funcname <- as.character(match.call()[[2]])
+##    
+##    ## In the following, this tests to see if there is variation in
+##    ## any inputs (is xmaxlength > 1). If so, is there variation in
+##    ## more than one input (length(maxarg) > 1). The column names are
+##    ## constructed as appropriate in each case.
+##
+##    ## are any parameters input as vectors?
+##    xlength <- lapply(x, length) ## how many of each input?
+##    xmaxlength <- max(unlist(lapply(x, length))) ## max # of inputs
+##    arggt1 <- which(xlength > 1)
+##    if (xmaxlength == 1) {
+##        colnames(y) <- funcname
+##    } else {
+##        ## if we get here, there are multiple inputs with length > 1
+##        tmp <- NULL
+##        for (i in arggt1) {
+##            tmp <- paste(tmp, format(x[[i]], digits=3, trim=TRUE), sep='_')
+##        }
+##        colnames(y) <- paste(funcname, tmp, sep='')
+##    }
+##    return(y)
+##}
+##
+##greeks2 <- function(f) {
+##    ## This version uses a standard function call
+##    args <- match.call()[[2]] ## get f and arguments
+##    funcname <- as.character(args[[1]]) 
+##    args[[1]] <- NULL  ## eliminate function name, leaving only the
+##                       ## function arguments
+##    argnames <- formals(match.fun(funcname)) ## arguments of function
+##    if (sum(names(args)=='') > 0) {
+##        fnames <- names(formals(funcname)) ## get arguments to function
+##        shared <- intersect(names(args), fnames)
+##        names(args)[names(args)==''] <- setdiff(fnames, shared)
+##    }
+##
+##    x <<- as.list(args)
+##    ## Issue: When an argument is a vector, the list representation
+##    ## stores the values as a language object (an unevaluated
+##    ## call). In order to extract the values, need to use "eval
+##    ## x[[i]]".  
+##    for (i in 1:length(x)) x[[i]] <- eval(x[[i]])
+##    .checkListRecycle(x)
+##    prem  <-  do.call(funcname, x)
+##    delta <-  .FirstDer(funcname, 's', x)
+##    vega  <-  .FirstDer(funcname, 'v', x)/100
+##    rho   <-  .FirstDer(funcname, 'r', x)/100
+##    theta <- -.FirstDer(funcname, 'tt', x)/365
+##    psi   <-  .FirstDer(funcname, 'd', x)/100
+##    elast <-  x[['s']]*delta/prem
+##    gamma <-  .SecondDer(funcname, 's', x)
+##    numcols <- length(prem)
+##    numrows <- 8
+##    y <- t(matrix(c(prem,delta,gamma,vega,rho,theta,psi,elast),
+##                  nrow=numcols,ncol=numrows))
+##    rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
+##                     "Psi", "Elasticity")
+###    funcname <- as.character(match.call()[[2]])
+##
+##    ## In the following, this tests to see if there is variation in
+##    ## any inputs (is xmaxlength > 1). If so, is there variation in
+##    ## more than one input (length(maxarg) > 1). The column names are
+##    ## constructed as appropriate in each case.
+##
+##    ## are any parameters input as vectors?
+##    xlength <- lapply(x, length) ## how many of each input?
+##    xmaxlength <- max(unlist(lapply(x, length))) ## max # of inputs
+##    arggt1 <- which(xlength > 1)
+##    if (xmaxlength == 1) {
+##        colnames(y) <- funcname
+##    } else {
+##        ## if we get here, there are multiple inputs with length > 1
+##        tmp <- NULL
+##        for (i in arggt1) {
+##            tmp <- paste(tmp, format(x[[i]], digits=3, trim=TRUE),
+##                         sep='_')
+##        }
+##        colnames(y) <- paste(funcname, tmp, sep='')
+##    }
+##    return(y)
+##}
+##
+##
+##.FirstDer <- function(fn, pos, arglist) {
+##    ## compute first derivative of function fn
+##    ## arglist must be a list
+##    epsilon <- 0.000001
+##    xup <- xdn <- arglist
+##    xup[[pos]] <- xup[[pos]] + epsilon
+##    xdn[[pos]] <- xdn[[pos]] - epsilon
+##    yup <- do.call(fn, xup)
+##    ydn <- do.call(fn, xdn)
+##    return((yup-ydn)/(2*epsilon))
+##}
+##
+##.SecondDer <- function(fn, pos, ...) {
+##    ## this is original
+##    ##   compute second derivative of function fn
+##    if (is.list(c(...))) arglist <- c(...)
+##    else arglist <- list(...)
+##    epsilon <- 0.0005
+##    xup <- xdn <- arglist
+##    xup[[pos]] <- xup[[pos]] + epsilon
+##    xdn[[pos]] <- xdn[[pos]] - epsilon
+##    yup <- .FirstDer(fn, pos, xup)
+##    ydn <- .FirstDer(fn, pos, xdn)
+##    return((yup-ydn)/(2*epsilon))
+##}
+##
+##.checkListRecycle <- function(x) {
+##    ## function tests whether list of vectors can work with recylcing
+##    ## without throwing a warning. We can do this by unlisting the
+##    ## elements, summing them, and checking for an error
+##    tryCatch(
+##        {tmp <- 0; for (i in seq_along(x)) tmp <- tmp+unlist(x[[i]])},
+##        warning = function(c) {
+##            c$message <- paste("Input vector lengths are not",
+##                               "integer multiples of one another")
+##            stop(c)
+##        }
+##    )
+##}
