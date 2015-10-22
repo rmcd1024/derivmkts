@@ -6,6 +6,7 @@ setwd('~/git/derivmkts')
 ## This program generates test values for different option pricing functions
 ##
 ## Here are the values we use:
+kseq0 <- c(35, 40, 45)
 kseq <- rep(c(35, 40, 45), times=3)
 Hseq <- rep(c(35, 40, 45), each=3)
 s <- 40; k <- 40; v <- 0.30; r <- 0.08;  tt <- 2; d <- 0.05; H=43.1
@@ -73,6 +74,23 @@ for (i in imptestfns[3:4]) {
 }
 
 ############################################################
+## Merton jump tests
+############################################################
+## Only test call values for each function
+lambda <- 0.5; alphaj <- -0.15; vj <- 0.20;
+jumpfns <- c('CashCallJump', 'AssetCallJump', 'MertonJump')
+jumpvals <- data.frame(kvals=kseq0)
+for (i in jumpfns[1:2]) {
+    tmp <- do.call(i, list(s=s, k=kseq0, v=v, r=r, tt=tt, d=d,
+                           lambda=lambda, alphaj=alphaj, vj=vj))
+    jumpvals[i] <- tmp
+}
+i <- jumpfns[3]
+tmp <- do.call(i, list(s=s, k=kseq0, v=v, r=r, tt=tt, d=d,
+                       lambda=lambda, alphaj=alphaj, vj=vj))
+jumpvals[i] <- tmp[grep('Call', names(tmp))]
+
+############################################################
 ## Greeks tests
 ############################################################
 
@@ -109,7 +127,9 @@ keeplist <- c('barriervals', 'barriertestfns',
               'greeksvals', 'greeksvals2',
               'greeksinputs', 'greeksinputsH',
               's', 'k', 'v', 'r', 'tt', 'd', 'H',
-              'kseq', 'Hseq', 'Hseq2', 'kseqbs', 'prices',
+              'kseq0', 'kseq', 'Hseq', 'Hseq2', 'kseqbs',
+              'prices', 'jumpfns', 'jumpvals',
+              'lambda', 'alphaj', 'vj',
               'nstep', 'binomvalsEurC', 'binomvalsEurP',
               'binomvalsAmC', 'binomvalsAmP'              
               )
