@@ -13,7 +13,11 @@
 #'     containing the inputs and binomial parameters used to compute
 #'     the option price. Optionally, by specifying
 #'     \code{returntrees=TRUE}, the list can include the complete
-#'     asset price and option price trees. The function
+#'     asset price and option price trees, along with trees
+#'     representing the replicating portfolio over time. The  current
+#'     delta, gamma, and theta are also returned. If
+#'     \code{returntrees=FALSE} and \code{returngreeks=TRUE}, only the
+#'     current price, delta, gamma, and theta are returned. The function
 #'     \code{binomplot} produces a visual representation of the
 #'     binomial tree.
 #'
@@ -55,6 +59,8 @@
 #'     \code{returnparams=FALSE}, which is the default.
 #' @param returnparams Return the vector of inputs and computed
 #'     pricing parameters as well as the price
+#' @param returngreeks Return time 0 delta, gamma, and theta in the
+#'     vector \code{greeks}
 #' @param plotvalues display asset prices at nodes
 #' @param plotarrows draw arrows connecting pricing nodes
 #' @param drawstrike draw horizontal line at the strike price
@@ -145,7 +151,7 @@ binomopt <- function(s, k, v, r, tt, d,
                      nstep=10, american = TRUE, putopt=FALSE,
                      specifyupdn=FALSE, crr=FALSE, jarrowrudd=FALSE,
                      up=1.5, dn=1.5, returntrees=FALSE,
-                     returnparams=FALSE) {
+                     returnparams=FALSE, returngreeks=FALSE) {
     ## set up the binomial tree parameters
     
     h <- tt/nstep
@@ -184,30 +190,49 @@ binomopt <- function(s, k, v, r, tt, d,
             Vc[1:i,i] <- Vnc
         }
     }
-    if (!returnparams & !returntrees) return(price=Vc[1,1])
+    price <- c(price=Vc[1, 1])
+    if (returntrees | returngreeks) {
+        deltatree <- matrix(0, nrow=nstep, ncol=nstep)
+        bondtree <- matrix(0, nrow=nstep, ncol=nstep)
+        for (i in 1:(nstep)) {
+            deltatree[1:i, i] <- exp(-d*h)*(Vc[1:i, i+1] - Vc[2:(i+1), i+1])/
+                (up-dn)/stree[1:i, i]
+            bondtree[1:i, i] <- exp(-r*h)*(up* Vc[2:(i+1), i+1] -
+                                      dn*Vc[1:i, i+1])/(up-dn)
+        }
+       
+        delta <- deltatree[1, 1]
+        if (nstep >= 2) {
+            gamma <- (deltatree[1, 2] - deltatree[2, 2])/
+                (stree[1, 2] - stree[2, 2])
+            epsilon <- (up*dn - 1)*s
+            theta <- (Vc[2, 3] - epsilon*delta - 0.5*epsilon^2*gamma
+                - Vc[1, 1])/(2*h)/365
+        } else {
+            theta <- NA
+            gamma <- NA
+        }
+        greeks <- c(delta=delta, gamma=gamma, theta=theta)
+    }
+    if (!returnparams & !returntrees & !returngreeks) return(price=price)
     params=c(s=s, k=k, v=v, r=r, tt=tt, d=d,
              nstep=nstep, p=p, up=up, dn=dn, h=h)
     if (returntrees) {
-        delta <- matrix(0, nrow=nstep, ncol=nstep)
-        bond <- matrix(0, nrow=nstep, ncol=nstep)
-        for (i in 1:(nstep)) {
-            delta[1:i, i] <- exp(-d*h)*(Vc[1:i, i+1] - Vc[2:(i+1), i+1])/
-                (up-dn)/stree[1:i, i]
-            bond[1:i, i] <- exp(-r*h)*(up* Vc[2:(i+1), i+1] -
-                                      dn*Vc[1:i, i+1])/(up-dn)
-        }
         probtree <- matrix(0, nstep+1, nstep+1)
         A <- matrix(p^nn, nstep+1, nstep+1, byrow=TRUE)
         B <- matrix((1-p)^nn/p^nn, nstep+1, nstep+1)
         for (i in 0:nstep) { probtree[,i+1] <- choose(i,nn) }
         exertree <- (payoffmult*(stree - k) == Vc)
         probtree <- A*B*probtree
-        return(list(price=Vc[1,1], params=params, oppricetree=Vc,
-                    stree=stree, probtree=probtree, exertree=exertree,
-                    delta=delta, bond=bond)
+        return(list(price=price, greeks=greeks, params=params,
+                    oppricetree=Vc, stree=stree, probtree=probtree,
+                    exertree=exertree, deltatree=deltatree,
+                    bondtree=bondtree)
                )
+    } else if (returngreeks) {
+        return(c(price, greeks, params))
     } else {
-        return(list(price=Vc[1,1], params=params))
+        return(c(price, params))
     }
 }
 
