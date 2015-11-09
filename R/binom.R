@@ -76,16 +76,22 @@
 #' 
 #' \describe{
 #' 
-#'   \item{stree}{the binomial tree for the price of the underlying
-#'   asset}
+#' \item{stree}{the binomial tree for the price of the underlying
+#'     asset}
 #' 
-#'   \item{oppricetree}{the binomial tree for the option price at each
-#'   node}
+#' \item{oppricetree}{the binomial tree for the option price at each
+#'     node}
 #' 
-#'   \item{exertree}{the tree of boolean indicators for whether or not
-#'  the option is exercisd at each node}
+#' \item{exertree}{the tree of boolean indicators for whether or not
+#'     the option is exercisd at each node}
 #' 
-#'   \item{probtree}{the probability of reaching each node}
+#' \item{probtree}{the probability of reaching each node}
+#'
+#' \item{delta}{at each node prior to expiration, the number of units
+#'     of the underlying asset in the replicating portfolio}
+#'
+#' \item{bond}{at each node prior to expiration, the bond position in
+#'     the replicating portfoliio}
 #' 
 #' }
 #' 
@@ -112,6 +118,13 @@
 #' 
 #' binomopt(s, k, v, r, tt, d, nstep, american=TRUE, putopt=TRUE,
 #'     returnparams=TRUE)
+#'
+#' ## matches Fig 10.8 in 3rd edition of Derivatives Markets
+#' x <- binomopt(110, 100, .3, .05, 1, 0.035, 3, american=TRUE,
+#'     returntrees=TRUE, returnparams=TRUE)
+#' print(x$oppricretree)
+#' print(x$delta)
+#' print(x$bond)
 #' 
 #' binomplot(s, k, v, r, tt, d, nstep, american=TRUE, putopt=TRUE)
 #' 
@@ -119,6 +132,10 @@
 #' 
 #' 
 
+
+## this matches fig 10.8 in the 3rd edition:
+## binomopt(110, 100, .3, .05, 1, 0.035, 3, american=TRUE,
+##          returntrees=TRUE, returnparams=TRUE)
 
 binomopt <- function(s, k, v, r, tt, d,
                      nstep=10, american = TRUE, putopt=FALSE,
@@ -167,6 +184,14 @@ binomopt <- function(s, k, v, r, tt, d,
     params=c(s=s, k=k, v=v, r=r, tt=tt, d=d,
              nstep=nstep, p=p, up=up, dn=dn, h=h)
     if (returntrees) {
+        delta <- matrix(0, nrow=nstep, ncol=nstep)
+        bond <- matrix(0, nrow=nstep, ncol=nstep)
+        for (i in 1:(nstep)) {
+            delta[1:i, i] <- exp(-d*h)*(Vc[1:i, i+1] - Vc[2:(i+1), i+1])/
+                (up-dn)/stree[1:i, i]
+            bond[1:i, i] <- exp(-r*h)*(up* Vc[2:(i+1), i+1] -
+                                      dn*Vc[1:i, i+1])/(up-dn)
+        }
         probtree <- matrix(0, nstep+1, nstep+1)
         A <- matrix(p^nn, nstep+1, nstep+1, byrow=TRUE)
         B <- matrix((1-p)^nn/p^nn, nstep+1, nstep+1)
@@ -174,7 +199,8 @@ binomopt <- function(s, k, v, r, tt, d,
         exertree <- (payoffmult*(stree - k) == Vc)
         probtree <- A*B*probtree
         return(list(price=Vc[1,1], params=params, oppricetree=Vc,
-                    stree=stree, probtree=probtree, exertree=exertree)
+                    stree=stree, probtree=probtree, exertree=exertree,
+                    delta=delta, bond=bond)
                )
     } else {
         return(list(price=Vc[1,1], params=params))
