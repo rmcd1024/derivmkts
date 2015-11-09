@@ -71,13 +71,14 @@
 #'  
 #' @details Returns an option price, a vector of the parameters used
 #'     to compute the price.  Optionally returns
-#'     the following \eqn{(\textrm{nstep}+1)\times (\textrm{nstep}+
-#'     1)}{(nstep+1)*(nstep+1)} matrices:
+#'     the following matrices, all but but two of which have
+#'     dimensionality \eqn{(\textrm{nstep}+1)\times (\textrm{nstep}+
+#'     1)}{(nstep+1)*(nstep+1)}:
 #' 
 #' \describe{
 #' 
 #' \item{stree}{the binomial tree for the price of the underlying
-#'     asset}
+#'     asset.}
 #' 
 #' \item{oppricetree}{the binomial tree for the option price at each
 #'     node}
@@ -88,10 +89,13 @@
 #' \item{probtree}{the probability of reaching each node}
 #'
 #' \item{delta}{at each node prior to expiration, the number of units
-#'     of the underlying asset in the replicating portfolio}
+#'     of the underlying asset in the replicating portfolio. The
+#'     dimensionality is \eqn{(\textrm{nstep})\times
+#'     (\textrm{nstep})}{nstep*nstep}}
 #'
 #' \item{bond}{at each node prior to expiration, the bond position in
-#'     the replicating portfoliio}
+#'     the replicating portfolio. The dimensionality is
+#'     \eqn{(\textrm{nstep})\times (\textrm{nstep})}{nstep*nstep}}
 #' 
 #' }
 #' 
