@@ -22,9 +22,11 @@
 #'     binomial tree.
 #'
 #' @usage
+#'
 #' binomopt(s, k, v, r, tt, d, nstep = 10, american = TRUE,
 #'     putopt=FALSE, specifyupdn=FALSE, crr=FALSE, jarrowrudd=FALSE,
-#'     up=1.5, dn=1.5, returntrees=FALSE, returnparams=FALSE)
+#'     up=1.5, dn=1.5, returntrees=FALSE, returnparams=FALSE,
+#'     returngreeks=FALSE)
 #' 
 #' binomplot(s, k, v, r, tt, d, nstep, putopt=FALSE, american=TRUE,
 #'     plotvalues=FALSE, plotarrows=FALSE, drawstrike=TRUE,

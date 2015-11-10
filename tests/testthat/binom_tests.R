@@ -5,7 +5,7 @@ test_that('binom EC works', {
               unknown <- binomopt(s=s, k=k, v=v, r=r, tt=tt, d=d,
                              nstep, putopt=FALSE, american=FALSE,
                              returnparams=FALSE)
-              expect_equal(correct, unknown, tolerance=tol)
+              expect_equivalent(correct, unknown)
           }
           )
 test_that('binom EP works', {
@@ -14,7 +14,7 @@ test_that('binom EP works', {
                                   nstep, putopt=TRUE, american=FALSE,
                                   returnparams=FALSE)
 
-              expect_equal(correct, unknown, tolerance=tol)
+              expect_equivalent(correct, unknown)
           }
           )
 test_that('binom EP works', {
@@ -22,7 +22,7 @@ test_that('binom EP works', {
               unknown <- binomopt(s=s, k=k, v=v, r=r, tt=tt, d=d,
                              nstep, putopt=TRUE, american=TRUE,
                              returnparams=FALSE)
-              expect_equal(correct, unknown, tolerance=tol)
+              expect_equivalent(correct, unknown)
           }
           )
 test_that('binom EP works', {
@@ -30,7 +30,7 @@ test_that('binom EP works', {
               unknown <- binomopt(s=s, k=k, v=v, r=r, tt=tt, d=d,
                              nstep, putopt=FALSE, american=TRUE,
                              returnparams=FALSE)
-              expect_equal(correct, unknown, tolerance=tol)
+              expect_equivalent(correct, unknown)
           }
           )
 
