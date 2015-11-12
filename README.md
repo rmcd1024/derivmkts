@@ -61,6 +61,28 @@ for (i in c('Call', 'Put')) {
 This small bit of code computes and plots all call and put Greeks for
 500 options. This is 16 plots in all.  It's a great illustration of how powerful R can be.
 
+### Binomial calculations
+
+#### binomopt
+
+By default the binomopt function returns the price of a American
+call. In adddition, with:
+* `putopt=TRUE` it returns the price of an American
+put.
+*  `returngreeks=TRUE` it returns a subset of the Greeks
+along with the binomial parameters.
+* `returntrees=TRUE` it returns as a list all of the above plus the
+  full binomial tree ($stree), the probability of reaching each node
+  ($probtree), whether or not the option is exercised at each node
+  (exertree), and the replicating portfolio at each node ($deltatree
+  and $bondtree).
+
+#### binomplot
+
+This function plots the binomial tree, providing a visual depiction of
+the nodes, the probability of reaching each node, and whether exercise
+occurs at that node.
+
 ### Galton board or quincunx
 
 The [Galton board](http://mathworld.wolfram.com/GaltonBoard.html) is a
