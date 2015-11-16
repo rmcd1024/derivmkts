@@ -30,7 +30,7 @@
 #' 
 #' binomplot(s, k, v, r, tt, d, nstep, putopt=FALSE, american=TRUE,
 #'     plotvalues=FALSE, plotarrows=FALSE, drawstrike=TRUE,
-#'     pointsize=4, setylim=FALSE, ylimval=c(0,0),
+#'     pointsize=4, ylimval=c(0,0),
 #'     saveplot = FALSE, saveplotfn='binomialplot.pdf',
 #'     crr=FALSE, jarrowrudd=FALSE, titles=TRUE, specifyupdn=FALSE,
 #'     up=1.5, dn=1.5)
@@ -67,8 +67,6 @@
 #' @param plotarrows draw arrows connecting pricing nodes
 #' @param drawstrike draw horizontal line at the strike price
 #' @param pointsize CEX parameter for nodes
-#' @param setylim Boolean. If true, manually set ylim (error if ylim
-#'     is not set or if \code{c(0,0)} is used
 #' @param ylimval \code{c(low, high)} for ylimit of the plot
 #' @param saveplot boolean; save the plot to a pdf file named
 #'     \code{saveplotfn}
@@ -242,7 +240,7 @@ binomopt <- function(s, k, v, r, tt, d,
 binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
                       american=TRUE, plotvalues=FALSE,
                       plotarrows=FALSE, drawstrike=TRUE, 
-                      pointsize=4, setylim=FALSE, ylimval=c(0,0),
+                      pointsize=4, ylimval=c(0,0),
                       saveplot = FALSE, saveplotfn='binomialplot.pdf',
                       crr=FALSE, jarrowrudd=FALSE, titles = TRUE,
                       specifyupdn=FALSE, up=1.5, dn=1.5) {
@@ -256,9 +254,7 @@ binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
     ## an error
     ## 
     
-    if (setylim & sum(ylimval^2)==0)
-        return(
-            'Error: if setylim==TRUE, must enter values for ylimval')
+    setylim <- ifelse((sum(ylimval^2)==0), FALSE, TRUE)
     y <- binomopt(s, k, v, r, tt, d, nstep, american, putopt,
                   specifyupdn, crr, jarrowrudd, up, dn,
                   returnparams=TRUE, returntrees=TRUE)
@@ -301,7 +297,7 @@ binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
                      ifelse(tt==1," year,"," years,")
                     ," Price = ",format(oppricetree[1,1],digits=5)))
     if (drawstrike) abline(h=k)
-    yoffset <- 0.03*max(stree)
+    yoffset <- ifelse(setylim, 0.075*ylimval[1], 0.03*max(stree))
     if (plotarrows) {
         for (i in 1:nstep) {
             for (j in 1:i) {
@@ -312,7 +308,8 @@ binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
     }
     if (plotvalues) {
         for (i in 1:(nstep+1)) {
-            text((i-1)*h,stree[1:i,i]+yoffset,format(stree[1:i,i], digits=4))
+            text((i-1)*h,stree[1:i,i]+yoffset,format(stree[1:i,i], digits=3),
+                 cex=0.7)
         }
     }
     if (saveplot) dev.off()
