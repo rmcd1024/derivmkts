@@ -297,7 +297,9 @@ binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
                      ifelse(tt==1," year,"," years,")
                     ," Price = ",format(oppricetree[1,1],digits=5)))
     if (drawstrike) abline(h=k)
-    yoffset <- ifelse(setylim, 0.075*ylimval[1], 0.03*max(stree))
+#    yoffset <- ifelse(setylim, 0.075*ylimval[1], 0.03*max(stree))
+    yoffset <- ifelse(setylim, 0.03*(ylimval[2]-ylimval[1]),
+                      0.03*max(stree))
     if (plotarrows) {
         for (i in 1:nstep) {
             for (j in 1:i) {
