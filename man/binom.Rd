@@ -14,7 +14,7 @@ binomopt(s, k, v, r, tt, d, nstep = 10, american = TRUE,
 
 binomplot(s, k, v, r, tt, d, nstep, putopt=FALSE, american=TRUE,
     plotvalues=FALSE, plotarrows=FALSE, drawstrike=TRUE,
-    pointsize=4, setylim=FALSE, ylimval=c(0,0),
+    pointsize=4, ylimval=c(0,0),
     saveplot = FALSE, saveplotfn='binomialplot.pdf',
     crr=FALSE, jarrowrudd=FALSE, titles=TRUE, specifyupdn=FALSE,
     up=1.5, dn=1.5)
@@ -70,9 +70,6 @@ vector \code{greeks}}
 \item{drawstrike}{draw horizontal line at the strike price}
 
 \item{pointsize}{CEX parameter for nodes}
-
-\item{setylim}{Boolean. If true, manually set ylim (error if ylim
-is not set or if \code{c(0,0)} is used}
 
 \item{ylimval}{\code{c(low, high)} for ylimit of the plot}
 
