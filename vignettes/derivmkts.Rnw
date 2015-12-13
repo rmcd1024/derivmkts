@@ -1,0 +1,189 @@
+%\VignetteEngine{knitr::knitr} 
+\documentclass{article}
+\input{rlistings}
+\title{Option Pricing Functions to Accompany \emph{Derivatives Markets}}
+\author{Robert McDonald}
+\date{\today}
+
+\lstMakeShortInline{|}
+
+<<echo=FALSE>>=
+library(highlight)
+library(knitr)
+##homedir <- '/home/rmcd/tex/d67/Rtutorial/'
+options(digits=4)
+figsize <- 4.5
+opts_chunk$set(size='footnotesize', prompt=FALSE, comment=NA, 
+               fig.align='center', fig.width = figsize, 
+               fig.height=figsize, out.width='3.75in')
+
+#              , fig.width=4.5*3.75/3.25, fig.height=4.5, 
+#              , out.width='3.75in', out.height='3.25in'
+#               )
+opts_knit$set(highlight = TRUE, 
+              eval.after='fig.cap',
+              prompt=TRUE,
+              renderer=renderer_latex(document=FALSE),
+              size='footnotesize') 
+@ 
+
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+
+<<>>=
+library(knitr)
+library(derivmkts)
+library(markdown)
+
+opts_chunk$set(collapse=TRUE)
+@ 
+
+\section{Introduction}
+
+This provides some additional documentation and examples for the R
+package \texttt{derivmkts}, which is meant as a companion to \emph{Derivatives
+Markets}. There are of course other option pricing packages for R, but
+this package uses function names corresponding to the usage in the
+book.
+
+
+\section{Basic Pricing Functions}
+
+\subsection{Black-Scholes}
+
+The functions |bscall|, |bsput|, and |bsopt| provide basic pricing of
+European calls and puts. There are also options with binary payoffs:
+cash-or-nothing and asset-or-nothing options. All functions are
+vectorized. The function |bsopt| provides option greeks. Here are some
+examples:
+
+<<>>=
+s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
+bscall(s, k, v, r, tt, d)
+bsput(s, k, v, r, tt, d)
+bsput(s, c(95, 100, 105), v, r, tt, d)
+bsopt(s, c(95, 100, 105), v, r, tt, d)$Call
+@
+
+\subsection{Barrier Options}
+
+There are pricing functions for a large number of barrier options: 
+
+\begin{itemize}
+\item down-and-in and down-and-out barrier binary options 
+\item  up-and-in and up-and-out barrier binary options 
+\item  more standard
+  down- and up- calls and puts, constructed using the barrier binary
+  options
+\end{itemize}
+Naming for the barrier options generally follows the convention
+\begin{verbatim}
+[u|d][i|o][call|put]
+\end{verbatim}
+which means that the option is "up" or "down", "in" or "out", and a
+call or put.\footnote{The naming convention here differs from that in
+\emph{Derivatives Markets}, in which names are \lstinline{callupin}, callupout,
+etc. For consistency, but possibly at the cost of confusion, I have
+made both names are available for these functions.}  An up-and-in
+call, for example, would be denoted by |uicall|. For binary options,
+we add the underlying, which is either the asset or \$1:
+cash:
+
+\begin{verbatim}
+[asset|cash][u|d][i|o][call|put]
+\end{verbatim}
+
+
+<<>>=
+H <- 105
+uicall(c(95, 100, 105), k, v, r, tt, d, H)
+bscall(c(95, 100, 105), k, v, r, tt, d)
+@
+
+\subsection{Option Greeks}
+
+Greeks can be computed one of two ways. The |greeks| function takes as arguments the name of the pricing function and then its inputs. The |greeks2| function takes the function call as an input. Here are illustrations of the two functions using the same parameters:
+
+<<>>=
+greeks(uicall(s, k, v, r, tt, d, H))
+greeks2(uicall, s=s, k=k, v=v, r=r, tt=tt, d=d, H=H)
+
+@
+
+\subsection{Binomial Pricing}
+
+
+There are two functions in this section: |binomopt|, which computes
+binomial option prices, and |binomplot|, which displays the asset
+price tree, the corresponding probability of being at each node, and
+whehter or not the option is in exercised at each node.
+
+\subsubsection{\lstinline{binomopt}}
+
+
+Here are examples of pricing, illustrating the default of just
+returning the price, and the ability to return the price plus
+parameters, as well as the price, the parameters, and various trees:
+<<>>=
+s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0.03
+binomopt(s, k, v, r, tt, d, nstep=4)
+binomopt(s, k, v, r, tt, d, nstep=4, returnparams=TRUE)
+binomopt(s, k, v, r, tt, d, nstep=4, putopt=TRUE)
+binomopt(s, k, v, r, tt, d, nstep=4, returntrees=TRUE, putopt=TRUE)
+@
+
+
+
+\section{Illustrative Functions}
+
+
+Several functions are intended to illustrate some aspects of the
+material. 
+
+\subsection{Quincunx or Galton Board}
+
+
+
+
+\subsection{Plotting the Solution to the Binomial Pricing Model}
+
+
+The |binomplot| function calls |binomopt| to compute the option price
+and the various trees, which it then uses in plotting:
+
+The first plot, figure \ref{fig:binomplot1}, is basic:
+
+<<binomplot1, fig.cap='Basic option plot showing stock prices and nodes at which the option is exercised.\\label{fig:binomplot1}'>>=
+binomplot(s, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE)
+
+@ 
+
+The second plot, figure \ref{fig:binomplot2}, adds a display of stock
+prices and arrows connecting the nodes.
+
+<<binomplot2, fig.cap='Same plot as Figure \\ref{fig:binomplot1} except that values and arrows are added to the plot.\\label{fig:binomplot2}'>>=
+binomplot(s, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE,
+    plotvalues=TRUE, plotarrows=TRUE)
+@
+
+Finally, here is a plot for an American call when the dividend yield
+is positive and |nstep| has a larger value:
+
+<<binomplot3, fig.cap="Binomial plot when nstep is 50.\\label{fig:binomplot3}">>=
+d <- 0.06
+binomplot(s, k, v, r, tt, d, nstep=50, american=TRUE)
+@
+
+Notice that the large value of |nstep| creates a high maximum terminal
+stock price, which makes the plot hard to see in the narrow region where
+exercise is occurring. We can zoom in on that region by  selecting values for |ylimval|:
+
+<<binomplot4, fig.cap="Binomial plot when nstep is 50 using the argument ylimval to focus on a subset.\\label{fig:binomplot4}">>=
+d <- 0.06
+binomplot(s, k, v, r, tt, d, nstep=50, american=TRUE, ylimval=c(75, 225))
+@
+
+\end{document}

@@ -2,6 +2,7 @@ Package: derivmkts
 Title: functions and R code to accompany Derivatives Markets
 Version: 0.1.1.9000
 License: GPL (>= 2)
+Author: 'Robert McDonald'
 Authors@R: c(person("Robert", "McDonald", email = "rmcd1024@gmail.com",
      role = c("aut", "cre", "cph")))
 Maintainer: Robert McDonald <rmcd1024@gmail.com>

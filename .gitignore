@@ -4,3 +4,6 @@
 *~
 inst/doc
 stuff/
+*.tex
+..Rcheck
+*.out

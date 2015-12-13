@@ -1,66 +1,48 @@
 #' @title Asian option pricing
 #'
-#' @description Pricing functions for European Asian
-#'     options. \code{geomAsian} (and \code{geomAsianCall} and
-#'     \code{geomAsianPut} compute prices of geometric Asian options
-#'     using the Black-Scholes formula. \code{arithAsian}  The functions
-#'     \code{assetcall}, \code{assetput}, \code{cashcall}, and
-#'     \code{cashput} provide the prices of binary options that pay a
-#'     share (the asset options) or $1 (the cash options) if at
-#'     expiration the asset price exceeds the strike (the calls) or is
-#'     below the strike (the puts). We have the identities
-#'
-#' \code{bscall(s, k, v, r, tt, d)
-#'   = assetcall(s, k, v, r, tt, d) - k*cashcall(s, k, v, r, tt, d)}
-#'
+#' @description Pricing functions for European Asian options. \code{geomAsian}
+#'   (and \code{geomAsianCall} and \code{geomAsianPut} compute prices of
+#'   geometric Asian options using the Black-Scholes formula. \code{arithAsian}
+#'   computes prices of a complete assortment of Arithmetic Asian options
+#'   (average price call and put and average strike call and put)
 #'
 #' @name asian
-#' @aliases geomAsianCall, geomAsianPut, geomAsian, arithAsian,
-#'     arithAsianCV
+#' @aliases geomAsianCall, geomAsianPut, geomAsian, arithAsian, arithAsianCV
 #'
-#' @return An option price. If more than one argument is a
-#' vector, the recycling rule determines the handling of the inputs
+#' @return An option price. If more than one argument is a vector, the recycling
+#'   rule determines the handling of the inputs
 #'
-#' @usage
-#' geomAsianCall(s, k, v, r, tt, d)
-#' geomAsianPut(s, k, v, r, tt, d)
-#' geomAsian(s, k, v, r, tt, d)
-#' arithAsian(s, k, v, r, tt, d)
-#' arithAsianCV(s, k, v, r, tt, d)
-#' 
+#' @usage geomAsianCall(s, k, v, r, tt, d) geomAsianPut(s, k, v, r, tt, d)
+#' geomAsian(s, k, v, r, tt, d) arithAsian(s, k, v, r, tt, d) arithAsianCV(s, k,
+#' v, r, tt, d)
+#'
 #'
 #' @param s Stock price
 #' @param k Strike price of the option
-#' @param v Volatility of the stock, defined as the annualized
-#' standard deviation of the continuously-compounded return
+#' @param v Volatility of the stock, defined as the annualized standard
+#'   deviation of the continuously-compounded return
 #' @param r Annual continuously-compounded risk-free interest rate
 #' @param tt Time to maturity in years
 #' @param d Dividend yield, annualized, continuously-compounded
-#' 
-#' @details Returns a scalar or vector of option prices, depending on
-#' the inputs
 #'
-#' @note It is possible to specify the inputs either in terms of an
-#' interest rate and a "dividend yield" or an interest rate and a
-#' "cost of carry". In this package, the dividend yield should be
-#' thought of as the cash dividend received by the owner of the
-#' underlying asset, \emph{or} (equivalently) as the payment received
-#' if the owner were to lend the asset.
+#' @details Returns a scalar or vector of option prices, depending on the inputs
 #'
-#' There are other option pricing packages available for R, and these
-#' may use different conventions for specifying inputs. In fOptions,
-#' the dividend yield is replaced by the generalized cost of carry,
-#' which is the net payment required to fund a position in the
-#' underlying asset. If the interest rate is 10\% and the dividend
-#' yield is 3\%, the generalized cost of carry is 7\% (the part of the
-#' interest payment not funded by the dividend payment). Thus, using
-#' the \code{GBS} function from fOptions, these two expressions return
-#' the same price:
+#' @note It is possible to specify the inputs either in terms of an interest
+#'   rate and a "dividend yield" or an interest rate and a "cost of carry". In
+#'   this package, the dividend yield should be thought of as the cash dividend
+#'   received by the owner of the underlying asset, \emph{or} (equivalently) as
+#'   the payment received if the owner were to lend the asset.
 #'
-#' \code{bscall(s, k, v, r, tt, d)}
+#'   There are other option pricing packages available for R, and these may use
+#'   different conventions for specifying inputs. In fOptions, the dividend
+#'   yield is replaced by the generalized cost of carry, which is the net
+#'   payment required to fund a position in the underlying asset. If the
+#'   interest rate is 10\% and the dividend yield is 3\%, the generalized cost
+#'   of carry is 7\% (the part of the interest payment not funded by the
+#'   dividend payment). Thus, using the \code{GBS} function from fOptions, these
+#'   two expressions return the same price:
 #'
-#' \code{fOptions::GBSOption('c', S=s, K=k, Time=tt, r=r, b=r-d, sigma=v) }
-#'
+#'   \code{bscall(s, k, v, r, tt, d)}
 #'
 #' @examples
 #' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
@@ -72,6 +54,7 @@
 #' ## return option prices for different strikes
 #' bsput(s, k=38:42, v, r, tt, d)
 
+#' price of continuous geometric average European Asian call
 geomAsianCall <- function(s, k, v, r, tt, d, numavg) {
     siga <- v*((numavg+1)*((2*numavg)+1)/6)^0.5/numavg
     da <- 0.5*(r*(numavg-1)/numavg+(d+0.5*v^2)*(numavg+1)/numavg-
@@ -79,6 +62,7 @@ geomAsianCall <- function(s, k, v, r, tt, d, numavg) {
     return(bscall(s, k, siga, r, tt, da))
 }
 
+#' price of continuous geometric average European Asian put
 geomAsianPut <- function(s, k, v, r, tt, d, numavg) {
     siga <- v*((numavg+1)*((2*numavg)+1)/6)^0.5/numavg
     da <- 0.5*(r*(numavg-1)/numavg+(d+0.5*v^2)*(numavg+1)/numavg-
@@ -86,6 +70,8 @@ geomAsianPut <- function(s, k, v, r, tt, d, numavg) {
     return(bsput(s, k, siga, r, tt, da))
 }
 
+#' Returns vector of continuous geometric European Asian call and put
+#' prices
 geomAsian <- function(s, k, v, r, tt, d, numavg) {
     siga <- v*((numavg+1)*((2*numavg)+1)/6)^0.5/numavg
     da <- 0.5*(r*(numavg-1)/numavg+(d+0.5*v^2)*(numavg+1)/numavg-
@@ -97,8 +83,8 @@ geomAsian <- function(s, k, v, r, tt, d, numavg) {
 arithAsian <- function(s, k, v, r, tt, d, numavg, numsim=1000,
                        printSDs=FALSE) {
     ## average price Asian call and put
-    ## 
-    ## numavg is the number of averages in the function. 
+    ##
+    ## numavg is the number of averages in the function.
     ## Create a matrix of stock prices, where the numavg stock prices in
     ## each simulation are a row of the matrix. After we compute the
     ## sequence of stock prices, we sum across the rows, then we compute
@@ -109,7 +95,7 @@ arithAsian <- function(s, k, v, r, tt, d, numavg, numsim=1000,
     hmat <- matrix((1:numavg)*h,numsim,numavg,byrow=TRUE)
     S <- matrix(0, nrow=numsim, ncol=numavg)
     ## Computing the matrix of stock prices in one step is marginally
-    ## faster when performing the experiment using microbenchmark.
+    ## faster (tested using microbenchmark)
     onestep <- TRUE
     if (onestep) {
         S <- s*exp((r-d-0.5*v^2)*hmat +
