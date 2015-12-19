@@ -64,6 +64,7 @@
 #'     }
 #' }
 
+#' @export
 bsopt <- function(s, k, v, r, tt, d) {
     ## Black-Scholes put and call values.
     xc <- greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
@@ -71,6 +72,7 @@ bsopt <- function(s, k, v, r, tt, d) {
     return(list(Call=xc, Put=xp))
 }
 
+#' @export
 greeks <- function(f) {
     ## This version uses a standard function call
     args <- match.call()[[2]] ## get f and arguments
@@ -133,6 +135,7 @@ greeks <- function(f) {
 }
 
 
+#' @export
 greeks2 <- function(fn, ...) {
     ## Fix handling of inputs with different lengths want to modify
     ## this function so that inputs need not be named

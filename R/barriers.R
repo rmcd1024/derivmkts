@@ -105,6 +105,7 @@
 #' ## return option prices for different strikes
 #' putupin(s, k=38:42, v, r, tt, d, H)
 
+#' @export
 cashdicall <- function(s, k, v, r, tt, d, H) {
     ifelse(s <= H, cashcall(s, k, v, r, tt, d),
            exp(-r*tt)*(.nd2(s, k, v, r, tt, d) -
@@ -113,10 +114,12 @@ cashdicall <- function(s, k, v, r, tt, d, H) {
                                    .nd8(s, k, v, r, tt, d, H*pmin(H/k, 1))))
 }
 
+#' @export
 assetdicall <- function(s, k, v, r, tt, d, H) {
     exp((r-d)*tt)*s*cashdicall(s, k, v, r, tt, d - v^2, H)
 }
 
+#' @export
 cashdocall <- function(s, k, v, r, tt, d, H) {
 ##    tmp <- vectorizesh(s, H)
 ##    s <- tmp[[1]]
@@ -125,11 +128,13 @@ cashdocall <- function(s, k, v, r, tt, d, H) {
         cashdicall(s, k, v, r, tt, d, H)
 }
 
+#' @export
 assetdocall <- function(s, k, v, r, tt, d, H) {
     price <- s*exp((r-d)*tt)*
         cashdocall(s, k, v, r, tt, d-v^2, H)
 }
 
+#' @export
 cashdoput <- function(s, k, v, r, tt, d, H) {
 ##> sapply(c(35, 40, 41, 42),
 ##    function(x) cashdoput(x, 40.5, .3, .08, .25, 0, 38))
@@ -144,51 +149,62 @@ cashdoput <- function(s, k, v, r, tt, d, H) {
            )
 }
 
+#' @export
 cashdiput <- function(s, k, v, r, tt, d, H) {
     cashput(s, k, v, r, tt, d) -
         cashdoput(s, k, v, r, tt, d, H)
 }
 
+#' @export
 assetdoput <- function(s, k, v, r, tt, d, H) {
     s*exp((r-d)*tt)*
         cashdoput(s, k, v, r, tt, d-v^2, H)
 }
 
+#' @export
 assetdiput <- function(s, k, v, r, tt, d, H) {
     s*exp((r-d)*tt)*
         cashdiput(s, k, v, r, tt, d-v^2, H)
 }
 
+#' @export
 calldownin <- function(s, k, v, r, tt, d, H) {
     assetdicall(s, k, v, r, tt, d, H) -
         k*cashdicall(s, k, v, r, tt, d, H)
 }
 
+#' @export
 dicall <- function(s, k, v, r, tt, d, H)
     calldownin(s, k, v, r, tt, d, H) 
 
+#' @export
 calldownout <- function(s, k, v, r, tt, d, H) {
     bscall(s, k, v, r, tt, d) -
         calldownin(s, k, v, r, tt, d, H)
 }
 
+#' @export
 docall <- function(s, k, v, r, tt, d, H)
     calldownout(s, k, v, r, tt, d, H)
 
+#' @export
 putdownin <- function(s, k, v, r, tt, d, H) {
     k*cashdiput(s, k, v, r, tt, d, H) -
         assetdiput(s, k, v, r, tt, d, H)
 
 }
 
+#' @export
 diput <- function(s, k, v, r, tt, d, H)
     putdownin(s, k, v, r, tt, d, H)
 
+#' @export
 putdownout <- function(s, k, v, r, tt, d, H) {
     bsput(s, k, v, r, tt, d) -
         putdownin(s, k, v, r, tt, d, H)
 }
 
+#' @export
 doput <- function(s, k, v, r, tt, d, H)
     putdownout(s, k, v, r, tt, d, H)
 
@@ -197,6 +213,7 @@ doput <- function(s, k, v, r, tt, d, H)
 ## up barriers
 #################################################
 
+#' @export
 cashuiput <- function(s, k, v, r, tt, d, H) {
     ifelse(s >= H,
            cashput(s, k, v, r, tt, d),
@@ -209,71 +226,87 @@ cashuiput <- function(s, k, v, r, tt, d, H) {
 }
 
 
+#' @export
 cashuoput <- function(s, k, v, r, tt, d, H) {
     cashput(s, k, v, r, tt, d) -
         cashuiput(s, k, v, r, tt, d, H)
 }
 
+#' @export
 cashuicall <- function(s, k, v, r, tt, d, H) {
     cashuiput(s, 1e15, v, r, tt, d, H) -
         cashuiput(s, k, v, r, tt, d, H)
 }
 
+#' @export
 cashuocall <- function(s, k, v, r, tt, d, H) {
     price <- cashcall(s, k, v, r, tt, d) -
         cashuicall(s, k, v, r, tt, d, H)
 }
 
+#' @export
 assetuiput <- function(s, k, v, r, tt, d, H) {
     s*exp((r-d)*tt)*
         cashuiput(s, k, v, r, tt, d-v^2, H)
 }
 
+#' @export
 assetuoput <- function(s, k, v, r, tt, d, H) {
     price <- s*exp((r-d)*tt)*
         cashuoput(s, k, v, r, tt, d-v^2, H)
     return(price)
 }
 
+#' @export
 assetuicall <- function(s, k, v, r, tt, d, H) {
     s*exp((r-d)*tt)*cashuicall(s, k, v, r, tt, d-v^2, H)
 }
+
+#' @export
 assetuocall <- function(s, k, v, r, tt, d, H) {
     s*exp((r-d)*tt)*cashuocall(s, k, v, r, tt, d-v^2, H)
 }
 
+#' @export
 callupin <- function(s, k, v, r, tt, d, H) {
     assetuicall(s, k, v, r, tt, d, H) -
         k*cashuicall(s, k, v, r, tt, d, H)
 }
 
+#' @export
 uicall <- function(s, k, v, r, tt, d, H)
     callupin(s, k, v, r, tt, d, H)
 
 
+#' @export
 callupout <- function(s, k, v, r, tt, d, H) {
     assetuocall(s, k, v, r, tt, d, H) -
         k*cashuocall(s, k, v, r, tt, d, H)
 }
 
+#' @export
 uocall <- function(s, k, v, r, tt, d, H)
     callupout(s, k, v, r, tt, d, H)
 
+#' @export
 putupin <- function(s, k, v, r, tt, d, H) {
     k*cashuiput(s, k, v, r, tt, d, H) -
         assetuiput(s, k, v, r, tt, d, H)
 }
 
+#' @export
 uiput <- function(s, k, v, r, tt, d, H)
     putupin(s, k, v, r, tt, d, H)
 
 
 
+#' @export
 putupout <- function(s, k, v, r, tt, d, H) {
     k*cashuoput(s, k, v, r, tt, d, H)-
         assetuoput(s, k, v, r, tt, d, H)
 }
 
+#' @export
 uoput <- function(s, k, v, r, tt, d, H)
     putupout(s, k, v, r, tt, d, H)
 
@@ -327,14 +360,17 @@ uoput <- function(s, k, v, r, tt, d, H)
 }
 
 
+#' @export
 drdeferred <- function(s, v, r, tt, d, H) {
     cashdicall(s, 0.00000001, v, r, tt, d, H)
 }
 
+#' @export
 urdeferred <- function(s, v, r, tt, d, H) {
     cashuicall(s, 0.00000001, v, r, tt, d, H)
 }
 
+#' @export
 ur <-  function(s, v, r, tt, d, H) {
     ifelse(s >= H, 1, {
                g = (((r - d) / v^2 - 0.5)^2 + 2*r /v^2)^0.5
@@ -347,6 +383,7 @@ ur <-  function(s, v, r, tt, d, H) {
            )
 }
 
+#' @export
 dr <-  function(s, v, r, tt, d, H) {
     ifelse(s <= H,  1, {
                g = (((r - d) / v^2 - 0.5)^2 + 2*r /v^2)^0.5
@@ -358,7 +395,6 @@ dr <-  function(s, v, r, tt, d, H) {
            }
            )
 }
-
 
 
 ##vectorizesh <- function(s, H) {

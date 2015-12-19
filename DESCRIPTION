@@ -11,6 +11,8 @@ Description: A set of pricing and expository functions that should
 Depends:
     R (>= 3.0.0)
 Suggests:
+    highlight,
+    markdown,
     knitr,
     rmarkdown
 VignetteBuilder: knitr

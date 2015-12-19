@@ -147,6 +147,7 @@
 ## binomopt(110, 100, .3, .05, 1, 0.035, 3, american=TRUE,
 ##          returntrees=TRUE, returnparams=TRUE)
 
+#' @export
 binomopt <- function(s, k, v, r, tt, d,
                      nstep=10, american = TRUE, putopt=FALSE,
                      specifyupdn=FALSE, crr=FALSE, jarrowrudd=FALSE,
@@ -237,6 +238,7 @@ binomopt <- function(s, k, v, r, tt, d,
 }
 
 
+#' @export
 binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
                       american=TRUE, plotvalues=FALSE,
                       plotarrows=FALSE, drawstrike=TRUE, 

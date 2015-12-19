@@ -45,6 +45,7 @@
 
 .tol <- .Machine$double.eps^0.5
 
+#' @export
 bscallimpvol <- function(s, k, r, tt, d, price) {
     ## this function is not vectorized
     if (price <= s*exp(-d*tt)-k*exp(-r*tt)) {
@@ -62,6 +63,7 @@ bscallimpvol <- function(s, k, r, tt, d, price) {
 }
 
 ## add tolerance!
+#' @export
 bsputimpvol <- function(s, k, r, tt, d, price) {
     ## this function is not vectorized
     x <- bscallimpvol(s, k, r, tt, d,
@@ -69,6 +71,7 @@ bsputimpvol <- function(s, k, r, tt, d, price) {
     return(x)
 }
 
+#' @export
 bscallimps <- function(s, k, v, r, tt, d, price) {
     f <- function(s, k, v, r, tt, d, price) {
         return(bscall(s, k, v, r, tt, d) - price)
@@ -77,6 +80,7 @@ bscallimps <- function(s, k, v, r, tt, d, price) {
     return(x$root)
 }
 
+#' @export
 bsputimps <- function(s, k, v, r, tt, d, price) {
     f <- function(s, k, v, r, tt, d, price) {
         return(bsput(s, k, v, r, tt, d) - price)

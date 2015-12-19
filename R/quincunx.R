@@ -30,6 +30,7 @@
 #' quincunx(n=10, numballs=200, delay=0)
 #' quincunx(n=20, numballs=200, delay=0, probright=0.7)
 
+#' @export
 quincunx <- function(n=3, numballs=20, delay=0.1,
                      probright=0.5, plottrue=TRUE) {
     ## inputs: n: number of binomial steps, number of balls, 

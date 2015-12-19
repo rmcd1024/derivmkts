@@ -65,12 +65,14 @@
 #'     ylab='Implied volatility', ylim=c(0.30, 0.50))
 
 
+#' @export
 cashjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj) {
     Call <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj, cashcall)
     Put <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj, cashput)
     return(c(Call=Call, Put=Put))
 }
 
+#' @export
 assetjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj) {
     Call <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
                assetcall)
@@ -79,6 +81,7 @@ assetjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj) {
     return(c(Call=Call, Put=Put))
 }
 
+#' @export
 mertonjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj) {
     Call <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
                bscall)

@@ -70,33 +70,39 @@
 #' ## return option prices for different strikes
 #' bsput(s, k=38:42, v, r, tt, d)
 
+#' @export
 bscall <- function(s, k, v, r, tt, d) {
     callp <- s*exp(-d*tt)*.nd1(s, k, v, r, tt, d) -
         k*exp(-r*tt)*.nd2(s, k, v, r, tt, d)
     return(callp)
 }
 
+#' @export
 bsput <- function(s, k, v, r, tt, d) {
     putp <- bscall(s, k, v, r, tt, d) + k*exp(-r*tt) -
         s*exp(-d*tt)
     return(putp)
 }
 
+#' @export
 assetcall <- function(s, k, v, r, tt, d) {
     price <- s*exp(-d*tt)*pnorm(.d1(s, k, v, r, tt, d))
     return(price)
 }
 
+#' @export
 cashcall <- function(s, k, v, r, tt, d) {
     price <- exp(-r*tt)*pnorm(.d2(s, k, v, r, tt, d))
     return(price)
 }
 
+#' @export
 assetput <- function(s, k, v, r, tt, d) {
     price <- s*exp(-d*tt)*pnorm(-.d1(s, k, v, r, tt, d))
     return(price)
 }
 
+#' @export
 cashput <- function(s, k, v, r, tt, d) {
     price <- exp(-r*tt)*pnorm(-.d2(s, k, v, r, tt, d))
     return(price)
