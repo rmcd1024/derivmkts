@@ -1,3 +1,7 @@
+# derivmkts 0.1.2.9000
+
+* Added Asian pricing files
+
 # derivmkts 0.1.1.9000
 
 * Greeks (delta, gamma, theta, added to binomial output)
