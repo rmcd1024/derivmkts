@@ -4,15 +4,23 @@
 This is a collection of option pricing functions for a course in
 financial derivatives. The names of the functions mostly match those
 in my book *Derivatives Markets*, which explains the package name.
-This is the first version; I expect to add many functions
-over time. Depending upon the level of the course, this package may or
-may not be helpful for students. I hope that at a minimum it will be
+This is the initial version; I expect to add and refine functions over
+time. Depending upon the level of the course, this package may or may
+not be helpful for students. I hope that at a minimum it will be
 helpful for instructors.
 
-There are of course other option pricing packages for R, notably
-RQuantLib and fOptions.  I don't claim to add significant
+There are of course other option pricing packages in R, notably
+RQuantLib and fOptions. I don't claim to add significant pricing
 functionality to those. This package does, however, have a few aspects
 that might be unique, which I describe below.
+
+The package includes functions for computing
+
+* Black-Scholes prices and greeks for European options
+* Option pricing and plotting using the binomial model
+* Barrier options
+* Pricing of options with jumps using the Merton model
+* Analytical and Monte Carlo pricing of Asian options 
 
 ## Things of note
 
@@ -28,12 +36,13 @@ standard Black-Scholes or barrier option inputs.
 As an example,
 
 ```r
-x <- greeks2(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0))
+x1 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0))
+x2 <- greeks2(bscall, s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0)
 ```
 
-will compute the full complement of greeks for a call, for three
-strike prices. You can access the delta values as, for example,
-`x['Delta', ]`.
+will produce identical output, computing the full complement of greeks
+for a call, for three strike prices. You can access the delta values
+as, for example, `x['Delta', ]`.
 
 
 The function
