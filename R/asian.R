@@ -1,99 +1,127 @@
 #' @title Asian option pricing
 #'
-#' @description Pricing functions for European Asian options. \code{geomAsian}
-#'   (and \code{geomAsianCall} and \code{geomAsianPut} compute prices of
-#'   geometric Asian options using the Black-Scholes formula. \code{arithAsian}
-#'   computes prices of a complete assortment of Arithmetic Asian options
-#'   (average price call and put and average strike call and put)
+#' @description Pricing functions for European Asian
+#'     options. \code{geomavgprice} and \code{geomavgstrike} compute
+#'     analytical prices of geometric Asian options using the modified
+#'     Black-Scholes formula. \code{arithasianmc} and
+#'     \code{geomasianmc} compute Monte Carlo prices for the full
+#'     range of average price and average strike call and puts
+#'     computes prices of a complete assortment of Arithmetic Asian
+#'     options (average price call and put and average strike call and
+#'     put)
 #'
-#' @name asian
-#' @aliases geomAsianCall, geomAsianPut, geomAsian, arithAsian, arithAsianCV
-#'
-#' @return An option price. If more than one argument is a vector, the recycling
-#'   rule determines the handling of the inputs
-#'
-#' @usage geomAsianCall(s, k, v, r, tt, d) geomAsianPut(s, k, v, r, tt, d)
-#' geomAsian(s, k, v, r, tt, d) arithAsian(s, k, v, r, tt, d) arithAsianCV(s, k,
-#' v, r, tt, d)
-#'
-#'
+#' @name Asian 
+#' @family Asian options
+#' @return An option price. If more than one argument is a vector, the
+#'     recycling rule determines the handling of the inputs
+#' @export 
 #' @param s Stock price
-#' @param k Strike price of the option
-#' @param v Volatility of the stock, defined as the annualized standard
-#'   deviation of the continuously-compounded return
+#' @param k Strike price of the option. In the case of average strike
+#'     options, \code{k/s} is the multiplier for the average
+#' @param km The strike mutiplier, relative to the initial stock
+#'     price, for an average price payoff. If the initial stock price
+#'     is \code{s = 120} and \code{km = 115}, the payoff for an
+#'     average strike call is \deqn{Payoff = max(ST - km/s*SAvg, 0)}.
+#' @param v Volatility of the stock, defined as the annualized
+#'     standard deviation of the continuously-compounded return
 #' @param r Annual continuously-compounded risk-free interest rate
 #' @param tt Time to maturity in years
 #' @param d Dividend yield, annualized, continuously-compounded
-#'
+#' @param m Number of prices in the average calculation
+#' @param cont Boolean which when TRUE denotes continuous averaging
+#' @param numsim Number of Monte Carlo iterations
+#' @param printsds Print standard deviation for the particular Monte
+#'     Carlo calculation
+#' 
 #' @details Returns a scalar or vector of option prices, depending on the inputs
 #'
-#' @note It is possible to specify the inputs either in terms of an interest
-#'   rate and a "dividend yield" or an interest rate and a "cost of carry". In
-#'   this package, the dividend yield should be thought of as the cash dividend
-#'   received by the owner of the underlying asset, \emph{or} (equivalently) as
-#'   the payment received if the owner were to lend the asset.
-#'
-#'   There are other option pricing packages available for R, and these may use
-#'   different conventions for specifying inputs. In fOptions, the dividend
-#'   yield is replaced by the generalized cost of carry, which is the net
-#'   payment required to fund a position in the underlying asset. If the
-#'   interest rate is 10\% and the dividend yield is 3\%, the generalized cost
-#'   of carry is 7\% (the part of the interest payment not funded by the
-#'   dividend payment). Thus, using the \code{GBS} function from fOptions, these
-#'   two expressions return the same price:
-#'
-#'   \code{bscall(s, k, v, r, tt, d)}
-#'
+
+#' @export
+#' @title Geometric average price
+#' @family Asian options
+#' @inheritParams Asian
+#' @name geomavgprice
 #' @examples
-#' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
-#' bscall(s, k, v, r, tt, d)
-#'
-#' ## following returns the same price as previous
-#' assetcall(s, k, v, r, tt, d) - k*cashcall(s, k, v, r, tt, d)
-#'
-#' ## return option prices for different strikes
-#' bsput(s, k=38:42, v, r, tt, d)
-
-#' price of continuous geometric average European Asian call
-geomAsianCall <- function(s, k, v, r, tt, d, numavg) {
-    siga <- v*((numavg+1)*((2*numavg)+1)/6)^0.5/numavg
-    da <- 0.5*(r*(numavg-1)/numavg+(d+0.5*v^2)*(numavg+1)/numavg-
-                   (v/numavg)^2*(numavg+1)*(2*numavg+1)/6)
-    return(bscall(s, k, siga, r, tt, da))
+#' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0; m=3;
+#' geomavgprice(s, k, v, r, tt, d, m)
+#' 
+#' @description Prices of geometric average-price call and put options
+#' @usage
+#' geomavgprice(s, k, v, r, tt, d, m, cont=FALSE)
+#' @title Geometric average-price options
+#' @return Vector of call and put prices for geometric average price
+#'     options
+geomavgprice <- function(s, k, v, r, tt, d, m, cont=FALSE) {
+    if (cont) {
+        siga <- v / (3^0.5)
+        da <- 0.5 * (r + d + v^2 / 6)
+    } else {
+        siga <- v * ((m + 1) * ((2 * m) + 1) / 6)^0.5 / m 
+        da <- 0.5 * (r * (m - 1) / m + (d + 0.5 * v^2) *
+                     (m + 1) / m - (v / m)^2 *
+                    (m + 1) * (2 * m + 1) / 6)
+    }
+    return(c(Call=bscall(s, k, siga, r, tt, da),
+             Put=bsput(s, k, siga, r, tt, da)))
 }
 
-#' price of continuous geometric average European Asian put
-geomAsianPut <- function(s, k, v, r, tt, d, numavg) {
-    siga <- v*((numavg+1)*((2*numavg)+1)/6)^0.5/numavg
-    da <- 0.5*(r*(numavg-1)/numavg+(d+0.5*v^2)*(numavg+1)/numavg-
-                   (v/numavg)^2*(numavg+1)*(2*numavg+1)/6)
-    return(bsput(s, k, siga, r, tt, da))
+#' @export
+#' @family Asian options
+#' @inheritParams Asian
+#' @name geomavgstrike
+#' @description Prices of geometric average-strike call and put options
+#' @usage
+#' geomavgstrike(s, km, v, r, tt, d, m, cont=FALSE)
+#' @examples
+#' s=40; km=40; v=0.30; r=0.08; tt=0.25; d=0; m=3;
+#' geomavgstrike(s, km, v, r, tt, d, m)
+#' @title Geometric average-strike options
+#' @return Vector of call and put prices for geometric average strike
+#'     options
+geomavgstrike <- function(s, km, v, r, tt, d, m, cont=FALSE) {
+    if (cont) {
+        siga <- v / (3 ^ 0.5)
+        da <- 0.5 * (r + d + v ^ 2 / 6)
+        rho <- 0.5 * (3 ^ 0.5)
+    } else {
+        siga <- v * ((m + 1) * (2 * m + 1) / 6) ^ 0.5 / m
+        da <- 0.5 * (r * (m - 1) / m + (d + 0.5 * v ^ 2) * (m + 1) / m -
+                      (v / m) ^ 2 * (m + 1) * (2 * m + 1) / 6)
+        rho <- 0.5 * (6 * (m + 1) / (2 * m + 1)) ^ 0.5
+    }
+    vol <-  (siga ^ 2 + v ^ 2 - 2 * rho * siga * v) ^ 0.5
+    return(c(Call=bscall(s, km, vol, da, tt, d),
+           Put=bsput(s, km, vol, da, tt, d)))
 }
 
-#' Returns vector of continuous geometric European Asian call and put
-#' prices
-geomAsian <- function(s, k, v, r, tt, d, numavg) {
-    siga <- v*((numavg+1)*((2*numavg)+1)/6)^0.5/numavg
-    da <- 0.5*(r*(numavg-1)/numavg+(d+0.5*v^2)*(numavg+1)/numavg-
-                   (v/numavg)^2*(numavg+1)*(2*numavg+1)/6)
-    return(c(Call <- bscall(s, k, siga, r, tt, da),
-             Put <- bsput(s, k, siga, r, tt, da)))
-}
-
-arithAsian <- function(s, k, v, r, tt, d, numavg, numsim=1000,
-                       printSDs=FALSE) {
+#' @export
+#' @title Arithmetic average options computed using Monte Carlo
+#' @name arithasianmc
+#' @family Asian options
+#' @inheritParams Asian
+#' @description Arithmetic average Asian option prices
+#' @usage
+#' arithasianmc(s, k, v, r, tt, d, m, numsim=1000, printsds=FALSE)
+#' @examples
+#' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0; m=3; numsim=1e04
+#' arithasianmc(s, k, v, r, tt, d, m, numsim, printsds=FALSE)
+#' @return Array of arithmetic average option prices, along with
+#'     vanilla European option prices implied by the the
+#'     simulation. Optionally returns Monte Carlo standard deviations.
+arithasianmc <- function(s, k, v, r, tt, d, m, numsim=1000,
+                       printsds=FALSE) {
     ## average price Asian call and put
     ##
-    ## numavg is the number of averages in the function.
-    ## Create a matrix of stock prices, where the numavg stock prices in
+    ## m is the number of averages in the function.
+    ## Create a matrix of stock prices, where the m stock prices in
     ## each simulation are a row of the matrix. After we compute the
     ## sequence of stock prices, we sum across the rows, then we compute
     ## option payoffs and average to get the price.
-    z <- matrix(rnorm(numavg*numsim), numsim, numavg)
+    z <- matrix(rnorm(m*numsim), numsim, m)
     zcum <- t(apply(z, 1, cumsum))
-    h <- tt/numavg
-    hmat <- matrix((1:numavg)*h,numsim,numavg,byrow=TRUE)
-    S <- matrix(0, nrow=numsim, ncol=numavg)
+    h <- tt/m
+    hmat <- matrix((1:m)*h,numsim,m,byrow=TRUE)
+    S <- matrix(0, nrow=numsim, ncol=m)
     ## Computing the matrix of stock prices in one step is marginally
     ## faster (tested using microbenchmark)
     onestep <- TRUE
@@ -101,13 +129,13 @@ arithAsian <- function(s, k, v, r, tt, d, numavg, numsim=1000,
         S <- s*exp((r-d-0.5*v^2)*hmat +
                    v*sqrt(h)*zcum)
     } else {
-        for (i in 1:numavg) {
+        for (i in 1:m) {
             S[, i] <- s*exp((r-d-0.5*v^2)*h*i +
                        v*sqrt(h)*zcum[, i])
         }
     }
-    ST <- S[,numavg]
-    Savg <- apply(S, 1, sum)/numavg
+    ST <- S[,m]
+    Savg <- apply(S, 1, sum)/m
     tmp <- pmax(Savg-k, 0)
     avgpricecall <- mean(tmp)*exp(-r*tt)
     avgpricecallsd <-sd(tmp)*exp(-r*tt)
@@ -126,7 +154,7 @@ arithAsian <- function(s, k, v, r, tt, d, numavg, numsim=1000,
     tmp <- pmax(k-ST,0)
     bsput <- mean(tmp)*exp(-r*tt)
     bsputsd <- sd(tmp)*exp(-r*tt)
-    if (printSDs) {
+    if (printsds) {
         out <- matrix(c(avgpricecall,avgstrikecall,bscall,
                         avgpriceput,avgstrikeput,bsput,
                         avgpricecallsd,avgstrikecallsd,bscallsd,
@@ -144,18 +172,32 @@ arithAsian <- function(s, k, v, r, tt, d, numavg, numsim=1000,
     return(out)
 }
 
-
-arithAsianCallCV <- function(s, k, v, r, tt, d, numavg, numsim=1000) {
+#' @export
+#' @title Control variate asian call price
+#' @family Asian options
+#' @description Calculation of arithmetic-average Asian call price
+#'     using control variate Monte Carlo valuation
+#' @inheritParams Asian
+#' @name arithavgpricecv
+#' @usage
+#' arithavgpricecv(s, k, v, r, tt, d, m, numsim)
+#' @examples
+#' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0; m=3; numsim=1e04
+#' arithavgpricecv(s, k, v, r, tt, d, m, numsim)
+#' @return Vector of the price of an arithmetic-average Asian call,
+#'     computed using a control variate Monte Carlo calculation, along
+#'     with the regression beta used for adjusting the price.
+arithavgpricecv <- function(s, k, v, r, tt, d, m, numsim=1000) {
     ## control variate version
     numsim <- numsim + 250
-    truegeom <- geomAsianCall(s, k, v, r, tt, d, numavg)
-    z <- matrix(rnorm(numavg*numsim), numsim, numavg)
-    h <- tt/numavg
-    hmat <- matrix((1:numavg)*h,numsim,numavg,byrow=TRUE)
+    truegeom <- geomavgprice(s, k, v, r, tt, d, m)["Call"]
+    z <- matrix(rnorm(m*numsim), numsim, m)
+    h <- tt/m
+    hmat <- matrix((1:m)*h,numsim,m,byrow=TRUE)
     S1 <- s*exp((r-d-0.5*v^2)*hmat +
                     v*sqrt(h)*t(apply(z, 1, cumsum)))
-    Savg <- apply(S1, 1, sum)/numavg
-    Sgeomavg <- apply(S1, 1, prod)^(1/numavg)
+    Savg <- apply(S1, 1, sum)/m
+    Sgeomavg <- apply(S1, 1, prod)^(1/m)
     avgpricecall <- pmax(Savg-k, 0)*exp(-r*tt)
     geomprice <- pmax(Sgeomavg-k, 0)*exp(-r*tt)
     betahat <- cov(avgpricecall[1:250], geomprice[1:250])/
@@ -164,3 +206,98 @@ arithAsianCallCV <- function(s, k, v, r, tt, d, numavg, numsim=1000) {
         betahat*(rep(truegeom, length(geomprice)) - geomprice)
     return(c(price=mean(corrected), beta=betahat))
 }
+
+#' @export
+#' @name geomasianmc
+#' @family Asian options
+#' @inheritParams Asian
+#' @description Geometric average Asian option prices
+#' @title Geometric Asian option prices computed by Monte Carlo
+#' @examples
+#' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0; m=3; numsim=1e04
+#' geomasianmc(s, k, v, r, tt, d, m, numsim, printsds=FALSE)
+#' @usage 
+#' geomasianmc(s, k, v, r, tt, d, m, numsim, printsds=FALSE)
+#' @return Array of geometric average option prices, along with
+#'     vanilla European option prices implied by the the
+#'     simulation. Optionally returns Monte Carlo standard
+#'     deviations. Note that exact solutions for these prices exist,
+#'     the purpose is to see how the Monte Carlo prices behave.
+geomasianmc <- function(s, k, v, r, tt, d, m, numsim=1000,
+                       printsds=FALSE) {
+    ## average price Asian call and put
+    ##
+    ## m is the number of averages in the function.
+    ## Create a matrix of stock prices, where the m stock prices in
+    ## each simulation are a row of the matrix. After we compute the
+    ## sequence of stock prices, we sum across the rows, then we compute
+    ## option payoffs and average to get the price.
+    z <- matrix(rnorm(m*numsim), numsim, m)
+    zcum <- t(apply(z, 1, cumsum))
+    h <- tt/m
+    hmat <- matrix((1:m)*h,numsim,m,byrow=TRUE)
+    S <- matrix(0, nrow=numsim, ncol=m)
+    ## Computing the matrix of stock prices in one step is marginally
+    ## faster (tested using microbenchmark)
+    onestep <- TRUE
+    if (onestep) {
+        S <- s*exp((r-d-0.5*v^2)*hmat +
+                   v*sqrt(h)*zcum)
+    } else {
+        for (i in 1:m) {
+            S[, i] <- s*exp((r-d-0.5*v^2)*h*i +
+                       v*sqrt(h)*zcum[, i])
+        }
+    }
+    ST <- S[,m]
+    ## compute geometric average
+    Savg <- apply(S, 1, prod)^(1/m)
+    tmp <- pmax(Savg-k, 0)
+    avgpricecall <- mean(tmp)*exp(-r*tt)
+    avgpricecallsd <-sd(tmp)*exp(-r*tt)
+    tmp <- pmax(k-Savg, 0)
+    avgpriceput <- mean(tmp)*exp(-r*tt)
+    avgpriceputsd <- sd(tmp)*exp(-r*tt)
+    tmp <- pmax(ST-k/s*Savg, 0)
+    avgstrikecall <- mean(tmp)*exp(-r*tt)
+    avgstrikecallsd <- sd(tmp)*exp(-r*tt)
+    tmp <- pmax(k/s*Savg-ST, 0)
+    avgstrikeput <- mean(tmp)*exp(-r*tt)
+    avgstrikeputsd <- sd(tmp)*exp(-r*tt)
+    tmp <- pmax(ST-k,0)
+    bscall <- mean(tmp)*exp(-r*tt)
+    bscallsd <- sd(tmp)*exp(-r*tt)
+    tmp <- pmax(k-ST,0)
+    bsput <- mean(tmp)*exp(-r*tt)
+    bsputsd <- sd(tmp)*exp(-r*tt)
+    avgpriceexact <- geomavgprice(s, k, v, r, tt, d, m)
+    avgstrikeexact <- geomavgstrike(s, k, v, r, tt, d, m)
+    
+    if (printsds) {
+        out <- matrix(c(avgpricecall,avgstrikecall,bscall,
+                        avgpriceexact["Call"], avgstrikeexact["Call"],
+                        bscall(s, k, v, r, tt, d),
+                        avgpriceput,avgstrikeput,bsput,
+                        avgpriceexact["Put"], avgstrikeexact["Put"],
+                        bsput(s, k, v, r, tt, d),
+                        avgpricecallsd,avgstrikecallsd,bscallsd,
+                        avgpriceputsd,avgstrikeputsd,bsputsd),
+                      nrow=3,ncol=6)
+        colnames(out) <- c("CallMC", "CallExact", "PutMC", "PutExact",
+                           "sd Call", "sd Put")
+        rownames(out) <- c("Avg Price", "Avg Strike","Vanilla")
+    } else {
+        out <- matrix(c(avgpricecall,avgstrikecall,bscall,
+                        avgpriceexact["Call"], avgstrikeexact["Call"],
+                        bscall(s, k, v, r, tt, d),
+                        avgpriceput,avgstrikeput,bsput,
+                        avgpriceexact["Put"], avgstrikeexact["Put"],
+                        bsput(s, k, v, r, tt, d)
+                        ),
+                      3,4)
+        colnames(out) <- c("CallMC", "CallExact", "PutMC", "PutExact")
+        rownames(out) <- c("Avg Price", "Avg Strike","Vanilla")
+    }
+    return(out)
+}
+

@@ -17,7 +17,7 @@ opts_knit$set(highlight = TRUE,
               renderer=renderer_latex(document=FALSE),
               size='footnotesize') 
 
-## ------------------------------------------------------------------------
+## ----echo=FALSE----------------------------------------------------------
 library(knitr)
 library(derivmkts)
 library(markdown)
@@ -32,21 +32,22 @@ bsput(s, c(95, 100, 105), v, r, tt, d)
 bsopt(s, c(95, 100, 105), v, r, tt, d)$Call
 
 ## ------------------------------------------------------------------------
-H <- 105
-uicall(c(95, 100, 105), k, v, r, tt, d, H)
-bscall(c(95, 100, 105), k, v, r, tt, d)
-
-## ------------------------------------------------------------------------
-greeks(uicall(s, k, v, r, tt, d, H))
-greeks2(uicall, s=s, k=k, v=v, r=r, tt=tt, d=d, H=H)
-
-
-## ------------------------------------------------------------------------
 s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0.03
 binomopt(s, k, v, r, tt, d, nstep=4)
 binomopt(s, k, v, r, tt, d, nstep=4, returnparams=TRUE)
 binomopt(s, k, v, r, tt, d, nstep=4, putopt=TRUE)
 binomopt(s, k, v, r, tt, d, nstep=4, returntrees=TRUE, putopt=TRUE)
+
+## ------------------------------------------------------------------------
+H <- 105
+uicall(c(95, 100, 105), k, v, r, tt, d, H)
+bscall(c(95, 100, 105), k, v, r, tt, d)
+
+## ------------------------------------------------------------------------
+H <- 105
+greeks(uicall(s, k, v, r, tt, d, H))
+greeks2(uicall, s=s, k=k, v=v, r=r, tt=tt, d=d, H=H)
+
 
 ## ----binomplot1, fig.cap='Basic option plot showing stock prices and nodes at which the option is exercised.\\label{fig:binomplot1}'----
 binomplot(s, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE)
@@ -56,11 +57,11 @@ binomplot(s, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE)
 binomplot(s, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE,
     plotvalues=TRUE, plotarrows=TRUE)
 
-## ----binomplot3, fig.cap="Binomial plot when nstep is 50.\\label{fig:binomplot3}"----
+## ----binomplot3, fig.cap="Binomial plot when nstep is 40.\\label{fig:binomplot3}"----
 d <- 0.06
-binomplot(s, k, v, r, tt, d, nstep=50, american=TRUE)
+binomplot(s, k, v, r, tt, d, nstep=40, american=TRUE)
 
-## ----binomplot4, fig.cap="Binomial plot when nstep is 50 using the argument ylimval to focus on a subset.\\label{fig:binomplot4}"----
+## ----binomplot4, fig.cap="Binomial plot when nstep is 40 using the argument ylimval to focus on a subset.\\label{fig:binomplot4}"----
 d <- 0.06
-binomplot(s, k, v, r, tt, d, nstep=50, american=TRUE, ylimval=c(75, 225))
+binomplot(s, k, v, r, tt, d, nstep=40, american=TRUE, ylimval=c(75, 225))
 
