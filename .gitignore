@@ -7,3 +7,4 @@ stuff/
 *.tex
 ..Rcheck
 *.out
+*[woven]*

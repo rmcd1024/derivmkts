@@ -44,12 +44,22 @@ opts_chunk$set(collapse=TRUE)
 
 \section{Introduction}
 
-This vignette is intended to a road map to the functions in the
-functions in the \emph{derivmkts} package, and also to provide some
-additional documentation and examples. The package was conceived as a
-companion to the book \emph{Derivatives Markets}. There are of course
-other option pricing packages for R, but this package primarily uses
-function names corresponding to the usage in the book.
+This vignette is an overview to the functions in the functions in the
+\emph{derivmkts} package, which was conceived as a companion to my
+book \emph{Derivatives Markets}. The material has an educational
+focus. There are other option pricing packages for R, but this package
+has several distinguishing features:
+\begin{itemize}
+\item function names (mostly) correspond to those in \emph{Derivatives
+  Markets}.
+\item the |quincunx| function illustrates the workings of a
+  quincunx (Galton board).
+\item binomial functions include a plotting function that provides a
+  visual depiction of early exercise
+\item Greek calculations are perhaps more convenient than in some
+  other option packages
+\end{itemize}
+
 
 
 \section{Basic European and American Option Pricing}
@@ -67,8 +77,27 @@ s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 bscall(s, k, v, r, tt, d)
 bsput(s, k, v, r, tt, d)
 bsput(s, c(95, 100, 105), v, r, tt, d)
-bsopt(s, c(95, 100, 105), v, r, tt, d)$Call
+
 @
+
+
+The |bsopt| function provides all option Greeks, vectorized, for both puts and
+calls. See Figure \ref{fig:allgreeks}. 
+<<allgreeks, fig.cap='All option Greeks, plotted using bsopt', fig.width=5.5, fig.height=5.5>>=
+## Plot all Greeks
+k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
+S <- seq(.5, 250, by=.5)
+x <- bsopt(S, k, v, r, tt, d)
+par(mfrow=c(4, 4))  ## create a 4x4 plot
+par(mar=c(2,2,2,2))
+for (i in c('Call', 'Put')) {
+    for (j in rownames(x[[i]])) {  ## loop over greeks
+        plot(S, x[[i]][j, ], main=paste(i, j), ylab=j, type='l')
+    }
+}
+
+@ 
+
 
 Table \ref{tab:bslist} lists the Black-Scholes related functions in
 the package.
@@ -89,7 +118,6 @@ the package.
   \caption{Black-Scholes related option pricing functions}
   \label{tab:bslist}
 \end{table}
-
 
 \subsection{Binomial Pricing of European and American Options}
 
@@ -159,23 +187,54 @@ bscall(c(95, 100, 105), k, v, r, tt, d)
 
 \section{Option Greeks}
 
-Greeks for Black-Scholes style and barrier options can be computed in
-several ways:
-\begin{itemize}
-\item For European calls and puts, the |bsopt| function produces
-  Greeks in addition to prices. 
-\item The |greeks| function takes as arguments the name of the pricing
-  function and then its inputs.
-\item The |greeks2| function takes the function call as an input.
+Greeks for Black-Scholes style and barrier options can be computed
+using the |greeks| function, which is a wrapper for any pricing
+function that returns the option price and which uses the default
+naming of inputs.\footnote{At the moment, there are two alternative
+  functions:
+  \begin{itemize}
+  \item For European calls and puts, the bsopt function by default
+    produces Greeks in addition to prices.
+\item The greeks2 function takes as arguments the name of the pricing
+  function and then its inputs as a list.
 \end{itemize}
-Here are illustrations of the two functions using the same parameters:
+}
 
 <<>>=
 H <- 105
 greeks(uicall(s, k, v, r, tt, d, H))
-greeks2(uicall, s=s, k=k, v=v, r=r, tt=tt, d=d, H=H)
 
 @
+
+The value of this approach is that you can easily compute Greeks for
+custom pricing functions and multiple options, including spreadsYou can also compute for custom pricing functions. Here is the formula
+for a prepaid contract that pays $S_{T}^{a}$ at time $T$:
+<<>>=
+powercontract <- function(s, v, r, tt, d, a) {
+price <- exp(-r*tt)*s^a* exp((a*(r-d) + 1/2*a*(a-1)*v^2)*tt)
+}
+@ 
+
+You can compute its Greek by wrapping it with the greeks function:
+<<>>=
+greeks(powercontract(s=40, v=.08, r=0.08, tt=0.25, d=0, a=2))
+@ 
+
+For a spread, simply define the value of the spread as a function and
+then compute the greeks for this function:
+<<>>=
+bullspread <- function(s, k1, k2, v, r, tt, d, fn) {
+    fn(s, k1, v, r, tt, d) - fn(s, k2, v, r, tt, d)
+}
+greeks(bullspread(40, 40, 45, .3, .08, 1, 0, bscall))
+@ 
+
+The Greeks function is vectorized, so you can do this:
+<<>>=
+sseq <- seq(1, 100, by=0.5)
+x <- greeks(bullspread(sseq, 40, 45, .3, .08, 1, 0))
+plot(sseq, x['Gamma',], type='l')
+@ 
 
 
 \section{Jumps and Stochastic Volatility}
