@@ -7,7 +7,7 @@ Authors@R: c(person("Robert", "McDonald", email = "rmcd1024@gmail.com",
      role = c("aut", "cre", "cph")))
 Maintainer: Robert McDonald <rmcd1024@gmail.com>
 Description: A set of pricing and expository functions that should
-    be useful in teaching a course on financial derivatives. 
+    be useful in teaching a course on financial derivatives.
 Depends:
     R (>= 3.0.0)
 Suggests:
@@ -17,4 +17,4 @@ Suggests:
     rmarkdown
 VignetteBuilder: knitr
 LazyData: true
-RoxygenNote: 5.0.0
+RoxygenNote: 5.0.1

@@ -1,4 +1,4 @@
-%\VignetteEngine{knitr::knitr} 
+%\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{derivmkts Package Overview}
 \documentclass{article}
 \input{rlistings}
@@ -14,19 +14,19 @@ library(knitr)
 ##homedir <- '/home/rmcd/tex/d67/Rtutorial/'
 options(digits=4)
 figsize <- 4.5
-opts_chunk$set(size='footnotesize', prompt=FALSE, comment=NA, 
-               fig.align='center', fig.width = figsize, 
+opts_chunk$set(size='footnotesize', prompt=FALSE, comment=NA,
+               fig.align='center', fig.width = figsize,
                fig.height=figsize, out.width='3.75in')
 
-#              , fig.width=4.5*3.75/3.25, fig.height=4.5, 
+#              , fig.width=4.5*3.75/3.25, fig.height=4.5,
 #              , out.width='3.75in', out.height='3.25in'
 #               )
-opts_knit$set(highlight = TRUE, 
+opts_knit$set(highlight = TRUE,
               eval.after='fig.cap',
               prompt=TRUE,
               renderer=renderer_latex(document=FALSE),
-              size='footnotesize') 
-@ 
+              size='footnotesize')
+@
 
 
 \begin{document}
@@ -62,15 +62,14 @@ has several distinguishing features:
 
 
 
-\section{Basic European and American Option Pricing}
+\section{European Calls and Puts}
 
-\subsection{Black-Scholes Pricing of European Options}
 
 The functions |bscall|, |bsput|, and |bsopt| provide basic pricing of
 European calls and puts. There are also options with binary payoffs:
 cash-or-nothing and asset-or-nothing options. All functions are
-vectorized. The function |bsopt| provides option greeks. Here are some
-examples:
+vectorized. The function |bsopt| by default provides option
+greeks. Here are some examples:
 
 <<>>=
 s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
@@ -81,23 +80,6 @@ bsput(s, c(95, 100, 105), v, r, tt, d)
 @
 
 
-The |bsopt| function provides all option Greeks, vectorized, for both puts and
-calls. See Figure \ref{fig:allgreeks}. 
-<<allgreeks, fig.cap='All option Greeks, plotted using bsopt', fig.width=5.5, fig.height=5.5>>=
-## Plot all Greeks
-k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
-S <- seq(.5, 250, by=.5)
-x <- bsopt(S, k, v, r, tt, d)
-par(mfrow=c(4, 4))  ## create a 4x4 plot
-par(mar=c(2,2,2,2))
-for (i in c('Call', 'Put')) {
-    for (j in rownames(x[[i]])) {  ## loop over greeks
-        plot(S, x[[i]][j, ], main=paste(i, j), ylab=j, type='l')
-    }
-}
-
-@ 
-
 
 Table \ref{tab:bslist} lists the Black-Scholes related functions in
 the package.
@@ -107,56 +89,25 @@ the package.
   \begin{tabular}{cp{4in}}
     Function& Description \\ \hline
     bscall & European call\\
-    bsput & European put\\ 
+    bsput & European put\\
     bsopt & European call and put and associated Greeks: delta, gamma,
             vega, theta, rho, psi, and elasticity \\
     assetcall &  Asset-or-nothing call\\
     assetput &  Asset-or-nothing put\\
-    cashcall &  Cash-or-nothing call\\ 
+    cashcall &  Cash-or-nothing call\\
     cashput & Cash-or-nothing put
   \end{tabular}
   \caption{Black-Scholes related option pricing functions}
   \label{tab:bslist}
 \end{table}
 
-\subsection{Binomial Pricing of European and American Options}
-
-Binomial option pricing provides a way to compute the price of
-American options.  There are two functions related to binomial
-pricing: 
-\begin{description}
-\item[binomopt] computes prices of American and European calls and
-  puts. Optionally returns the full array of stock prices, selected
-  Greeks (delta, gamma, and theta), the option pricing inputs and
-  computed parameters, risk-neutral probabilities, and nodes at which
-  exercise occurs.
-\item[binomplot] displays the asset price
-  tree, the corresponding probability of being at each node, and
-  whether or not the option is in exercised at each node. This
-  function is described in more detail in Section \ref{sec:binomplot}.
-\end{description}
-
-Here are examples of pricing, illustrating the default of just
-returning the price, and the ability to return the price plus
-parameters, as well as the price, the parameters, and various trees:
-
-<<>>=
-s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0.03
-binomopt(s, k, v, r, tt, d, nstep=4)
-binomopt(s, k, v, r, tt, d, nstep=4, returnparams=TRUE)
-binomopt(s, k, v, r, tt, d, nstep=4, putopt=TRUE)
-binomopt(s, k, v, r, tt, d, nstep=4, returntrees=TRUE, putopt=TRUE)
-@
-
-
-
 \section{Barrier Options}
 
-There are pricing functions for a large number of barrier options: 
+There are pricing functions for a large number of barrier options:
 
 \begin{itemize}
-\item down-and-in and down-and-out barrier binary options 
-\item  up-and-in and up-and-out barrier binary options 
+\item down-and-in and down-and-out barrier binary options
+\item  up-and-in and up-and-out barrier binary options
 \item  more standard
   down- and up- calls and puts, constructed using the barrier binary
   options
@@ -185,6 +136,8 @@ uicall(c(95, 100, 105), k, v, r, tt, d, H)
 bscall(c(95, 100, 105), k, v, r, tt, d)
 @
 
+
+
 \section{Option Greeks}
 
 Greeks for Black-Scholes style and barrier options can be computed
@@ -211,42 +164,92 @@ custom pricing functions and multiple options, including spreadsYou can also com
 for a prepaid contract that pays $S_{T}^{a}$ at time $T$:
 <<>>=
 powercontract <- function(s, v, r, tt, d, a) {
-price <- exp(-r*tt)*s^a* exp((a*(r-d) + 1/2*a*(a-1)*v^2)*tt)
+    price <- exp(-r*tt)*s^a* exp((a*(r-d) + 1/2*a*(a-1)*v^2)*tt)
 }
-@ 
+@
 
 You can compute its Greek by wrapping it with the greeks function:
 <<>>=
 greeks(powercontract(s=40, v=.08, r=0.08, tt=0.25, d=0, a=2))
-@ 
+@
 
 For a spread, simply define the value of the spread as a function and
 then compute the greeks for this function:
 <<>>=
-bullspread <- function(s, k1, k2, v, r, tt, d, fn) {
-    fn(s, k1, v, r, tt, d) - fn(s, k2, v, r, tt, d)
+bullspread <- function(s, k1, k2, v, r, tt, d) {
+    bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
 }
-greeks(bullspread(40, 40, 45, .3, .08, 1, 0, bscall))
-@ 
+greeks(bullspread(40, 40, 45, .3, .08, 1, 0))
+@
 
 The Greeks function is vectorized, so you can do this:
 <<>>=
 sseq <- seq(1, 100, by=0.5)
 x <- greeks(bullspread(sseq, 40, 45, .3, .08, 1, 0))
 plot(sseq, x['Gamma',], type='l')
-@ 
+@
+
+
+As an alternative, the |bsopt| function provides all option Greeks,
+vectorized, for both puts and calls. See Figure \ref{fig:allgreeks}.
+<<allgreeks, fig.cap='All option Greeks, plotted using bsopt', fig.width=5.5, fig.height=5.5>>=
+## Plot all Greeks
+k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
+S <- seq(.5, 250, by=.5)
+x <- bsopt(S, k, v, r, tt, d)
+par(mfrow=c(4, 4))  ## create a 4x4 plot
+par(mar=c(2,2,2,2))
+for (i in c('Call', 'Put')) {
+    for (j in rownames(x[[i]])) {  ## loop over greeks
+        plot(S, x[[i]][j, ], main=paste(i, j), ylab=j, type='l')
+    }
+}
+
+@
+
+
+\section{Binomial Pricing of European and American Options}
+
+Binomial option pricing provides a way to compute the price of
+American options.  There are two functions related to binomial
+pricing:
+\begin{description}
+\item[binomopt] computes prices of American and European calls and
+  puts. Optionally returns the full array of stock prices, selected
+  Greeks (delta, gamma, and theta), the option pricing inputs and
+  computed parameters, risk-neutral probabilities, and nodes at which
+  exercise occurs.
+\item[binomplot] displays the asset price
+  tree, the corresponding probability of being at each node, and
+  whether or not the option is in exercised at each node. This
+  function is described in more detail in Section \ref{sec:binomplot}.
+\end{description}
+
+Here are examples of pricing, illustrating the default of just
+returning the price, and the ability to return the price plus
+parameters, as well as the price, the parameters, and various trees:
+
+<<>>=
+s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0.03
+binomopt(s, k, v, r, tt, d, nstep=3)
+binomopt(s, k, v, r, tt, d, nstep=3, returnparams=TRUE)
+binomopt(s, k, v, r, tt, d, nstep=3, putopt=TRUE)
+binomopt(s, k, v, r, tt, d, nstep=3, returntrees=TRUE, putopt=TRUE)
+@
+
+
 
 
 \section{Jumps and Stochastic Volatility}
 \label{sec:jumps}
 
 \section{Asian Options}
- 
+
 \section{Illustrative Functions}
 
 
 Several functions are intended to illustrate some aspects of the
-material. 
+material.
 
 \subsection{Quincunx or Galton Board}
 
@@ -264,7 +267,7 @@ The first plot, figure \ref{fig:binomplot1}, is basic:
 <<binomplot1, fig.cap='Basic option plot showing stock prices and nodes at which the option is exercised.\\label{fig:binomplot1}'>>=
 binomplot(s, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE)
 
-@ 
+@
 
 The second plot, figure \ref{fig:binomplot2}, adds a display of stock
 prices and arrows connecting the nodes.

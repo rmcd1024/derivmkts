@@ -79,8 +79,6 @@ greeks <- function(f) {
     funcname <- as.character(args[[1]])
     args[[1]] <- NULL  ## eliminate function name, leaving only the
                        ## function arguments
-    argnames <- formals(match.fun(funcname)) ## arguments of passed
-                                             ## function
     fnames <- names(formals(funcname)) ## arguments to function
     if (sum(names(args)=='') > 0) {
         shared <- intersect(names(args), fnames)
