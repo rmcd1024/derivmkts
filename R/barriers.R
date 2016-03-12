@@ -75,8 +75,8 @@
 #' assetuoput(s, k, v, r, tt, d, H)
 #' assetdocall(s, k, v, r, tt, d, H)
 #' assetdoput(s, k, v, r, tt, d, H)
-#' dr(s, v, r, tt, d, H)
-#' ur(s, v, r, tt, d, H)
+#' dr(s, v, r, tt, d, H, perpetual)
+#' ur(s, v, r, tt, d, H, perpetual)
 #' drdeferred(s, v, r, tt, d, H)
 #' urdeferred(s, v, r, tt, d, H)
 #'
@@ -84,11 +84,13 @@
 #' @param s Stock price
 #' @param k Strike price of the option
 #' @param v Volatility of the stock, defined as the annualized
-#' standard deviation of the continuously-compounded return
+#'     standard deviation of the continuously-compounded return
 #' @param r Annual continuously-compounded risk-free interest rate
 #' @param tt Time to maturity in years
 #' @param d Dividend yield, annualized, continuously-compounded
 #' @param H Barrier
+#' @param perpetual Boolean for the case where an up or down rebate is
+#'     infinitely lived. Default is FALSE.
 #'
 #' @details Returns a scalar or vector  of option prices, depending on
 #' the inputs
@@ -108,11 +110,13 @@
 #' @export
 #' @family Barriers
 cashdicall <- function(s, k, v, r, tt, d, H) {
+    tmp <- data.frame(s, k, v, r, tt, d, H)
+    for (i in names(tmp)) {assign(i, tmp[, i])}
     ifelse(s <= H, cashcall(s, k, v, r, tt, d),
            exp(-r*tt)*(.nd2(s, k, v, r, tt, d) -
-                           .nd6(s, k, v, r, tt, d, pmax(k, H)) +
-                               (H/s)^(2*(r-d)/(v^2)-1)*
-                                   .nd8(s, k, v, r, tt, d, H*pmin(H/k, 1))))
+                       .nd6(s, k, v, r, tt, d, pmax(k, H)) +
+                       (H/s)^(2*(r-d)/(v^2)-1)*
+                             .nd8(s, k, v, r, tt, d, H*pmin(H/k, 1))))
 }
 
 #' @export
@@ -141,16 +145,11 @@ assetdocall <- function(s, k, v, r, tt, d, H) {
 #' @export
 #' @family Barriers
 cashdoput <- function(s, k, v, r, tt, d, H) {
-##> sapply(c(35, 40, 41, 42),
-##    function(x) cashdoput(x, 40.5, .3, .08, .25, 0, 38))
-##[1] 0.00000000 0.02168404 0.02973113 0.03540291
-##    tmp <- vectorizeskh(s, k, H)
-##    s <- tmp[[1]]
-##    k <- tmp[[2]]
-##    h <- tmp[[3]]
+    tmp <<- data.frame(s, k, v, r, tt, d, H)
+    for (i in names(tmp)) {assign(i, tmp[, i])}
     ifelse( (s<=H) | (k<=H), 0,
            cashdocall(s, H, v, r, tt, d, H) -
-               cashdocall(s, k, v, r, tt, d, H)
+           cashdocall(s, k, v, r, tt, d, H)
            )
 }
 
@@ -232,14 +231,15 @@ doput <- function(s, k, v, r, tt, d, H)
 #' @export
 #' @family Barriers
 cashuiput <- function(s, k, v, r, tt, d, H) {
+    tmp <<- data.frame(s, k, v, r, tt, d, H)
+    for (i in names(tmp)) {assign(i, tmp[, i])}
     ifelse(s >= H,
            cashput(s, k, v, r, tt, d),
            exp(-r*tt)*(1-.nd2(s, k, v, r, tt, d)
-                       - (1 - .nd6(s, k, v, r, tt, d, pmin(k, H))
-                          ) +(H/s)^(2*(r-d)/(v^2)-1)*
-                              (1 - .nd8(s, k, v, r, tt, d, H*pmax(H/k, 1))))
+               - (1 - .nd6(s, k, v, r, tt, d, pmin(k, H))
+               ) +(H/s)^(2*(r-d)/(v^2)-1)*
+                        (1 - .nd8(s, k, v, r, tt, d, H*pmax(H/k, 1))))
            )
-               
 }
 
 
@@ -406,51 +406,45 @@ urdeferred <- function(s, v, r, tt, d, H) {
 
 #' @export
 #' @family Barriers
-ur <-  function(s, v, r, tt, d, H) {
-    ifelse(s >= H, 1, {
-               g = (((r - d) / v^2 - 0.5)^2 + 2*r /v^2)^0.5
-               z1 = (log(H/s) - g*v^2*tt)/(v*sqrt(tt))
-               z2 = (log(H/s) + g*v^2*tt)/(v*sqrt(tt))
-               h1 = 0.5 - (r - d) / v ^ 2 + g
-               h2 = 0.5 - (r - d) / v ^ 2 - g
-               (s/H)^h1*pnorm(-z1) + (s/H)^h2*pnorm(-z2)
-           }
-           )
+ur <-  function(s, v, r, tt, d, H, perpetual=FALSE) {
+    tmp <- data.frame(s, v, r, tt, d, H, perpetual)
+    for (i in names(tmp)) {assign(i, tmp[, i])}
+    val <- ifelse(s >= H, 1,
+    {
+        g <- (((r - d) / v^2 - 0.5)^2 + 2*r /v^2)^0.5
+        h1 <- 0.5 - (r - d) / v ^ 2 + g
+        h2 <- 0.5 - (r - d) / v ^ 2 - g
+        ifelse(perpetual, (s/H)^h1,
+        {
+            z1 <- (log(H/s) - g*v^2*tt)/(v*sqrt(tt))
+            z2 <- (log(H/s) + g*v^2*tt)/(v*sqrt(tt))
+            (s/H)^h1*pnorm(-z1) + (s/H)^h2*pnorm(-z2)
+        }
+        )
+    }
+    )
+    return(val)
 }
 
 #' @export
 #' @family Barriers
-dr <-  function(s, v, r, tt, d, H) {
-    ifelse(s <= H,  1, {
-               g = (((r - d) / v^2 - 0.5)^2 + 2*r /v^2)^0.5
-               z1 = (log(H/s) - g*v^2*tt)/(v*sqrt(tt))
-               z2 = (log(H/s) + g*v^2*tt)/(v*sqrt(tt))
-               h1 = 0.5 - (r - d) / v ^ 2 + g
-               h2 = 0.5 - (r - d) / v ^ 2 - g
-               (s/H)^h1*pnorm(z1) + (s/H)^h2*pnorm(z2)
-           }
-           )
+dr <-  function(s, v, r, tt, d, H, perpetual=FALSE) {
+    tmp <- data.frame(s, v, r, tt, d, H, perpetual)
+    for (i in names(tmp)) {assign(i, tmp[, i])}
+    val <- ifelse(s <= H, 1,
+    {
+        g = (((r - d) / v^2 - 0.5)^2 + 2*r /v^2)^0.5
+        h1 = 0.5 - (r - d) / v ^ 2 + g
+        h2 = 0.5 - (r - d) / v ^ 2 - g
+        ifelse(perpetual, (s/H)^h2,
+        {
+            z1 = (log(H/s) - g*v^2*tt)/(v*sqrt(tt))
+            z2 = (log(H/s) + g*v^2*tt)/(v*sqrt(tt))
+            (s/H)^h1*pnorm(z1) + (s/H)^h2*pnorm(z2)
+        }
+        )
+    }
+    )
+    return(val)
 }
 
-
-##vectorizesh <- function(s, H) {
-##    if (length(s) > length(h)) {
-##        h <- rep(h, round(length(s)/length(h)))
-##    } else if (length(s) < length(h)) {
-##        s <- rep(s, round(length(h)/length(s)))
-##    }
-##    return(list(s, H))
-##}
-
-##vectorizeskh <- function(s, k, H) {
-##    w <- list(s, k, H)
-##    y <- lapply(w, length)
-##    maxw <- which(unlist(y)==max(unlist(y)))
-##    nonmaxw <- which(unlist(y) < max(unlist(y)))
-##    if (length(nonmaxw) > 0) {
-##        for (i in nonmaxw) w[[i]] <-
-##                rep(w[[i]], length(w[[maxw[1]]])/length(w[[i]]))
-##
-##    }
-##    return(w)
-##}

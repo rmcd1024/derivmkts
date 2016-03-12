@@ -72,8 +72,8 @@ assetuocall(s, k, v, r, tt, d, H)
 assetuoput(s, k, v, r, tt, d, H)
 assetdocall(s, k, v, r, tt, d, H)
 assetdoput(s, k, v, r, tt, d, H)
-dr(s, v, r, tt, d, H)
-ur(s, v, r, tt, d, H)
+dr(s, v, r, tt, d, H, perpetual)
+ur(s, v, r, tt, d, H, perpetual)
 drdeferred(s, v, r, tt, d, H)
 urdeferred(s, v, r, tt, d, H)
 }
@@ -92,6 +92,9 @@ standard deviation of the continuously-compounded return}
 \item{d}{Dividend yield, annualized, continuously-compounded}
 
 \item{H}{Barrier}
+
+\item{perpetual}{Boolean for the case where an up or down rebate is
+infinitely lived. Default is FALSE.}
 }
 \value{
 The pricing functions return the price of a barrier

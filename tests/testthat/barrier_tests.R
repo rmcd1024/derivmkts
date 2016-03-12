@@ -11,7 +11,7 @@ library(testthat)
 ## the uppercased names of the functions, which have been downcased
 ## for this version file
 #load('~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
-load('option_testvalues.Rdata')
+load('~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
 
 ## for each function name, we will generate results believed correct
 ## from options.R. Then we will test against barriers.R
@@ -45,3 +45,20 @@ for (i in barriertestfns2) {
     print(paste(testfn, 'okay'))
 }
 
+for (i in c('UR', 'DR')) {
+    testfn <- tolower(i)
+    test_that(paste(testfn, 'perpetual works'), {
+        correct <- barriervals3[, i]
+##        print(correct)
+                  unknown <- do.call(testfn,
+                                     list(s=s, v=v, r=r, tt=tt,
+                                          d=d, H=Hseq2, perpetual=TRUE)
+                                     )
+##        print(unknown)
+##                  print(paste(s, v, r, tt, d, H))
+                  expect_equal(correct, unknown)
+              }
+              )
+    print(paste(testfn, 'okay'))
+}
+    

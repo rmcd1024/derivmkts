@@ -32,7 +32,6 @@ for (i in barriertestfns) {
     barriervals[, i] <- tmp
 }
 
-## following functions are infinitely-lived, hence no tt argument
 Hseq2 <- 36:44
 barriertestfns2 <- c('DRDeferred', 'URDeferred', 'UR', 'DR')
 barriervals2 <- data.frame(Hvals=Hseq2)
@@ -40,6 +39,15 @@ barriervals2 <- data.frame(Hvals=Hseq2)
 for (i in barriertestfns2) {
     tmp <- do.call(i, list(s=s, v=v, r=r, tt=tt, d=d, H=Hseq2))
     barriervals2[, i] <- tmp
+}
+
+barriertestfns3 <- c('UR', 'DR')
+barriervals3 <- data.frame(Hvals=Hseq2)
+for (i in barriertestfns3) {
+    for (j in 1:length(Hseq2)) {
+        tmp <- do.call(i, list(s=s, v=v, r=r, tt=1e10, d=d, H=Hseq2[j]))
+        barriervals3[j, i] <- tmp
+    }
 }
 
 ############################################################
@@ -129,6 +137,7 @@ binomvalsAmP <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d,
 
 keeplist <- c('barriervals', 'barriertestfns',
               'barriervals2', 'barriertestfns2',
+              'barriervals3', 'barriertestfns3',
               'bstestfns', 'bsvals',
               'imptestfns', 'bsimpvals',
               'greeksvals', 'greeksvals2',
