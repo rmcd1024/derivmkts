@@ -31,6 +31,35 @@ bsput(s, k, v, r, tt, d)
 bsput(s, c(95, 100, 105), v, r, tt, d)
 
 
+## ------------------------------------------------------------------------
+H <- 105
+uicall(c(95, 100, 105), k, v, r, tt, d, H)
+bscall(c(95, 100, 105), k, v, r, tt, d)
+
+## ------------------------------------------------------------------------
+H <- 105
+greeks(uicall(s, k, v, r, tt, d, H))
+
+
+## ------------------------------------------------------------------------
+powercontract <- function(s, v, r, tt, d, a) {
+    price <- exp(-r*tt)*s^a* exp((a*(r-d) + 1/2*a*(a-1)*v^2)*tt)
+}
+
+## ------------------------------------------------------------------------
+greeks(powercontract(s=40, v=.08, r=0.08, tt=0.25, d=0, a=2))
+
+## ------------------------------------------------------------------------
+bullspread <- function(s, k1, k2, v, r, tt, d) {
+    bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
+}
+greeks(bullspread(40, 40, 45, .3, .08, 1, 0))
+
+## ------------------------------------------------------------------------
+sseq <- seq(1, 100, by=0.5)
+x <- greeks(bullspread(sseq, 40, 45, .3, .08, 1, 0))
+plot(sseq, x['Gamma',], type='l')
+
 ## ----allgreeks, fig.cap='All option Greeks, plotted using bsopt', fig.width=5.5, fig.height=5.5----
 ## Plot all Greeks
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
@@ -47,39 +76,10 @@ for (i in c('Call', 'Put')) {
 
 ## ------------------------------------------------------------------------
 s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0.03
-binomopt(s, k, v, r, tt, d, nstep=4)
-binomopt(s, k, v, r, tt, d, nstep=4, returnparams=TRUE)
-binomopt(s, k, v, r, tt, d, nstep=4, putopt=TRUE)
-binomopt(s, k, v, r, tt, d, nstep=4, returntrees=TRUE, putopt=TRUE)
-
-## ------------------------------------------------------------------------
-H <- 105
-uicall(c(95, 100, 105), k, v, r, tt, d, H)
-bscall(c(95, 100, 105), k, v, r, tt, d)
-
-## ------------------------------------------------------------------------
-H <- 105
-greeks(uicall(s, k, v, r, tt, d, H))
-
-
-## ------------------------------------------------------------------------
-powercontract <- function(s, v, r, tt, d, a) {
-price <- exp(-r*tt)*s^a* exp((a*(r-d) + 1/2*a*(a-1)*v^2)*tt)
-}
-
-## ------------------------------------------------------------------------
-greeks(powercontract(s=40, v=.08, r=0.08, tt=0.25, d=0, a=2))
-
-## ------------------------------------------------------------------------
-bullspread <- function(s, k1, k2, v, r, tt, d) {
-    bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
-}
-greeks(bullspread(40, 40, 45, .3, .08, 1, 0))
-
-## ------------------------------------------------------------------------
-sseq <- seq(1, 100, by=0.5)
-x <- greeks(bullspread(sseq, 40, 45, .3, .08, 1, 0))
-plot(sseq, x['Gamma',], type='l')
+binomopt(s, k, v, r, tt, d, nstep=3)
+binomopt(s, k, v, r, tt, d, nstep=3, returnparams=TRUE)
+binomopt(s, k, v, r, tt, d, nstep=3, putopt=TRUE)
+binomopt(s, k, v, r, tt, d, nstep=3, returntrees=TRUE, putopt=TRUE)
 
 ## ----binomplot1, fig.cap='Basic option plot showing stock prices and nodes at which the option is exercised.\\label{fig:binomplot1}'----
 binomplot(s, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE)

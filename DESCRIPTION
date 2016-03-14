@@ -1,7 +1,6 @@
 Package: derivmkts
 Title: Functions and R Code to Accompany Derivatives Markets
-Version: 0.1.2.9000
-License: MIT + file LICENSE
+Version: 0.1.3.9000
 Author: 'Robert McDonald'
 Authors@R: c(person("Robert", "McDonald", email = "rmcd1024@gmail.com",
      role = c("aut", "cre", "cph")))
@@ -15,6 +14,7 @@ Suggests:
     markdown,
     knitr,
     rmarkdown
+License: MIT + file LICENSE
 VignetteBuilder: knitr
 LazyData: true
 RoxygenNote: 5.0.1

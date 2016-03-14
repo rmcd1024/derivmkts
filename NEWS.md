@@ -1,3 +1,9 @@
+# derivmkts 0.1.3.9000
+
+* added simple bond functions (yield, pv, duration, convexity)
+
+* fixed problem with vectorization in barrier options 
+
 # derivmkts 0.1.2.9000
 
 * Added Asian pricing files

@@ -145,7 +145,7 @@ assetdocall <- function(s, k, v, r, tt, d, H) {
 #' @export
 #' @family Barriers
 cashdoput <- function(s, k, v, r, tt, d, H) {
-    tmp <<- data.frame(s, k, v, r, tt, d, H)
+    tmp <- data.frame(s, k, v, r, tt, d, H)
     for (i in names(tmp)) {assign(i, tmp[, i])}
     ifelse( (s<=H) | (k<=H), 0,
            cashdocall(s, H, v, r, tt, d, H) -
@@ -231,7 +231,7 @@ doput <- function(s, k, v, r, tt, d, H)
 #' @export
 #' @family Barriers
 cashuiput <- function(s, k, v, r, tt, d, H) {
-    tmp <<- data.frame(s, k, v, r, tt, d, H)
+    tmp <- data.frame(s, k, v, r, tt, d, H)
     for (i in names(tmp)) {assign(i, tmp[, i])}
     ifelse(s >= H,
            cashput(s, k, v, r, tt, d),

@@ -168,13 +168,14 @@ powercontract <- function(s, v, r, tt, d, a) {
 }
 @
 
-You can compute its Greek by wrapping it with the greeks function:
+The `greeks` function enables you to  compute the greeks for the power
+contract:
 <<>>=
 greeks(powercontract(s=40, v=.08, r=0.08, tt=0.25, d=0, a=2))
 @
 
-For a spread, simply define the value of the spread as a function and
-then compute the greeks for this function:
+You can compute the greeks for a spread by defining the value of the
+spread as a function, and then computing the greeks for the function:
 <<>>=
 bullspread <- function(s, k1, k2, v, r, tt, d) {
     bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
@@ -182,7 +183,9 @@ bullspread <- function(s, k1, k2, v, r, tt, d) {
 greeks(bullspread(40, 40, 45, .3, .08, 1, 0))
 @
 
-The Greeks function is vectorized, so you can do this:
+The Greeks function is vectorized, so you can create vectors of greek
+values with a single call. This example plots, for a bull spread, the
+gamma as a function of the stock price.
 <<>>=
 sseq <- seq(1, 100, by=0.5)
 x <- greeks(bullspread(sseq, 40, 45, .3, .08, 1, 0))
@@ -293,5 +296,12 @@ exercise is occurring. We can zoom in on that region by  selecting values for |y
 d <- 0.06
 binomplot(s, k, v, r, tt, d, nstep=40, american=TRUE, ylimval=c(75, 225))
 @
+
+\section{Bonds}
+
+\subsection{Basic bond pricing}
+
+a
+
 
 \end{document}
