@@ -1,10 +1,9 @@
 .Rproj.user
 .Rhistory
 .RData
-*~
 inst/doc
 stuff/
 *.tex
 ..Rcheck
 *.out
-*[woven]*
+*\[woven\]*
