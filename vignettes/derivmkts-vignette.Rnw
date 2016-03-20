@@ -1,7 +1,27 @@
 %\VignetteEngine{knitr::knitr}
 %\VignetteIndexEntry{derivmkts Package Overview}
 \documentclass{article}
-\input{rlistings}
+\usepackage{textcomp}
+\usepackage{listings}
+    \lstset{
+    language=R,
+    tabsize=2,
+    keepspaces,
+    extendedchars=true,
+    rulecolor=\color{black},
+    basicstyle=\footnotesize\ttfamily,
+    aboveskip=5pt,
+    upquote=true,
+    columns=fixed,
+    showstringspaces=false,
+    extendedchars=true,
+    breaklines=true,
+    frame=none,
+    showtabs=true,
+    showspaces=false,
+    showstringspaces=false,
+}
+
 \title{Option Pricing Functions to Accompany \emph{Derivatives Markets}}
 \author{Robert McDonald}
 \date{\today}
