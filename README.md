@@ -59,7 +59,7 @@ Psi        -0.08640162 -0.05825156 -0.02820079
 Elasticity  5.63352271  8.36726367 11.57705764
 ```
 
-
+You can also define a function for a spread position. You can then pass this function to `greeks()` and easily compute greeks for that position.
 
 The function
 
