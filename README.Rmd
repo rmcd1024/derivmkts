@@ -1,3 +1,10 @@
+---
+output: github_document
+---
+
+[![Build Status](https://travis-ci.org/rmcd1024/derivmkts.svg?branch=master)](https://travis-ci.org/rmcd1024/derivmkts)[![](http://www.r-pkg.org/badges/version/derivmkts)](http://www.r-pkg.org/pkg/derivmkts)
+
+
 ```{r, echo=FALSE}
 library(knitr)
 opts_chunk$set(comment=NA)

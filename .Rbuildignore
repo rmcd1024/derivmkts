@@ -4,3 +4,4 @@ stuff/
 LICENSE
 ./.git
 tests/option_testvalues.R
+.travis.yml
