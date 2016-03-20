@@ -321,7 +321,7 @@ binomplot(s, k, v, r, tt, d, nstep=40, american=TRUE, ylimval=c(75, 225))
 
 \subsection{Basic bond pricing}
 
-a
+
 
 
 \end{document}
