@@ -27,8 +27,9 @@
 #' immediately ("ur" or "dr") or at expiration ("drdeferred" and
 #' "urdeferred")
 #' 
-#' \code{callupin(s, k, v, r, tt, d, H) = assetuicall(s, k, v, r, tt,
-#'   d, H) - k*cashuicall(s, k, v, r, tt, d, H)}
+#' \code{callupin(s, k, v, r, tt, d, H) =  
+#' assetuicall(s, k, v, r, tt, d, H) - k*cashuicall(s, k, v, r, tt, d, H)
+#' }
 #'
 #' @name barriers
 #' @aliases callupin callupout putupin putupout calldownin calldownout
