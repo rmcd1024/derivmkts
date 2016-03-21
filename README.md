@@ -10,9 +10,13 @@ There are of course other option pricing packages in R, notably RQuantLib and fO
 The package includes functions for computing
 
 -   Black-Scholes prices and greeks for European options
+
 -   Option pricing and plotting using the binomial model
+
 -   Barrier options
+
 -   Pricing of options with jumps using the Merton model
+
 -   Analytical and Monte Carlo pricing of Asian options
 
 Things of note
@@ -68,7 +72,13 @@ This small bit of code computes and plots all call and put Greeks for 500 option
 
 #### binomopt
 
-By default the binomopt function returns the price of a American call. In adddition, with: \* `putopt=TRUE` it returns the price of an American put. \* `returngreeks=TRUE` it returns a subset of the Greeks along with the binomial parameters. \* `returntrees=TRUE` it returns as a list all of the above plus the full binomial tree (\(stree), the probability of reaching each node  (\)probtree), whether or not the option is exercised at each node (exertree), and the replicating portfolio at each node ($deltatree and $bondtree).
+By default the binomopt function returns the price of a American call. In adddition, with:
+
+-   `putopt=TRUE` it returns the price of an American put.
+
+-   `returngreeks=TRUE` it returns a subset of the Greeks along with the binomial parameters.
+
+-   `returntrees=TRUE` it returns as a list all of the above plus the full binomial tree (\(stree), the probability of reaching each node (\)probtree), whether or not the option is exercised at each node (exertree), and the replicating portfolio at each node ($deltatree and $bondtree).
 
 Here is an example illustrating everything that the function can return:
 
