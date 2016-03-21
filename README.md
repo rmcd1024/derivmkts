@@ -78,7 +78,7 @@ By default the binomopt function returns the price of a American call. In adddit
 
 -   `returngreeks=TRUE` it returns a subset of the Greeks along with the binomial parameters.
 
--   `returntrees=TRUE` it returns as a list all of the above plus the full binomial tree (\(stree), the probability of reaching each node (\)probtree), whether or not the option is exercised at each node (exertree), and the replicating portfolio at each node ($deltatree and $bondtree).
+-   `returntrees=TRUE` it returns as a list all of the above plus the full binomial tree ($stree), the probability of reaching each node ($probtree), whether or not the option is exercised at each node ($exertree), and the replicating portfolio at each node ($deltatree and $bondtree).
 
 Here is an example illustrating everything that the function can return:
 
