@@ -4,3 +4,4 @@ stuff/
 ./.git
 tests/option_testvalues.R
 .travis.yml
+./vignettes/figure/
