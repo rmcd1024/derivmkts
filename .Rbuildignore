@@ -4,4 +4,6 @@ stuff/
 ./.git
 tests/option_testvalues.R
 .travis.yml
-./vignettes/figure/
+./vignettes/figure
+./derivmkts.pdf
+./README.Rmd

@@ -25,16 +25,17 @@ library(markdown)
 opts_chunk$set(collapse=TRUE)
 
 ## ------------------------------------------------------------------------
-s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
+s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 0.25; d <- 0
 bscall(s, k, v, r, tt, d)
-bsput(s, k, v, r, tt, d)
 bsput(s, c(95, 100, 105), v, r, tt, d)
 
 
 ## ------------------------------------------------------------------------
 H <- 105
-uicall(c(95, 100, 105), k, v, r, tt, d, H)
-bscall(c(95, 100, 105), k, v, r, tt, d)
+bscall(c(80, 100, 120), k, v, r, tt, d)
+uicall(c(80, 100, 120), k, v, r, tt, d, H)
+bsput(c(80, 100, 120), k, v, r, tt, d)
+uoput(c(80, 100, 120), k, v, r, tt, d, H)
 
 ## ------------------------------------------------------------------------
 H <- 105
@@ -45,31 +46,33 @@ greeks(uicall(s, k, v, r, tt, d, H))
 powercontract <- function(s, v, r, tt, d, a) {
     price <- exp(-r*tt)*s^a* exp((a*(r-d) + 1/2*a*(a-1)*v^2)*tt)
 }
-
-## ------------------------------------------------------------------------
 greeks(powercontract(s=40, v=.08, r=0.08, tt=0.25, d=0, a=2))
 
 ## ------------------------------------------------------------------------
-bullspread <- function(s, k1, k2, v, r, tt, d) {
+bullspread <- function(s, v, r, tt, d, k1, k2) {
     bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
 }
-greeks(bullspread(40, 40, 45, .3, .08, 1, 0))
+greeks(bullspread(40, .3, .08, 1, 0, k1=40, k2=45))
 
-## ------------------------------------------------------------------------
+
+## ----bullgamma, fig.cap='Gamma for a 40-45 bull spread.'-----------------
 sseq <- seq(1, 100, by=0.5)
-x <- greeks(bullspread(sseq, 40, 45, .3, .08, 1, 0))
+x <- greeks(bullspread(sseq, .3, .08, 1, 0, k1=40, k2=45))
 plot(sseq, x['Gamma',], type='l')
 
-## ----allgreeks, fig.cap='All option Greeks, plotted using bsopt', fig.width=5.5, fig.height=5.5----
-## Plot all Greeks
+
+## ----allgreeks, fig.cap='All option Greeks, plotted using bsopt', fig.width=7.5, fig.height=6.5----
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 S <- seq(.5, 250, by=.5)
-x <- bsopt(S, k, v, r, tt, d)
+cgreeks <- greeks(bscall(S, k, v, r, tt, d))
+pgreeks <- greeks(bsput(S, k, v, r, tt, d))
+optlbl <-  c('Call', 'Put')
+y <- list(cgreeks, pgreeks)
 par(mfrow=c(4, 4))  ## create a 4x4 plot
 par(mar=c(2,2,2,2))
-for (i in c('Call', 'Put')) {
-    for (j in rownames(x[[i]])) {  ## loop over greeks
-        plot(S, x[[i]][j, ], main=paste(i, j), ylab=j, type='l')
+for (i in 1:length(y)) {
+    for (j in rownames(y[[i]])) {  ## loop over greeks
+        plot(S, y[[i]][j, ], main=paste(optlbl[i], j), ylab=j, type='l')
     }
 }
 
@@ -80,6 +83,20 @@ binomopt(s, k, v, r, tt, d, nstep=3)
 binomopt(s, k, v, r, tt, d, nstep=3, returnparams=TRUE)
 binomopt(s, k, v, r, tt, d, nstep=3, putopt=TRUE)
 binomopt(s, k, v, r, tt, d, nstep=3, returntrees=TRUE, putopt=TRUE)
+
+## ------------------------------------------------------------------------
+coupon <- 8; mat <- 20; yield <- 0.06; principal <- 100; 
+modified <- FALSE; freq <- 2
+price <- bondpv(coupon, mat, yield, principal, freq)
+price
+bondyield(price, coupon, mat, principal, freq)
+duration(price, coupon, mat, principal, freq, modified)
+convexity(price, coupon, mat, principal, freq)
+
+
+## ----quincunx, fig.cap='Output from the Quincunx function'---------------
+par(mar=c(2,2,2,2))
+quincunx(n=20, numballs=200, delay=0, probright=0.7)
 
 ## ----binomplot1, fig.cap='Basic option plot showing stock prices and nodes at which the option is exercised.\\label{fig:binomplot1}'----
 binomplot(s, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE)

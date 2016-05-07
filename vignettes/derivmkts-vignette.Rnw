@@ -72,12 +72,12 @@ has several distinguishing features:
 \begin{itemize}
 \item function names (mostly) correspond to those in \emph{Derivatives
   Markets}.
+\item vectorized Greek calculations are convenient both for individual
+  options and for portfolios
 \item the |quincunx| function illustrates the workings of a
   quincunx (Galton board).
 \item binomial functions include a plotting function that provides a
   visual depiction of early exercise
-\item Greek calculations are perhaps more convenient than in some
-  other option packages
 \end{itemize}
 
 
@@ -85,24 +85,22 @@ has several distinguishing features:
 \section{European Calls and Puts}
 
 
-The functions |bscall|, |bsput|, and |bsopt| provide basic pricing of
-European calls and puts. There are also options with binary payoffs:
-cash-or-nothing and asset-or-nothing options. All functions are
-vectorized. The function |bsopt| by default provides option
-greeks. Here are some examples:
+Table \ref{tab:bslist} lists the Black-Scholes related functions in
+the package.  The functions |bscall|, |bsput|, and |bsopt| provide
+basic pricing of European calls and puts. There are also options with
+binary payoffs: cash-or-nothing and asset-or-nothing options. All of
+these functions are vectorized. The function |bsopt| by default
+provides option greeks. Here are some examples:
 
 <<>>=
-s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
+s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 0.25; d <- 0
 bscall(s, k, v, r, tt, d)
-bsput(s, k, v, r, tt, d)
 bsput(s, c(95, 100, 105), v, r, tt, d)
 
 @
 
 
 
-Table \ref{tab:bslist} lists the Black-Scholes related functions in
-the package.
 
 \begin{table}[btp]
   \centering
@@ -123,7 +121,7 @@ the package.
 
 \section{Barrier Options}
 
-There are pricing functions for a large number of barrier options:
+There are pricing functions for the following barrier options:
 
 \begin{itemize}
 \item down-and-in and down-and-out barrier binary options
@@ -136,14 +134,13 @@ Naming for the barrier options generally follows the convention
 \begin{verbatim}
 [u|d][i|o][call|put]
 \end{verbatim}
-which means that the option is "up" or "down", "in" or "out", and a
-call or put.\footnote{The naming convention here differs from that in
-\emph{Derivatives Markets}, in which names are \lstinline{callupin}, callupout,
-etc. For consistency, but possibly at the cost of confusion, I have
-made both names are available for these functions.}  An up-and-in
-call, for example, would be denoted by |uicall|. For binary options,
-we add the underlying, which is either the asset or \$1:
-cash:
+which means that the option is ``up'' or ``down'', ``in'' or ``out'', and a
+call or put.\footnote{This naming convention differs from that in
+  \emph{Derivatives Markets}, in which names are \lstinline{callupin},
+  \lstinline{callupout}, etc. Thus, I have made both names are
+  available for these functions.}  An up-and-in call, for example,
+would be denoted by |uicall|. For binary options, we add the
+underlying, which is either the asset or \$1: cash:
 
 \begin{verbatim}
 [asset|cash][u|d][i|o][call|put]
@@ -152,25 +149,28 @@ cash:
 
 <<>>=
 H <- 105
-uicall(c(95, 100, 105), k, v, r, tt, d, H)
-bscall(c(95, 100, 105), k, v, r, tt, d)
+bscall(c(80, 100, 120), k, v, r, tt, d)
+uicall(c(80, 100, 120), k, v, r, tt, d, H)
+bsput(c(80, 100, 120), k, v, r, tt, d)
+uoput(c(80, 100, 120), k, v, r, tt, d, H)
 @
 
 
 
 \section{Option Greeks}
 
-Greeks for Black-Scholes style and barrier options can be computed
-using the |greeks| function, which is a wrapper for any pricing
-function that returns the option price and which uses the default
-naming of inputs.\footnote{At the moment, there are two alternative
-  functions:
+Greeks for vanilla and barrier options can be computed using the
+|greeks| function, which is a wrapper for any pricing function that
+returns the option price and which uses the default naming of
+inputs.\footnote{In this version of the package, I have two
+  alternative functions that return Greeks:
   \begin{itemize}
-  \item For European calls and puts, the bsopt function by default
-    produces Greeks in addition to prices.
-\item The greeks2 function takes as arguments the name of the pricing
-  function and then its inputs as a list.
+  \item The \lstinline{bsopt} function by default
+    produces prices and Greeks for European calls and puts.
+\item The \lstinline{greeks2} function takes as arguments the name of the pricing
+  function and then inputs as a list.
 \end{itemize}
+These may be deprecated in the future.
 }
 
 <<>>=
@@ -180,51 +180,51 @@ greeks(uicall(s, k, v, r, tt, d, H))
 @
 
 The value of this approach is that you can easily compute Greeks for
-custom pricing functions and multiple options, including spreadsYou can also compute for custom pricing functions. Here is the formula
-for a prepaid contract that pays $S_{T}^{a}$ at time $T$:
+spreads and custom pricing functions. Here are two examples Here is the formula for
+a prepaid contract that pays $S_{T}^{a}$ at time $T$:
 <<>>=
 powercontract <- function(s, v, r, tt, d, a) {
     price <- exp(-r*tt)*s^a* exp((a*(r-d) + 1/2*a*(a-1)*v^2)*tt)
 }
-@
-
-The `greeks` function enables you to  compute the greeks for the power
-contract:
-<<>>=
 greeks(powercontract(s=40, v=.08, r=0.08, tt=0.25, d=0, a=2))
 @
 
-You can compute the greeks for a spread by defining the value of the
-spread as a function, and then computing the greeks for the function:
+Compute the greeks for a spread by defining the value of the spread as
+a function, and then computing the greeks for the function:
 <<>>=
-bullspread <- function(s, k1, k2, v, r, tt, d) {
+bullspread <- function(s, v, r, tt, d, k1, k2) {
     bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
 }
-greeks(bullspread(40, 40, 45, .3, .08, 1, 0))
+greeks(bullspread(39:41, .3, .08, 1, 0, k1=40, k2=45))
+
 @
 
 The Greeks function is vectorized, so you can create vectors of greek
 values with a single call. This example plots, for a bull spread, the
 gamma as a function of the stock price.
-<<>>=
+<<bullgamma, fig.cap='Gamma for a 40-45 bull spread.'>>=
 sseq <- seq(1, 100, by=0.5)
-x <- greeks(bullspread(sseq, 40, 45, .3, .08, 1, 0))
+x <- greeks(bullspread(sseq, .3, .08, 1, 0, k1=40, k2=45))
 plot(sseq, x['Gamma',], type='l')
+
 @
 
 
-As an alternative, the |bsopt| function provides all option Greeks,
-vectorized, for both puts and calls. See Figure \ref{fig:allgreeks}.
-<<allgreeks, fig.cap='All option Greeks, plotted using bsopt', fig.width=5.5, fig.height=5.5>>=
-## Plot all Greeks
+Here is a final example:
+%%As an alternative, the |bsopt| function provides all option Greeks,
+%%vectorized, for both puts and calls. See Figure \ref{fig:allgreeks}.
+<<allgreeks, fig.cap='All option Greeks, plotted using bsopt', fig.width=7.5, fig.height=6.5>>=
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 S <- seq(.5, 250, by=.5)
-x <- bsopt(S, k, v, r, tt, d)
+cgreeks <- greeks(bscall(S, k, v, r, tt, d))
+pgreeks <- greeks(bsput(S, k, v, r, tt, d))
+optlbl <-  c('Call', 'Put')
+y <- list(cgreeks, pgreeks)
 par(mfrow=c(4, 4))  ## create a 4x4 plot
 par(mar=c(2,2,2,2))
-for (i in c('Call', 'Put')) {
-    for (j in rownames(x[[i]])) {  ## loop over greeks
-        plot(S, x[[i]][j, ], main=paste(i, j), ylab=j, type='l')
+for (i in 1:length(y)) {
+    for (j in rownames(y[[i]])) {  ## loop over greeks
+        plot(S, y[[i]][j, ], main=paste(optlbl[i], j), ylab=j, type='l')
     }
 }
 
@@ -233,15 +233,22 @@ for (i in c('Call', 'Put')) {
 
 \section{Binomial Pricing of European and American Options}
 
-Binomial option pricing provides a way to compute the price of
-American options.  There are two functions related to binomial
-pricing:
+There are two functions related to binomial pricing:
 \begin{description}
 \item[binomopt] computes prices of American and European calls and
-  puts. Optionally returns the full array of stock prices, selected
-  Greeks (delta, gamma, and theta), the option pricing inputs and
-  computed parameters, risk-neutral probabilities, and nodes at which
-  exercise occurs.
+  puts. The function has three optional parameters that control output:
+  \begin{itemize}
+  \item \lstinline{returnparams=TRUE} will return as a vector the option
+    pricing inputs, computed parameters, and risk-neutral probability.
+    
+  \item \lstinline{returngreeks=TRUE} will return as a vector the price,
+    delta, gamma, and theta at the initial node.
+  \item \lstinline{returntrees=TRUE} will return as a list the price,
+    greeks, the full  stock price tree, the exercise status
+    (\lstinline{TRUE} or \lstinline{FALSE}) at each node, and the
+    replicating portfolio at each node.
+  \end{itemize}
+  
 \item[binomplot] displays the asset price
   tree, the corresponding probability of being at each node, and
   whether or not the option is in exercised at each node. This
@@ -261,23 +268,63 @@ binomopt(s, k, v, r, tt, d, nstep=3, returntrees=TRUE, putopt=TRUE)
 @
 
 
-
-
 \section{Jumps and Stochastic Volatility}
 \label{sec:jumps}
 
+
+
+
 \section{Asian Options}
 
-\section{Illustrative Functions}
+
+\section{Bonds}
+
+The simple bond functions provided in this version compute the present
+value of cash flows (|bondpv|), the IRR of the bond (|bondyield|),
+Macaulay duration (|duration|), and convexity (|convexity|).
+
+<<>>=
+coupon <- 8; mat <- 20; yield <- 0.06; principal <- 100; 
+modified <- FALSE; freq <- 2
+price <- bondpv(coupon, mat, yield, principal, freq)
+price
+bondyield(price, coupon, mat, principal, freq)
+duration(price, coupon, mat, principal, freq, modified)
+convexity(price, coupon, mat, principal, freq)
+
+@ 
 
 
-Several functions are intended to illustrate some aspects of the
+
+\section{Functions with Graphical Output}
+
+
+Several functions provide visual illustrations of some aspects of the
 material.
 
 \subsection{Quincunx or Galton Board}
 
+The quincunx is a physical device the illustrates the central limit
+theorem. A ball rolls down a pegboard and strikes a peg, falling
+randomly either to the left or right. As it continues down the board
+it continues to strike a series of pegs, randomly falling left or
+right at each. The balls
+collect in bins and create an approximate normal distribution. 
 
+The quincunx function allows the user to simulate a quincunx,
+observing the path of each ball and watching the height of each bin as
+the balls accumulate. More interestingly, the quincunx function
+permits altering the probability that the ball will fall to the
+right. 
 
+Figure \ref{fig:quincunx} illustrates the function after dropping 200
+balls down 20 levels of pegs with a 70\% probability that each ball
+will fall right:
+
+<<quincunx, fig.cap='Output from the Quincunx function'>>=
+par(mar=c(2,2,2,2))
+quincunx(n=20, numballs=200, delay=0, probright=0.7)
+@ 
 
 \subsection{Plotting the Solution to the Binomial Pricing Model}
 \label{sec:binomplot}
@@ -316,10 +363,6 @@ exercise is occurring. We can zoom in on that region by  selecting values for |y
 d <- 0.06
 binomplot(s, k, v, r, tt, d, nstep=40, american=TRUE, ylimval=c(75, 225))
 @
-
-\section{Bonds}
-
-\subsection{Basic bond pricing}
 
 
 
