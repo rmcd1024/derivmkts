@@ -74,7 +74,9 @@
 #' @param titles automatically supply appropriate main title and x-
 #'     and y-axis labels
 #' 
-#'  
+#' @importFrom graphics lines plot par points abline arrows mtext text 
+#' @importFrom grDevices dev.off pdf
+#' 
 #' @details Returns an option price, a vector of the parameters used
 #'     to compute the price.  Optionally returns
 #'     the following matrices, all but but two of which have

@@ -39,6 +39,8 @@
 #' duration(price, coupon, mat, principal, freq, modified=TRUE) # 12.3928
 #' convexity(price, coupon, mat, principal, freq) # 205.3245
 #'
+#' @importFrom stats uniroot
+#' 
 
 #' @export
 bondpv <- function(coupon, mat, yield, principal=1000, freq=1) {

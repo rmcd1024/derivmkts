@@ -37,7 +37,8 @@
 #'
 #' @details Returns a scalar or vector of option prices, depending on
 #' the inputs
-#'
+#' @importFrom stats dpois ppois
+#' 
 #' @seealso bscall bsput
 #'
 #' @examples

@@ -11,6 +11,8 @@
 #' @return Implied volatility (for the "impvol" functions) or implied
 #' stock price (for the "impS") functions.
 #'
+#' @importFrom stats uniroot
+#' 
 #' @usage
 #' bscallimpvol(s, k, r, tt, d, price)
 #' bsputimpvol(s, k, r, tt, d, price)

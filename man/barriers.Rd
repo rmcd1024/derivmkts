@@ -144,7 +144,7 @@ callupin(s, k, v, r, tt, d, H)
 ## following returns the same price as previous
 assetuicall(s, k, v, r, tt, d, H) - k*cashuicall(s, k, v, r, tt, d, H)
 
-## return option prices for different strikes
-putupin(s, k=38:42, v, r, tt, d, H)
+## return option prices for different strikes putupin(s, k=38:42,
+#v, r, tt, d, H)
 }
 

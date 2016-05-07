@@ -52,7 +52,7 @@ greeks(powercontract(s=40, v=.08, r=0.08, tt=0.25, d=0, a=2))
 bullspread <- function(s, v, r, tt, d, k1, k2) {
     bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
 }
-greeks(bullspread(40, .3, .08, 1, 0, k1=40, k2=45))
+greeks(bullspread(39:41, .3, .08, 1, 0, k1=40, k2=45))
 
 
 ## ----bullgamma, fig.cap='Gamma for a 40-45 bull spread.'-----------------

@@ -22,6 +22,8 @@
 #' @param plottrue Boolean If \code{TRUE}, the display will indicate
 #' bin levels if the distribution were normal. Default is TRUE
 #'
+#' @importFrom graphics lines barplot plot par points
+#' 
 #' @examples
 #' 
 #' ## These examples will not display correctly within RStudio unless
@@ -29,6 +31,9 @@
 #' quincunx(delay=0)
 #' quincunx(n=10, numballs=200, delay=0)
 #' quincunx(n=20, numballs=200, delay=0, probright=0.7)
+#'
+#' @importFrom stats rbinom
+#' 
 
 #' @export
 quincunx <- function(n=3, numballs=20, delay=0.1,

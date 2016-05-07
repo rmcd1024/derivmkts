@@ -12,6 +12,7 @@
 #' @name arithasianmc
 #' @family Asian
 #' @inheritParams geomavgprice
+#' @importFrom stats rnorm cov sd var
 #' @param numsim Number of Monte Carlo iterations
 #' @param printsds Print standard deviation for the particular Monte
 #'     Carlo calculation

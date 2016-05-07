@@ -38,7 +38,7 @@
 #'     assetuicall assetuiput assetdicall assetdiput cashuocall
 #'     cashuoput cashdocall cashdoput assetuocall assetuoput
 #'     assetdocall assetdoput dr ur drdeferred urdeferred
-#'
+#' @importFrom stats pnorm
 #' @return The pricing functions return the price of a barrier
 #' claim. If more than one argument is a vector, the recycling rule
 #' determines the handling of the inputs. 
@@ -105,9 +105,8 @@
 #' ## following returns the same price as previous
 #' assetuicall(s, k, v, r, tt, d, H) - k*cashuicall(s, k, v, r, tt, d, H)
 #'
-#' ## return option prices for different strikes
-#' putupin(s, k=38:42, v, r, tt, d, H)
-
+#' ## return option prices for different strikes putupin(s, k=38:42,
+#' #v, r, tt, d, H)
 #' @export
 #' @family Barriers
 cashdicall <- function(s, k, v, r, tt, d, H) {
