@@ -25,17 +25,17 @@ library(markdown)
 opts_chunk$set(collapse=TRUE)
 
 ## ------------------------------------------------------------------------
-s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 0.25; d <- 0
+s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 bscall(s, k, v, r, tt, d)
 bsput(s, c(95, 100, 105), v, r, tt, d)
 
 
 ## ------------------------------------------------------------------------
-H <- 105
-bscall(c(80, 100, 120), k, v, r, tt, d)
-uicall(c(80, 100, 120), k, v, r, tt, d, H)
-bsput(c(80, 100, 120), k, v, r, tt, d)
-uoput(c(80, 100, 120), k, v, r, tt, d, H)
+H <- 115
+bscall(s, c(80, 100, 120), v, r, tt, d)
+uicall(s, c(80, 100, 120), v, r, tt, d, H)
+bsput(s, c(80, 100, 120), v, r, tt, d)
+uoput(s, c(80, 100, 120), v, r, tt, d, H)
 
 ## ------------------------------------------------------------------------
 H <- 105
@@ -83,6 +83,23 @@ binomopt(s, k, v, r, tt, d, nstep=3)
 binomopt(s, k, v, r, tt, d, nstep=3, returnparams=TRUE)
 binomopt(s, k, v, r, tt, d, nstep=3, putopt=TRUE)
 binomopt(s, k, v, r, tt, d, nstep=3, returntrees=TRUE, putopt=TRUE)
+
+## ------------------------------------------------------------------------
+geomavgprice(s, k, v, r, tt, d, 3)
+geomavgstrike(s, k, v, r, tt, d, 3)
+
+
+## ------------------------------------------------------------------------
+arithasianmc(s, k, v, r, tt, d, 3, numsim=5000, printsds=TRUE)
+
+
+## ------------------------------------------------------------------------
+arithavgpricecv(s, k, v, r, tt, d, 3, numsim=5000)
+
+
+## ------------------------------------------------------------------------
+mertonjump(s, k, v, r, tt, d, lambda=0.5, alphaj=-0.2, vj=0.3)
+c(bscall(s, k, v, r, tt, d), bsput(s, k, v, r, tt, d))
 
 ## ------------------------------------------------------------------------
 coupon <- 8; mat <- 20; yield <- 0.06; principal <- 100; 
