@@ -56,7 +56,6 @@ opts_knit$set(highlight = TRUE,
 
 
 <<echo=FALSE>>=
-library(knitr)
 library(derivmkts)
 library(markdown)
 
@@ -398,17 +397,19 @@ binomplot(s, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE,
     plotvalues=TRUE, plotarrows=TRUE)
 @
 
-Finally, here is a plot for an American call when the dividend yield
-is positive and |nstep| has a larger value:
+As a final example, consider an American call when the dividend yield
+is positive and |nstep| has a larger value. Figure
+\ref{fig:binomplot3} shows the plot, with early exercise evident.
 
 <<binomplot3, fig.cap="Binomial plot when nstep is 40.\\label{fig:binomplot3}">>=
 d <- 0.06
 binomplot(s, k, v, r, tt, d, nstep=40, american=TRUE)
 @
 
-Notice that the large value of |nstep| creates a high maximum terminal
-stock price, which makes the plot hard to see in the narrow region where
-exercise is occurring. We can zoom in on that region by  selecting values for |ylimval|:
+The large value of |nstep| creates a high maximum terminal stock
+price, which makes details hard to discern in the boundary region
+where exercise first occurrs. We can zoom in on that region by
+selecting values for |ylimval|; the result is in Figure \ref{fig:binomplot4}.
 
 <<binomplot4, fig.cap="Binomial plot when nstep is 40 using the argument ylimval to focus on a subset.\\label{fig:binomplot4}">>=
 d <- 0.06
