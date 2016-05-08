@@ -2,6 +2,7 @@
 %\VignetteIndexEntry{derivmkts Package Overview}
 \documentclass{article}
 \usepackage{textcomp}
+\usepackage{amsmath}
 \usepackage{listings}
     \lstset{
     language=R,
@@ -93,7 +94,7 @@ these functions are vectorized. The function |bsopt| by default
 provides option greeks. Here are some examples:
 
 <<>>=
-s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 0.25; d <- 0
+s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 bscall(s, k, v, r, tt, d)
 bsput(s, c(95, 100, 105), v, r, tt, d)
 
@@ -148,11 +149,11 @@ underlying, which is either the asset or \$1: cash:
 
 
 <<>>=
-H <- 105
-bscall(c(80, 100, 120), k, v, r, tt, d)
-uicall(c(80, 100, 120), k, v, r, tt, d, H)
-bsput(c(80, 100, 120), k, v, r, tt, d)
-uoput(c(80, 100, 120), k, v, r, tt, d, H)
+H <- 115
+bscall(s, c(80, 100, 120), v, r, tt, d)
+uicall(s, c(80, 100, 120), v, r, tt, d, H)
+bsput(s, c(80, 100, 120), v, r, tt, d)
+uoput(s, c(80, 100, 120), v, r, tt, d, H)
 @
 
 
@@ -268,13 +269,64 @@ binomopt(s, k, v, r, tt, d, nstep=3, returntrees=TRUE, putopt=TRUE)
 @
 
 
-\section{Jumps and Stochastic Volatility}
-\label{sec:jumps}
-
-
 
 \section{Asian Options}
 
+There are analytical functions for valuing geometric Asian options and
+Monte Carlo routines for valuing arithmetic Asian options. 
+
+\subsection{Geometric Asian Options}
+
+Geometric Asian options can be valued using the Black-Scholes formulas
+for vanilla calls and puts, with modified inputs. The functions return
+both call and put prices with a named vector:
+
+<<>>=
+geomavgprice(s, k, v, r, tt, d, 3)
+geomavgstrike(s, k, v, r, tt, d, 3)
+
+@ 
+
+\subsection{Arithmetic Asian Options}
+
+Monte Carlo valuation is used to price arithmetic Asian options. For
+efficiency, the function \lstinline{arithasianmc} returns call and put
+prices for average price and average strike options. By default the
+number of simulations is 1000. Optionally the function returns the
+standard deviation of each estimate
+
+<<>>=
+arithasianmc(s, k, v, r, tt, d, 3, numsim=5000, printsds=TRUE)
+
+@ 
+
+The function \lstinline{arithavgpricecv} uses the control variate
+method to reduce the variance in the simulation. At the moment this
+function prices only calls, and returns both the price and the
+regression coefficient used in the control variate correction:
+
+<<>>=
+arithavgpricecv(s, k, v, r, tt, d, 3, numsim=5000)
+
+@ 
+\section{Jumps and Stochastic Volatility}
+\label{sec:jumps}
+
+The \lstinline{mertonjump} function returns call and put prices for a
+stock that can jump discretely. A poisson process controls the
+occurrence of a jump and the size of the jump is lognormally
+distributed. The parameter \lstinline{lambda} is the mean number of
+jumps per year,  the parameter \lstinline{alphaj} is the log of the
+expected jump, and \lstinline{sigmaj} is the standard deviation of the
+log of the jump. The jump amount is thus drawn from the distribution
+\begin{equation*}
+  Y \sim \mathcal{N}(\alpha_{J} - 0.5\sigma^{2}_{J}, \sigma_{J}^{2} )
+\end{equation*}
+
+<<>>=
+mertonjump(s, k, v, r, tt, d, lambda=0.5, alphaj=-0.2, vj=0.3)
+c(bscall(s, k, v, r, tt, d), bsput(s, k, v, r, tt, d))
+@ 
 
 \section{Bonds}
 
