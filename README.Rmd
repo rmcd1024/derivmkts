@@ -48,7 +48,7 @@ I have tried to make calculation of Greeks especially easy. The
 function `greeks()` allows vectorized calculation of greeks for any
 option pricing calculation based on the standard Black-Scholes or
 barrier option
-inputs.^[In addition, `greeks2` performs the same calculations with a different calling convention, and `bsopt()` simultaneously computes prices and Greeks for European calls and puts.]
+inputs.
 
 As an example, the following calculation will produce identical
 output, computing the full complement of greeks for a call, for three
