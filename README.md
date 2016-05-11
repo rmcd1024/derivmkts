@@ -54,15 +54,16 @@ will do the same for both calls and puts simultanteously. The delta values for t
 My favorite example, which you should run, is this:
 
 ``` r
-k <- 100; v <- 0.30; r <- 0.08; tt <- 2; d <- 0
+k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 S <- seq(.5, 250, by=.5)
-x[[1]] <- greeks(bscall(S, k, v, r, tt, d))
-x[[2]] <- greeks(bsput(S, k, v, r, tt, d))
-txt <- c('Call', 'Put')
+Call <- greeks(bscall(S, k, v, r, tt, d))
+Put <- greeks(bsput(S, k, v, r, tt, d))
+y <- list(Call=Call, Put=Put)
 par(mfrow=c(4, 4))  ## create a 4x4 plot
-for (i in 1:2) {
-    for (j in rownames(x[[i]])) {  ## loop over greeks
-        plot(S, x[[i]][j, ], main=paste(txt[i], j), ylab=j, type='l')
+par(mar=c(2,2,2,2))
+for (i in names(y)) {
+    for (j in rownames(y[[i]])) {  ## loop over greeks
+        plot(S, y[[i]][j, ], main=paste(i, j), ylab=j, type='l')
     }
 }
 ```
