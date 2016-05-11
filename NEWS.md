@@ -1,3 +1,9 @@
+# derivmkts 0.2.0
+
+* First CRAN release
+
+* Completed vignette
+
 # derivmkts 0.1.3.9000
 
 * added simple bond functions (yield, pv, duration, convexity)

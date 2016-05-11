@@ -6,4 +6,6 @@ tests/option_testvalues.R
 .travis.yml
 ./vignettes/figure/
 ./derivmkts.pdf
-./README.Rmd
+README.Rmd
+README.md
+

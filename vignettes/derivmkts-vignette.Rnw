@@ -64,9 +64,9 @@ opts_chunk$set(collapse=TRUE)
 
 \section{Introduction}
 
-This vignette is an overview to the functions in the functions in the
-\emph{derivmkts} package, which was conceived as a companion to my
-book \emph{Derivatives Markets}. The material has an educational
+This vignette is an overview to the functions in the \emph{derivmkts}
+package, which was conceived as a companion to my book
+\emph{Derivatives Markets}. The material has an educational
 focus. There are other option pricing packages for R, but this package
 has several distinguishing features:
 \begin{itemize}
