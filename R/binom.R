@@ -25,7 +25,7 @@
 #'
 #' binomopt(s, k, v, r, tt, d, nstep = 10, american = TRUE,
 #'     putopt=FALSE, specifyupdn=FALSE, crr=FALSE, jarrowrudd=FALSE,
-#'     up=1.5, dn=1.5, returntrees=FALSE, returnparams=FALSE,
+#'     up=1.5, dn=0.5, returntrees=FALSE, returnparams=FALSE,
 #'     returngreeks=FALSE)
 #' 
 #' binomplot(s, k, v, r, tt, d, nstep, putopt=FALSE, american=TRUE,
@@ -33,7 +33,7 @@
 #'     pointsize=4, ylimval=c(0,0),
 #'     saveplot = FALSE, saveplotfn='binomialplot.pdf',
 #'     crr=FALSE, jarrowrudd=FALSE, titles=TRUE, specifyupdn=FALSE,
-#'     up=1.5, dn=1.5)
+#'     up=1.5, dn=0.5)
 #'
 #'
 #' @param s Stock price
@@ -153,7 +153,7 @@
 binomopt <- function(s, k, v, r, tt, d,
                      nstep=10, american = TRUE, putopt=FALSE,
                      specifyupdn=FALSE, crr=FALSE, jarrowrudd=FALSE,
-                     up=1.5, dn=1.5, returntrees=FALSE,
+                     up=1.5, dn=0.5, returntrees=FALSE,
                      returnparams=FALSE, returngreeks=FALSE) {
     ## set up the binomial tree parameters
     
@@ -247,7 +247,7 @@ binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
                       pointsize=4, ylimval=c(0,0),
                       saveplot = FALSE, saveplotfn='binomialplot.pdf',
                       crr=FALSE, jarrowrudd=FALSE, titles = TRUE,
-                      specifyupdn=FALSE, up=1.5, dn=1.5) {
+                      specifyupdn=FALSE, up=1.5, dn=0.5) {
     ## see binomopt for more details on tree
     ## construction. "plotvalues" shows stock price values;
     ## "drawstrike" if true draws a line at the strike price; "probs"

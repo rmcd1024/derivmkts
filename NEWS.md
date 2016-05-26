@@ -1,3 +1,9 @@
+# derivmkts 0.2.1
+
+* Fixed: default dn=1.5 in binomopt and binomplot
+
+* Simplification of Greeks discussion in README.Rmd
+
 # derivmkts 0.2.0
 
 * First CRAN release
