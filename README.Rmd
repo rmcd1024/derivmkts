@@ -126,7 +126,8 @@ the nodes, the probability of reaching each node, and whether exercise
 occurs at that node.
 
 ```{r}
-binomopt(41, 40, .3, .08, 1, 0, 3, putopt=TRUE, American=TRUE)
+binomplot(41, 40, .3, .08, 1, 0, 3, putopt=TRUE, american=TRUE)
+
 ```
 
 ### Galton board or quincunx
