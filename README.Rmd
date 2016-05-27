@@ -51,10 +51,9 @@ argument, and returns a vectorized set of greeks for any pricing
 function that uses standard input names (i.e., the asset price is `s`,
 the volatility is `v`, etc.). 
 
-As an example, the following two calculations will produce identical
-output, computing the full complement of greeks for a call, for three
-strike prices. You can access the delta values as, for example,
-`x['Delta', ]`.
+As an example, the following calculation will produce the full
+complement of greeks for a call, for each of three strike prices. You
+can access the delta values, for example, using `x['Delta', ]`.
 
 
 ```{r}
@@ -144,7 +143,8 @@ is thus likely to be fatter-tailed than normal.)
 
 You can see the Galton board in action with `quincunx()`:
 
-```{r}
+```{r, echo=2}
+par(mar=c(2, 2, 2, 2))
 quincunx(n=11, numballs=250, delay=0, probright=0.5)
 
 ```

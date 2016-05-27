@@ -26,7 +26,7 @@ Things of note
 
 I have tried to make calculation of Greeks easy. The function `greeks()` accepts an option pricing function call as an argument, and returns a vectorized set of greeks for any pricing function that uses standard input names (i.e., the asset price is `s`, the volatility is `v`, etc.).
 
-As an example, the following two calculations will produce identical output, computing the full complement of greeks for a call, for three strike prices. You can access the delta values as, for example, `x['Delta', ]`.
+As an example, the following calculation will produce the full complement of greeks for a call, for each of three strike prices. You can access the delta values, for example, using `x['Delta', ]`.
 
 ``` r
 x1 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0))
