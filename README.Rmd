@@ -113,7 +113,7 @@ along with the binomial parameters.
 * `returntrees=TRUE` it returns as a list all of the above plus the full binomial tree (\$stree), the probability of reaching each node (\$probtree), whether or not the option is exercised at each node  (\$exertree), and the replicating portfolio at each node ($deltatree and $bondtree).
 
 Here is an example illustrating everything that the function can return:
-```{r, echo=FALSE, eval=TRUE}
+```{r, eval=TRUE}
 x <- binomopt(41, 40, .3, .08, 1, 0, 3, putopt=TRUE, american=TRUE,
               returntrees=TRUE)
 x
