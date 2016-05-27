@@ -9,7 +9,8 @@ output:
 
 ```{r, echo=FALSE}
 library(knitr)
-opts_chunk$set(comment=NA)
+opts_chunk$set(comment=NA,
+               collapse=TRUE)
 library(derivmkts)
 ```
 

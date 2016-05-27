@@ -1,4 +1,4 @@
 language: r
 warnings_are_errors: true
 sudo: required
-after_success: R -e 'rmarkdown::render("README.Rmd")'
+after_success: R -e 'library(devtools);install_github("rmcd1024/derivmkts");rmarkdown::render("README.Rmd")'
