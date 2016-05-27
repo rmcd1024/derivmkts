@@ -8,3 +8,4 @@ stuff/
 derivmkts.Rcheck
 *.out
 *\[woven\]*
+DM_token
