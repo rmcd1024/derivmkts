@@ -76,7 +76,9 @@ will do the same for both calls and puts simultanteously. The delta
 values for the call would be `y[['Call']]['Delta', ]`
 -->
 
-My favorite example is this:
+My favorite example is this small bit of code, which computes and
+plots all call and put Greeks for 500 options. This produces 16 plots in
+all:
 
 ```{r}
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
@@ -93,9 +95,7 @@ for (i in names(y)) {
 }
 ```
 
-This small bit of code computes and plots all call and put Greeks for
-500 options. This is 16 plots in all.  It's a great illustration of
-how powerful R can be.
+This is a great illustration of how powerful R can be.
 
 ### Binomial calculations
 

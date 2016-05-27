@@ -11,4 +11,4 @@ README.md
 README_files/
 figure/
 DM_token
-*.sh
+make_readme.sh
