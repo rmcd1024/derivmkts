@@ -1,7 +1,7 @@
 language: r
 
 r_github_packages:
-  - derivmkts
+  - rmcd1024/derivmkts
 
 warnings_are_errors: true
 
