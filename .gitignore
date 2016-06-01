@@ -10,3 +10,4 @@ derivmkts.Rcheck
 *\[woven\]*
 DM_token
 *.sh
+pkg-status*

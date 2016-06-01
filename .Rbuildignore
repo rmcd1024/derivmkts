@@ -12,3 +12,6 @@ README_files/
 figure/
 DM_token
 make_readme.sh
+pkg-status.*
+
+
