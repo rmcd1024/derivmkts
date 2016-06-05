@@ -75,18 +75,34 @@ bsopt <- function(s, k, v, r, tt, d) {
 #' @export
 greeks <- function(f) {
     ## This version uses a standard function call
+    stdnames <- c('s', 'k', 'v', 'r', 'tt', 'd') 
     args <- match.call()[[2]] ## get f and arguments
     funcname <- as.character(args[[1]])
     args[[1]] <- NULL  ## eliminate function name, leaving only the
                        ## function arguments
-    fnames <- names(formals(funcname)) ## arguments to function
+    fnames <- names(formals(funcname)) ## list of defined arguments
+    ## following handles case of perpetual options
+    if ("tt" %in% fnames) includetheta <- TRUE
+    else includetheta <- FALSE
+    ##
+    ## if there are optional parameters, exclude them from the
+    ## following check for out-of-order arguments
+    ##
+    fnames <- fnames[fnames %in% stdnames]
+    ##
+    ## following logic handles the perverse case where some arguments
+    ## are named, some are unnamed, and the arguments are out of
+    ## order, i.e.  the named arguments are in some arbitrary order.
+    ## If the function is defined as f(a, b, c), if it's called as
+    ## f(c=3,5,2), the unused arguments are assigned to 5 and 2 in the
+    ## order defined (a then b). The following code fills them in as
+    ## such
     if (sum(names(args)=='') > 0) {
         shared <- intersect(names(args), fnames)
         names(args)[names(args)==''] <- setdiff(fnames, shared)
     } else {
         names(args) <- fnames
     }
-
     x <<- as.list(args)
     ## Issue: When an argument is a vector, the list representation
     ## stores the values as a language object (an unevaluated
@@ -94,11 +110,16 @@ greeks <- function(f) {
     ## x[[i]]".
     for (i in 1:length(x)) x[[i]] <- eval(x[[i]])
     .checkListRecycle(x)
+    xlength <- sapply(x, length)
+    xmaxlength <- max(xlength)
+    includetheta <- rep(includetheta, xmaxlength)
     prem  <-  do.call(funcname, x)
     delta <-  .FirstDer(funcname, 's', x)
     vega  <-  .FirstDer(funcname, 'v', x)/100
     rho   <-  .FirstDer(funcname, 'r', x)/100
-    theta <- -.FirstDer(funcname, 'tt', x)/365
+    theta <- ifelse(includetheta,
+                    -.FirstDer(funcname, 'tt', x)/365,
+                    NA)
     psi   <-  .FirstDer(funcname, 'd', x)/100
     elast <-  x[['s']]*delta/prem
     gamma <-  .SecondDer(funcname, 's', x)
@@ -109,14 +130,14 @@ greeks <- function(f) {
     rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
                      "Psi", "Elasticity")
 
-    ## In the following, this tests to see if there is variation in
+    ## The following, this tests to see if there is variation in
     ## any inputs (is xmaxlength > 1). If so, is there variation in
     ## more than one input (length(maxarg) > 1). The column names are
     ## constructed as appropriate in each case.
 
     ## are any parameters input as vectors?
-    xlength <- lapply(x, length) ## how many of each input?
-    xmaxlength <- max(unlist(lapply(x, length))) ## max # of inputs
+    ## xlength <- lapply(x, length) ## how many of each input?
+    ## xmaxlength <- max(unlist(lapply(x, length))) ## max # of inputs
     arggt1 <- which(xlength > 1)
     if (xmaxlength == 1) {
         colnames(y) <- funcname

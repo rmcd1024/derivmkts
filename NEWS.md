@@ -8,6 +8,8 @@
 
 * callperpetual and putperpetual added to barriers.R
 
+* Greeks function ignores theta when appropriate (perpetual options)
+
 # derivmkts 0.2.0
 
 * First CRAN release
