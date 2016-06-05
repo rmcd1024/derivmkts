@@ -18,7 +18,6 @@ opts_knit$set(highlight = TRUE,
               size='footnotesize')
 
 ## ----echo=FALSE----------------------------------------------------------
-library(knitr)
 library(derivmkts)
 library(markdown)
 
@@ -61,18 +60,17 @@ x <- greeks(bullspread(sseq, .3, .08, 1, 0, k1=40, k2=45))
 plot(sseq, x['Gamma',], type='l')
 
 
-## ----allgreeks, fig.cap='All option Greeks, plotted using bsopt', fig.width=7.5, fig.height=6.5----
+## ----allgreeks, fig.cap='All option Greeks, computed using the greeks() function', fig.width=7.5, fig.height=6.5----
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 S <- seq(.5, 250, by=.5)
-cgreeks <- greeks(bscall(S, k, v, r, tt, d))
-pgreeks <- greeks(bsput(S, k, v, r, tt, d))
-optlbl <-  c('Call', 'Put')
-y <- list(cgreeks, pgreeks)
+Call <- greeks(bscall(S, k, v, r, tt, d))
+Put <- greeks(bsput(S, k, v, r, tt, d))
+y <- list(Call=Call, Put=Put)
 par(mfrow=c(4, 4))  ## create a 4x4 plot
 par(mar=c(2,2,2,2))
-for (i in 1:length(y)) {
+for (i in names(y)) {
     for (j in rownames(y[[i]])) {  ## loop over greeks
-        plot(S, y[[i]][j, ], main=paste(optlbl[i], j), ylab=j, type='l')
+        plot(S, y[[i]][j, ], main=paste(i, j), ylab=j, type='l')
     }
 }
 

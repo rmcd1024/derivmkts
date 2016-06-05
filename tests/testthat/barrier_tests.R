@@ -45,7 +45,7 @@ for (i in barriertestfns2) {
     print(paste(testfn, 'okay'))
 }
 
-for (i in c('UR', 'DR')) {
+for (i in barriertestfns3) {
     testfn <- tolower(i)
     test_that(paste(testfn, 'perpetual works'), {
         correct <- barriervals3[, i]
@@ -62,3 +62,21 @@ for (i in c('UR', 'DR')) {
     print(paste(testfn, 'okay'))
 }
     
+
+for (i in barriertestfns4) {
+    testfn <- tolower(i)
+    test_that(paste(testfn, 'perpetual works'), {
+        correct <- barriervals4[, i]
+        ##        print(correct)
+        unknown <- do.call(testfn,
+                           list(s=sseq4, k=kseq4, v=v, r=r, d=d)
+                           )
+        ##        print(unknown)
+        ##                  print(paste(s, v, r, tt, d, H))
+        expect_equal(correct, unknown)
+
+    }
+    )
+    print(paste(testfn, 'okay'))
+}
+##    

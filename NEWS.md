@@ -4,6 +4,10 @@
 
 * Simplification of Greeks discussion in README.Rmd
 
+* Added "returnprice" parameter to binomplot
+
+* callperpetual and putperpetual added to barriers.R
+
 # derivmkts 0.2.0
 
 * First CRAN release

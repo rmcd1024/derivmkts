@@ -7,9 +7,7 @@ library(testthat)
 ## for this version file
 #load('~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
 #load('option_testvalues.Rdata')
-load('~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
-## for each function name, we will generate results believed correct
-## from options.R. Then we will test against barriers.R
+#load('~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
 
 coupon <- 6; mat <- 20; yield <- 0.045; principal <- 100;
 p2 <- 119.6451416543
@@ -35,15 +33,15 @@ test_that('bondpv ', {
 
 test_that('bondyield ', {
     expect_equal(
-        bondyield(coupon=coupon, mat=mat, price=p2,
+        bondyield(price=p2, coupon=coupon, mat=mat, 
                   principal=principal, freq=2),
         0.045, tolerance=1e-07)
     expect_equal(
-        bondyield(coupon=coupon, mat=mat, price=p1,
+        bondyield(price=p1, coupon=coupon, mat=mat, 
                   principal=principal, freq=1),
         0.045, tolerance=1e-07)
     expect_equal(
-        bondyield(coupon=coupon, mat=mat, price=p5,
+        bondyield(price=p5, coupon=coupon, mat=mat, 
                   principal=principal, freq=5),
         0.045, tolerance=1e-07)
     print('bondyield okay')

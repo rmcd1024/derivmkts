@@ -11,3 +11,4 @@ derivmkts.Rcheck
 DM_token
 *.sh
 pkg-status*
+todo.md*

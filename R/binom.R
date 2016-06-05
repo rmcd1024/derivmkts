@@ -33,7 +33,7 @@
 #'     pointsize=4, ylimval=c(0,0),
 #'     saveplot = FALSE, saveplotfn='binomialplot.pdf',
 #'     crr=FALSE, jarrowrudd=FALSE, titles=TRUE, specifyupdn=FALSE,
-#'     up=1.5, dn=0.5)
+#'     up=1.5, dn=0.5, returnprice=FALSE)
 #'
 #'
 #' @param s Stock price
@@ -73,15 +73,18 @@
 #' @param saveplotfn file name for saved plot
 #' @param titles automatically supply appropriate main title and x-
 #'     and y-axis labels
+#' @param returnprice if \code{TRUE}, the \code{binomplot} function
+#'     returns the option price
 #' 
 #' @importFrom graphics lines plot par points abline arrows mtext text 
 #' @importFrom grDevices dev.off pdf
 #' 
-#' @details Returns an option price, a vector of the parameters used
-#'     to compute the price.  Optionally returns
-#'     the following matrices, all but but two of which have
-#'     dimensionality \eqn{(\textrm{nstep}+1)\times (\textrm{nstep}+
-#'     1)}{(nstep+1)*(nstep+1)}:
+#' @details By default, \code{binomopt} returns an option
+#'     price. Optionally, it returns a vector of the parameters used
+#'     to compute the price, and if \code{returntrees=TRUE} it can
+#'     also return the following matrices, all but but two of which
+#'     have dimensionality \eqn{(\textrm{nstep}+1)\times
+#'     (\textrm{nstep}+ 1)}{(nstep+1)*(nstep+1)}:
 #' 
 #' \describe{
 #' 
@@ -111,7 +114,7 @@
 #' graphically the probability of being at each node (represented as
 #' the area of the circle at that price) and whether or not the option
 #' is optimally exercised there (green if yes, red if no), and
-#' optionally, ht, depending on the inputs
+#' optionally, ht, depending on the inputs.
 #'
 #' @note By default, \code{binomopt} computes the binomial tree using
 #'     up and down moves of \deqn{u=\exp((r-d)*h + \sigma\sqrt{h})}{u
@@ -243,11 +246,12 @@ binomopt <- function(s, k, v, r, tt, d,
 #' @export
 binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
                       american=TRUE, plotvalues=FALSE,
-                      plotarrows=FALSE, drawstrike=TRUE, 
-                      pointsize=4, ylimval=c(0,0),
-                      saveplot = FALSE, saveplotfn='binomialplot.pdf',
-                      crr=FALSE, jarrowrudd=FALSE, titles = TRUE,
-                      specifyupdn=FALSE, up=1.5, dn=0.5) {
+                      plotarrows=FALSE, drawstrike=TRUE, pointsize=4,
+                      ylimval=c(0,0), saveplot = FALSE,
+                      saveplotfn='binomialplot.pdf', crr=FALSE,
+                      jarrowrudd=FALSE, titles = TRUE,
+                      specifyupdn=FALSE, up=1.5, dn=0.5,
+                      returnprice=FALSE) {
     ## see binomopt for more details on tree
     ## construction. "plotvalues" shows stock price values;
     ## "drawstrike" if true draws a line at the strike price; "probs"
@@ -261,7 +265,8 @@ binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
     setylim <- ifelse((sum(ylimval^2)==0), FALSE, TRUE)
     y <- binomopt(s, k, v, r, tt, d, nstep, american, putopt,
                   specifyupdn, crr, jarrowrudd, up, dn,
-                  returnparams=TRUE, returntrees=TRUE)
+                  returnparams=TRUE, returntrees=TRUE
+                  )
     h <- tt/nstep
     for (i in c('up', 'dn', 'p')) assign(i, y$params[i])
     for (i in c('stree', 'exertree', 'oppricetree', 'probtree'))
@@ -319,4 +324,5 @@ binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
         }
     }
     if (saveplot) dev.off()
+    if (returnprice) return(oppricetree[1,1])
 }

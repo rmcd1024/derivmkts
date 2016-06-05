@@ -10,6 +10,7 @@ kseq0 <- c(35, 40, 45)
 kseq <- rep(c(35, 40, 45), times=3)
 Hseq <- rep(c(35, 40, 45), each=3)
 s <- 40; k <- 40; v <- 0.30; r <- 0.08;  tt <- 2; d <- 0.05; H=43.1
+sseq <- c(10, 40, 250)
 nstep=15
 
 ############################################################
@@ -49,6 +50,18 @@ for (i in barriertestfns3) {
         barriervals3[j, i] <- tmp
     }
 }
+
+sseq4 <- rep(c(10, 40, 200), each=3)
+kseq4 <- rep(c(35, 40, 45), 3)
+barriertestfns4 <- c('callPerpetual', 'putPerpetual')
+barriervals4 <- data.frame(kvals=kseq4, svals=sseq4)
+for (i in barriertestfns4) {
+    for (j in 1:length(kseq4)) {
+        tmp <- do.call(i, list(sseq4[j], kseq4[j], v=v, r=r, d=d))[1]
+        barriervals4[j, i] <- tmp
+    }
+}
+
 
 ############################################################
 ## Asian tests
@@ -138,12 +151,14 @@ binomvalsAmP <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d,
 keeplist <- c('barriervals', 'barriertestfns',
               'barriervals2', 'barriertestfns2',
               'barriervals3', 'barriertestfns3',
+              'barriervals4', 'barriertestfns4',
               'bstestfns', 'bsvals',
               'imptestfns', 'bsimpvals',
               'greeksvals', 'greeksvals2',
               'greeksinputs', 'greeksinputsH',
               's', 'k', 'v', 'r', 'tt', 'd', 'H',
               'kseq0', 'kseq', 'Hseq', 'Hseq2', 'kseqbs',
+              'kseq4', 'sseq4',
               'prices', 'jumpfns', 'jumpvals',
               'lambda', 'alphaj', 'vj',
               'nstep', 'binomvalsEurC', 'binomvalsEurP',
@@ -152,5 +167,3 @@ keeplist <- c('barriervals', 'barriertestfns',
 
 rm(list=setdiff(ls(), keeplist))
 save.image(file='~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
-
-

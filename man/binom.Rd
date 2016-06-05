@@ -17,7 +17,7 @@ binomplot(s, k, v, r, tt, d, nstep, putopt=FALSE, american=TRUE,
     pointsize=4, ylimval=c(0,0),
     saveplot = FALSE, saveplotfn='binomialplot.pdf',
     crr=FALSE, jarrowrudd=FALSE, titles=TRUE, specifyupdn=FALSE,
-    up=1.5, dn=0.5)
+    up=1.5, dn=0.5, returnprice=FALSE)
 }
 \arguments{
 \item{s}{Stock price}
@@ -80,6 +80,9 @@ vector \code{greeks}}
 
 \item{titles}{automatically supply appropriate main title and x-
 and y-axis labels}
+
+\item{returnprice}{if \code{TRUE}, the \code{binomplot} function
+returns the option price}
 }
 \value{
 By default, \code{binomopt} returns the option price. If
@@ -101,11 +104,12 @@ By default, \code{binomopt} returns the option price. If
     to compute prices of European and American calls and puts.
 }
 \details{
-Returns an option price, a vector of the parameters used
-    to compute the price.  Optionally returns
-    the following matrices, all but but two of which have
-    dimensionality \eqn{(\textrm{nstep}+1)\times (\textrm{nstep}+
-    1)}{(nstep+1)*(nstep+1)}:
+By default, \code{binomopt} returns an option
+    price. Optionally, it returns a vector of the parameters used
+    to compute the price, and if \code{returntrees=TRUE} it can
+    also return the following matrices, all but but two of which
+    have dimensionality \eqn{(\textrm{nstep}+1)\times
+    (\textrm{nstep}+ 1)}{(nstep+1)*(nstep+1)}:
 
 \describe{
 
@@ -135,7 +139,7 @@ Returns an option price, a vector of the parameters used
 graphically the probability of being at each node (represented as
 the area of the circle at that price) and whether or not the option
 is optimally exercised there (green if yes, red if no), and
-optionally, ht, depending on the inputs
+optionally, ht, depending on the inputs.
 }
 \note{
 By default, \code{binomopt} computes the binomial tree using
