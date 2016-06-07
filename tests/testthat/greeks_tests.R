@@ -41,7 +41,8 @@ tol2 <- 1e-06 ## doesn't seem to make the check work
 
 test_that('greeks works bscall', {
               correct <- greeksvals[['bscall']]
-              unknown <- greeks2(bscall, greeksinputs)
+              unknown <- greeks(bscall(s=s, k=kseq, v=v,
+                                             r=r, tt=tt, d=d))
               expect_equal(correct, unknown, tolerance=tol)
           }
           )
@@ -50,8 +51,7 @@ print('bscall greeks okay')
 
 test_that('greeks2 works bscall', {
               correct <- greeksvals2[['bscall']]
-              unknown <- greeks(bscall(s=s, k=kseq, v=v,
-                                             r=r, tt=tt, d=d))
+              unknown <- greeks2(bscall, greeksinputs)
               expect_equal(correct, unknown, tolerance=tol)
           }
           )

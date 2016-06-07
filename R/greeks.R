@@ -52,15 +52,18 @@
 #' bsopt(s, c(35, 40, 45), v, r, tt, d)[['Call']][c('Delta', 'Gamma'), ]
 #'
 #' ## plot Greeks for calls and puts for 500 different stock prices
-#' ## Unfortunately, this plot will most likely not display in RStudio;
-#' ## it will generate a "figure margins too large" error
+#' ##
+#' ## This plot can generate a "figure margins too large" error
+#' ## in Rstudio
 #' k <- 100; v <- 0.30; r <- 0.08; tt <- 2; d <- 0
 #' S <- seq(.5, 250, by=.5)
-#' x <- bsopt(S, k, v, r, tt, d)
-#' par(mfrow=c(4, 4))  ## create a 4x4 plot
-#' for (i in c('Call', 'Put')) {
-#'     for (j in rownames(x[[i]])) {  ## loop over greeks
-#'         plot(S, x[[i]][j, ], main=paste(i, j), ylab=j, type='l')
+#' Call <- greeks(bscall(S, k, v, r, tt, d))
+#' Put <- greeks(bsput(S, k, v, r, tt, d))
+#' y <- list(Call=Call, Put=Put)
+#' par(mfrow=c(4, 4), mar=c(2, 2, 2, 2))  ## create a 4x4 plot
+#' for (i in names(y)) {
+#'     for (j in rownames(y[[i]])) {  ## loop over greeks
+#'         plot(S, y[[i]][j, ], main=paste(i, j), ylab=j, type='l')
 #'     }
 #' }
 
@@ -72,23 +75,23 @@ bsopt <- function(s, k, v, r, tt, d) {
     return(list(Call=xc, Put=xp))
 }
 
+
 #' @export
 greeks <- function(f) {
     ## This version uses a standard function call
     stdnames <- c('s', 'k', 'v', 'r', 'tt', 'd') 
-    args <- match.call()[[2]] ## get f and arguments
+    args <- match.call(expand.dots=FALSE)[[2]] ## get f and arguments
     funcname <- as.character(args[[1]])
     args[[1]] <- NULL  ## eliminate function name, leaving only the
                        ## function arguments
     fnames <- names(formals(funcname)) ## list of defined arguments
     ## following handles case of perpetual options
-    if ("tt" %in% fnames) includetheta <- TRUE
-    else includetheta <- FALSE
+    includetheta <- ("tt" %in% fnames)
     ##
     ## if there are optional parameters, exclude them from the
     ## following check for out-of-order arguments
     ##
-    fnames <- fnames[fnames %in% stdnames]
+    # if (!includetheta) fnames <- fnames[fnames %in% stdnames]
     ##
     ## following logic handles the perverse case where some arguments
     ## are named, some are unnamed, and the arguments are out of
@@ -130,15 +133,11 @@ greeks <- function(f) {
     rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
                      "Psi", "Elasticity")
 
-    ## The following, this tests to see if there is variation in
-    ## any inputs (is xmaxlength > 1). If so, is there variation in
-    ## more than one input (length(maxarg) > 1). The column names are
-    ## constructed as appropriate in each case.
-
-    ## are any parameters input as vectors?
-    ## xlength <- lapply(x, length) ## how many of each input?
-    ## xmaxlength <- max(unlist(lapply(x, length))) ## max # of inputs
-    arggt1 <- which(xlength > 1)
+    ## The following tests to see if there is variation in any inputs
+    ## (is xmaxlength > 1). If so, is there variation in more than one
+    ## input (length(maxarg) > 1). The column names are constructed 
+    ## in each case to state the parameter values for that column.
+    arggt1 <- which(xlength > 1) # which inputs are vectors
     if (xmaxlength == 1) {
         colnames(y) <- funcname
     } else {
@@ -154,19 +153,42 @@ greeks <- function(f) {
 }
 
 
+.testcases <- function() {
+    ## test cases for greeks():
+    spd <- function(s, v, r, tt, d, k1, k2) {
+        bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
+        }
+    greeks(spd(40, .3, .08, .25, 0, 40, 45))
+    spd1 <- function(s, k1, k2, v, r, tt, d) {
+        bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
+        }
+    greeks(spd1(40, 40, 45, .3, .08, .25, 0))
+    spd2 <- function(s, k1, k2, v, r, d) {
+        callperpetual(s, k1, v, r, d) - callperpetual(s, k2, v, r, d)
+        }
+    greeks(spd2(40, 40, 45, .3, .08,  0.08))
+    spd3 <- function(s, v, r, d, k1, k2) {
+        callperpetual(s, k1, v, r, d) - callperpetual(s, k2, v, r, d)
+        }
+    greeks(spd3(40, .3, .08,  0.08, 40, 45))
+}       
+
+
 #' @export
 greeks2 <- function(fn, ...) {
     ## Fix handling of inputs with different lengths want to modify
     ## this function so that inputs need not be named
     if (is.list(c(...))) x <- c(...)
     else x <- list(...)
+    includetheta <- ('tt' %in% names(x))
     ## make sure recycling rule will work, stop if not
     .checkListRecycle(x)
     prem  <-  do.call(fn, x)
     delta <-  .FirstDer(fn, 's', x)
     vega  <-  .FirstDer(fn, 'v', x)/100
     rho   <-  .FirstDer(fn, 'r', x)/100
-    theta <- -.FirstDer(fn, 'tt', x)/365
+    if (includetheta) theta <- -.FirstDer(fn, 'tt', x)/365
+    else theta <- NA
     psi   <-  .FirstDer(fn, 'd', x)/100
     elast <-  x[['s']]*delta/prem
     gamma <-  .SecondDer(fn, 1, x)

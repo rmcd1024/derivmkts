@@ -108,7 +108,6 @@ cashput <- function(s, k, v, r, tt, d) {
     return(price)
 }
 
-
 .d1 <- function(s, k, v, r, tt, d)
     (log(s/k) + (r-d+v^2/2)*tt)/(v*sqrt(tt))
 

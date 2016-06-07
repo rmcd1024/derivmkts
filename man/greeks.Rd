@@ -66,15 +66,18 @@ bsopt(s, c(35, 40, 45), v, r, tt, d)
 bsopt(s, c(35, 40, 45), v, r, tt, d)[['Call']][c('Delta', 'Gamma'), ]
 
 ## plot Greeks for calls and puts for 500 different stock prices
-## Unfortunately, this plot will most likely not display in RStudio;
-## it will generate a "figure margins too large" error
+##
+## This plot can generate a "figure margins too large" error
+## in Rstudio
 k <- 100; v <- 0.30; r <- 0.08; tt <- 2; d <- 0
 S <- seq(.5, 250, by=.5)
-x <- bsopt(S, k, v, r, tt, d)
-par(mfrow=c(4, 4))  ## create a 4x4 plot
-for (i in c('Call', 'Put')) {
-    for (j in rownames(x[[i]])) {  ## loop over greeks
-        plot(S, x[[i]][j, ], main=paste(i, j), ylab=j, type='l')
+Call <- greeks(bscall(S, k, v, r, tt, d))
+Put <- greeks(bsput(S, k, v, r, tt, d))
+y <- list(Call=Call, Put=Put)
+par(mfrow=c(4, 4), mar=c(2, 2, 2, 2))  ## create a 4x4 plot
+for (i in names(y)) {
+    for (j in rownames(y[[i]])) {  ## loop over greeks
+        plot(S, y[[i]][j, ], main=paste(i, j), ylab=j, type='l')
     }
 }
 }

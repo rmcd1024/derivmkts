@@ -158,8 +158,26 @@ uoput(s, c(80, 100, 120), v, r, tt, d, H)
 \section{Perpetual American Options}
 
 The functions \lstinline{callperpetual} and \lstinline{putperetual}
-price infinitely-lived options for which all inputs other than the
-stock price are fixed. 
+price infinitely-lived American options. The pricing formula assumes
+that all inputs (risk-free rate, volatility, dividend yield) are
+fixed. This is of course usual with the basic option pricing formulas,
+but it is more of a conceptual stretch for an infinitely-lived option
+than for a 3-month option.  
+
+The important things to know are that the dividend yield must be
+positive if the option is a call, and the risk-free rate must be
+positive if the option is a put. If either of these is not true, the
+option is never exercised and there is no price. 
+
+The pricing formula can return, in a list, both the option price and
+the stock price at which the option is optimally exercised (the
+``barrier'').  Here are some examples:
+<<>>=
+s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0.04
+callperpetual(s, c(95, 100, 105), v, r, d)
+callperpetual(s, c(95, 100, 105), v, r, d, priceonly=FALSE)
+
+@ 
 
 \section{Option Greeks}
 
@@ -174,7 +192,9 @@ inputs.\footnote{In this version of the package, I have two
 \item The \lstinline{greeks2} function takes as arguments the name of the pricing
   function and then inputs as a list.
 \end{itemize}
-These may be deprecated in the future.
+These may be deprecated in the future. \lstinline{greeks2} is
+more cumbersome to use but may be more robust. I welcome feedback on
+the use of these functions.
 }
 
 <<>>=
@@ -205,7 +225,7 @@ greeks(bullspread(39:41, .3, .08, 1, 0, k1=40, k2=45))
 
 The Greeks function is vectorized, so you can create vectors of greek
 values with a single call. This example plots, for a bull spread, the
-gamma as a function of the stock price.
+gamma as a function of the stock price; see Figure \ref{fig:bullgamma}.
 <<bullgamma, fig.cap='Gamma for a 40-45 bull spread.'>>=
 sseq <- seq(1, 100, by=0.5)
 x <- greeks(bullspread(sseq, .3, .08, 1, 0, k1=40, k2=45))
@@ -214,7 +234,7 @@ plot(sseq, x['Gamma',], type='l')
 @
 
 
-Here is a final example:
+This code produces the plots in Figure \ref{fig:allgreeks}:
 %%As an alternative, the |bsopt| function provides all option Greeks,
 %%vectorized, for both puts and calls. See Figure \ref{fig:allgreeks}.
 <<allgreeks, fig.cap='All option Greeks, computed using the greeks() function', fig.width=7.5, fig.height=6.5>>=
