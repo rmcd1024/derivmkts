@@ -12,3 +12,4 @@ DM_token
 *.sh
 pkg-status*
 todo.md*
+tests/scripts

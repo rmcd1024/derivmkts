@@ -76,35 +76,35 @@ bsopt <- function(s, k, v, r, tt, d) {
 }
 
 
+
 #' @export
 greeks <- function(f) {
     ## This version uses a standard function call
     stdnames <- c('s', 'k', 'v', 'r', 'tt', 'd') 
-    args <- match.call(expand.dots=FALSE)[[2]] ## get f and arguments
+    args <- match.call()[[2]] ## get f and arguments
     funcname <- as.character(args[[1]])
-    args[[1]] <- NULL  ## eliminate function name, leaving only the
+    args[[1]] <- NULL  ## eliminate function name, leaving only arg as
                        ## function arguments
     fnames <- names(formals(funcname)) ## list of defined arguments
     ## following handles case of perpetual options
     includetheta <- ("tt" %in% fnames)
-    ##
-    ## if there are optional parameters, exclude them from the
-    ## following check for out-of-order arguments
-    ##
-    # if (!includetheta) fnames <- fnames[fnames %in% stdnames]
-    ##
     ## following logic handles the perverse case where some arguments
     ## are named, some are unnamed, and the arguments are out of
     ## order, i.e.  the named arguments are in some arbitrary order.
     ## If the function is defined as f(a, b, c), if it's called as
     ## f(c=3,5,2), the unused arguments are assigned to 5 and 2 in the
     ## order defined (a then b). The following code fills them in as
-    ## such
-    if (sum(names(args)=='') > 0) {
-        shared <- intersect(names(args), fnames)
-        names(args)[names(args)==''] <- setdiff(fnames, shared)
+    ## such. The code also handles the case of implicit parameters
+    numargs <- length(args)
+    if (length(names(args)) == 0) {
+        ## all arguments unnamed, hence in the correct order
+        names(args) <- fnames[1:numargs]
     } else {
-        names(args) <- fnames
+        numunnamedargs <- sum(names(args) == "")
+        ##  restrict range in setdiff to account for implicit
+        ##  parameters in fnames but not in function call
+        names(args)[which(names(args) == "")] <-
+            setdiff(fnames, names(args))[1:numunnamedargs] 
     }
     x <<- as.list(args)
     ## Issue: When an argument is a vector, the list representation
@@ -153,25 +153,6 @@ greeks <- function(f) {
 }
 
 
-.testcases <- function() {
-    ## test cases for greeks():
-    spd <- function(s, v, r, tt, d, k1, k2) {
-        bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
-        }
-    greeks(spd(40, .3, .08, .25, 0, 40, 45))
-    spd1 <- function(s, k1, k2, v, r, tt, d) {
-        bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
-        }
-    greeks(spd1(40, 40, 45, .3, .08, .25, 0))
-    spd2 <- function(s, k1, k2, v, r, d) {
-        callperpetual(s, k1, v, r, d) - callperpetual(s, k2, v, r, d)
-        }
-    greeks(spd2(40, 40, 45, .3, .08,  0.08))
-    spd3 <- function(s, v, r, d, k1, k2) {
-        callperpetual(s, k1, v, r, d) - callperpetual(s, k2, v, r, d)
-        }
-    greeks(spd3(40, .3, .08,  0.08, 40, 45))
-}       
 
 
 #' @export
