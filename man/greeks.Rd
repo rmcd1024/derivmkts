@@ -12,18 +12,20 @@ greeks(f)
 greeks2(fn, ...)
 }
 \arguments{
-\item{s}{Stock price}
+\item{s}{Price of underlying asset}
 
 \item{k}{Strike price of the option}
 
-\item{v}{Volatility of the stock, defined as the annualized
-standard deviation of the continuously-compounded return}
+\item{v}{Volatility of the underlying asset, defined as the
+annualized standard deviation of the continuously-compounded
+return}
 
 \item{r}{Annual continuously-compounded risk-free interest rate}
 
 \item{tt}{Time to maturity in years}
 
-\item{d}{Dividend yield, annualized, continuously-compounded}
+\item{d}{Dividend yield of the underlying asset, annualized,
+continuously-compounded}
 
 \item{fn}{Pricing function name, not in quotes}
 

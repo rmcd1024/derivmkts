@@ -1,5 +1,6 @@
 source('blksch_tests.R')
 source('barrier_tests.R')
+source('perpetual_tests.R')
 source('implied_test.R')
 source('jump_tests.R')
 source('greeks_tests.R')

@@ -4,6 +4,8 @@
 \usepackage{textcomp}
 \usepackage{amsmath}
 \usepackage{listings}
+\usepackage[linktocpage=TRUE, colorlinks=TRUE]{hyperref}
+\usepackage{natbib}
     \lstset{
     language=R,
     tabsize=2,
@@ -66,9 +68,9 @@ opts_chunk$set(collapse=TRUE)
 
 This vignette is an overview to the functions in the \emph{derivmkts}
 package, which was conceived as a companion to my book
-\emph{Derivatives Markets}. The material has an educational
-focus. There are other option pricing packages for R, but this package
-has several distinguishing features:
+\emph{Derivatives Markets} \citep{mcdonald:derivs:13}. The material
+has an educational focus. There are other option pricing packages for
+R, but this package has several distinguishing features:
 \begin{itemize}
 \item function names (mostly) correspond to those in \emph{Derivatives
   Markets}.
@@ -98,8 +100,6 @@ bscall(s, k, v, r, tt, d)
 bsput(s, c(95, 100, 105), v, r, tt, d)
 
 @
-
-
 
 
 \begin{table}[btp]
@@ -164,13 +164,21 @@ fixed. This is of course usual with the basic option pricing formulas,
 but it is more of a conceptual stretch for an infinitely-lived option
 than for a 3-month option.  
 
-The important things to know are that the dividend yield must be
-positive if the option is a call, and the risk-free rate must be
-positive if the option is a put. If either of these is not true, the
-option is never exercised and there is no price. 
+In order for the option to have a determined value, the dividend yield
+on the underlying asset must be positive if the option is a call. If
+this is not true, the call is never exercised and the price is
+undefined.\footnote{A well-known result \citep{merton:73-bell} is that
+  a standard American call is never exercised before expiration if the
+  dividend yield is zero and the interest rate is non-negative. A
+  perpetual call with $\delta=0$ and $r>0$ would thus never be
+  exercised. The limit of the option price as $\delta\to 0$ is $s$, so
+  in this case the function returns the stock price as the option
+  value.} Similarly, the risk-free rate must be positive if the option
+is a put.
 
-The pricing formula can return, in a list, both the option price and
-the stock price at which the option is optimally exercised (the
+By default, the perpetual pricing formulas return the price. By
+setting \lstinline{priceonly=FALSE}, the function returns both the option price
+and the stock price at which the option is optimally exercised (the
 ``barrier'').  Here are some examples:
 <<>>=
 s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0.04
@@ -194,7 +202,7 @@ inputs.\footnote{In this version of the package, I have two
 \end{itemize}
 These may be deprecated in the future. \lstinline{greeks2} is
 more cumbersome to use but may be more robust. I welcome feedback on
-the use of these functions.
+these functions and what you find useful.
 }
 
 <<>>=
@@ -204,17 +212,25 @@ greeks(uicall(s, k, v, r, tt, d, H))
 @
 
 The value of this approach is that you can easily compute Greeks for
-spreads and custom pricing functions. Here are two examples Here is the formula for
-a prepaid contract that pays $S_{T}^{a}$ at time $T$:
+spreads and custom pricing functions. Here are two examples. First,
+the value of a  prepaid contract that pays $S_{T}^{a}$ at time $T$ is
+given by the \lstinline{powercontract()} function:
 <<>>=
 powercontract <- function(s, v, r, tt, d, a) {
     price <- exp(-r*tt)*s^a* exp((a*(r-d) + 1/2*a*(a-1)*v^2)*tt)
 }
+@ 
+
+We can easily compute the Greeks for a power contract:
+<<>>=
 greeks(powercontract(s=40, v=.08, r=0.08, tt=0.25, d=0, a=2))
 @
 
-Compute the greeks for a spread by defining the value of the spread as
-a function, and then computing the greeks for the function:
+Second, consider a bull spread in which we buy a call with a strike of
+$k_{1}$ and sell a call with a strike of $k_2$. We can create a
+function that computes the
+value of the spread, and then  compute the greeks for the spread by
+using this newly-created function together with \lstinline{greeks()}:
 <<>>=
 bullspread <- function(s, v, r, tt, d, k1, k2) {
     bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
@@ -295,7 +311,21 @@ binomopt(s, k, v, r, tt, d, nstep=3, returntrees=TRUE, putopt=TRUE)
 \section{Asian Options}
 
 There are analytical functions for valuing geometric Asian options and
-Monte Carlo routines for valuing arithmetic Asian options. 
+Monte Carlo routines for valuing arithmetic Asian options. Be aware
+that the \lstinline{greeks()} function at this time will not work
+automatically with geometric Asian options nor (for different reasons)
+with arithmetic Asian options. I plan to address this in a future
+release.\footnote{At this time the \lstinline{greeks()} function will
+  not work with options valued using Monte Carlo. The reason is that
+  each invocation of the pricing function will start with a different
+  random number seed, resulting in price variation due solely to
+  random variationso there will be variation in the option value both
+  because the inputs are different and because the random number seed
+  has changed. In a future release I hope to address this. For the
+  curious,
+  \href{http://stackoverflow.com/questions/14324096/setting-seed-locally-not-globally-in-r}{this
+    Stackoverflow post} discusses one issue that arises in this
+  context.}
 
 \subsection{Geometric Asian Options}
 
@@ -308,6 +338,17 @@ geomavgprice(s, k, v, r, tt, d, 3)
 geomavgstrike(s, k, v, r, tt, d, 3)
 
 @ 
+
+The functions return both call and put prices, which plays havoc with
+the \lstinline{greeks()} function. For now the workaround is to create
+a new function that returns one price:
+<<>>=
+geomavgpricecall <- function(s, k, v, r, tt, d, m) geomavgprice(s, k, v, r, tt, d, m)['Call']
+greeks(geomavgpricecall(40, 40, .3, .08, .25, 0, 3))
+
+@ 
+
+Be aware that this calculation is not vectorized.
 
 \subsection{Arithmetic Asian Options}
 
@@ -439,7 +480,9 @@ d <- 0.06
 binomplot(s, k, v, r, tt, d, nstep=40, american=TRUE, ylimval=c(75, 225))
 @
 
-
+\bibliographystyle{book2}
+%\bibliography{rmcd, derivmkts}
+\bibliography{rmcd}
 
 
 \end{document}

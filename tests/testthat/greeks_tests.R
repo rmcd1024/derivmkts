@@ -48,6 +48,15 @@ test_that('greeks works bscall', {
           )
 print('bscall greeks okay')
 
+test_that('greeks works bscall', {
+              correct <- greeksvals[['bscall']]
+              unknown <- greeks(bscall(s=s, k=kseq, v=v,
+                                             r=r, tt=tt, d=d))
+              expect_equal(correct, unknown, tolerance=tol)
+          }
+          )
+print('bscall greeks okay')
+
 
 test_that('greeks2 works bscall', {
               correct <- greeksvals2[['bscall']]

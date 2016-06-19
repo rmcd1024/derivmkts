@@ -15,3 +15,5 @@ make_readme.sh
 pkg-status.*
 todo.md*
 tests/scripts/
+bbl$
+blg$

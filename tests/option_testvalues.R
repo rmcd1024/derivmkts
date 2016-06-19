@@ -129,16 +129,18 @@ jumpvals[i] <- tmp[grep('Call', names(tmp))]
 
 greeksvals <- list()
 greeksinputs <- list(s=s, k=kseq, v=v, r=r, tt=tt, d=d)
+greeksinputsnott <- list(s=s, k=k, v=v, r=r, d=d)
 greeksinputsH <- list(s=s, k=kseq, v=v, r=r, tt=tt, d=d, H=Hseq2)
 greeksvals[['bscall']] <- Greeks(bscall, greeksinputs)
 greeksvals[['assetuicall']] <- Greeks(AssetUICall, greeksinputsH)
-
+## for this next test use new version of function and greeks that can
+## handle absence of tt input
+greeksvals[['callperpetual']] <- greeks2(callperpetual, greeksinputsnott)
 greeksvals2 <- list()
 greeksvals2[['bscall']] <- Greeks2(bscall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d))
 greeksvals2[['assetuicall']] <- Greeks2(AssetUICall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d, H=Hseq2))
-
 binomvalsEurC <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d, nstep,
                              putOpt=FALSE, American=FALSE)
 binomvalsEurP <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d,

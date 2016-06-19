@@ -39,22 +39,30 @@
 
 #' @export
 callperpetual <- function(s, k, v, r, d, priceonly=TRUE) {
+    tmp <- data.frame(s, k, v, r, d)
+    for (i in names(tmp)) assign(i, tmp[, i])
     g <- (((r - d) / v^2 - 0.5)^2 + 2*r /v^2)^0.5
     h1 <- 0.5 - (r-d) /v^2 + g
     sbar <- k*h1/(h1-1)
     val <- (pmax(sbar, s) - k)*ur(s=s, v=v, r=r, tt=1, d=d, H=sbar,
                                   perpetual=TRUE)
+    val <- ifelse(d < 1e-13 & r > 0, s, val)
     if (priceonly) return(price=val)
     else return(list(price=val, barrier=sbar))
 }
 
 #' @export
 putperpetual <- function(s, k, v, r, d, priceonly=TRUE) {
+    tmp <- data.frame(s, k, v, r, d)
+    for (i in names(tmp)) assign(i, tmp[, i])
     g <- (((r - d) / v^2 - 0.5)^2 + 2*r /v^2)^0.5
     h2 <- 0.5 - (r-d) /v^2 - g
     sbar <- k*h2 / (h2-1)
     val <- (k - pmin(s, sbar))*dr(s=s, v=v, r=r, tt=1, d=d, H=sbar,
                                   perpetual=TRUE)
+    val <- ifelse(r < 1e-13 & d > 0, k, val)
     if (priceonly) return(price=val)
     else return(list(price=val, barrier=sbar))
 }
+
+
