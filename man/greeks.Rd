@@ -6,10 +6,10 @@
 \alias{greeks2}
 \title{Calculate option Greeks}
 \usage{
-bsopt(s, k, v, r, tt, d)
 greeks(f)
 # must used named list entries:
 greeks2(fn, ...)
+bsopt(s, k, v, r, tt, d)
 }
 \arguments{
 \item{s}{Price of underlying asset}
@@ -53,10 +53,16 @@ multiples of one another).
 }
 \details{
 Numerical derivatives are calculated using a simple
-difference. This can create numerical problems in edge cases. It
-might be good to use the package numDeriv or some other more
-sophisticated calculation, but the current approach works well with
-vectorization.
+    difference. This can create numerical problems in edge
+    cases. It might be good to use the package numDeriv or some
+    other more sophisticated calculation, but the current approach
+    works well with vectorization.
+}
+\note{
+The pricing function being passed to the greeks function must
+    return a numeric vector. For example, \code{callperpetual} must
+    be called with the option \code{showbarrier=FALSE} (the
+    default).
 }
 \examples{
 s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;

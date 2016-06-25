@@ -7,13 +7,14 @@
 arithavgpricecv(s, k, v, r, tt, d, m, numsim)
 }
 \arguments{
-\item{s}{Stock price}
+\item{s}{Price of underlying asset}
 
 \item{k}{Strike price of the option. In the case of average strike
 options, \code{k/s} is the multiplier for the average}
 
-\item{v}{Volatility of the stock, defined as the annualized
-standard deviation of the continuously-compounded return}
+\item{v}{Volatility of the underlygin asset price, defined as the
+annualized standard deviation of the continuously-compounded
+return}
 
 \item{r}{Annual continuously-compounded risk-free interest rate}
 
@@ -40,7 +41,6 @@ arithavgpricecv(s, k, v, r, tt, d, m, numsim)
 }
 \seealso{
 Other Asian: \code{\link{arithasianmc}},
-  \code{\link{geomasianmc}}, \code{\link{geomavgprice}},
-  \code{\link{geomavgstrike}}
+  \code{\link{asiangeomavg}}, \code{\link{geomasianmc}}
 }
 

@@ -11,7 +11,8 @@
 #' @title Arithmetic average options computed using Monte Carlo
 #' @name arithasianmc
 #' @family Asian
-#' @inheritParams geomavgprice
+#' @inheritParams asiangeomavg
+#' @inheritParams blksch
 #' @importFrom stats rnorm cov sd var
 #' @param numsim Number of Monte Carlo iterations
 #' @param printsds Print standard deviation for the particular Monte
@@ -81,6 +82,7 @@ arithasianmc <- function(s, k, v, r, tt, d, m, numsim=1000,
 #' @name geomasianmc
 #' @family Asian
 #' @inheritParams geomavgprice
+#' @inheritParams bslksch
 #' @inheritParams arithasianmc
 #' @description Geometric average Asian option prices
 #' @title Geometric Asian option prices computed by Monte Carlo
@@ -166,6 +168,7 @@ geomasianmc <- function(s, k, v, r, tt, d, m, numsim=1000,
 #'     using control variate Monte Carlo valuation
 #' @inheritParams geomavgprice
 #' @inheritParams arithasianmc
+#' @inheritParams blksch
 #' @name arithavgpricecv
 #' @usage
 #' arithavgpricecv(s, k, v, r, tt, d, m, numsim)

@@ -18,11 +18,11 @@ assetput(s, k, v, r, tt, d)
 cashput(s, k, v, r, tt, d)
 }
 \arguments{
-\item{s}{Stock price}
+\item{s}{Price of the underlying asset}
 
-\item{k}{Strike price of the option}
+\item{k}{Strike price}
 
-\item{v}{Volatility of the stock, defined as the annualized
+\item{v}{Volatility of the asset price, defined as the annualized
 standard deviation of the continuously-compounded return}
 
 \item{r}{Annual continuously-compounded risk-free interest rate}

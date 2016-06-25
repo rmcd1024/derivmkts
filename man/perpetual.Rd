@@ -6,22 +6,22 @@
 \alias{putperpetual}
 \title{Perpetual American options}
 \usage{
-callperpetual(s, k, v, r, d, priceonly)
-putperpetual(s, k, v, r, d, priceonly)
+callperpetual(s, k, v, r, d, showbarrier)
+putperpetual(s, k, v, r, d, showbarrier)
 }
 \arguments{
-\item{s}{Stock price}
+\item{s}{Price of the underlying asset}
 
-\item{k}{Strike price of the option}
+\item{k}{Strike price}
 
-\item{v}{Volatility of the stock, defined as the annualized
+\item{v}{Volatility of the asset price, defined as the annualized
 standard deviation of the continuously-compounded return}
 
 \item{r}{Annual continuously-compounded risk-free interest rate}
 
 \item{d}{Dividend yield, annualized, continuously-compounded}
 
-\item{priceonly}{Boolean (TRUE). If false, the option price and
+\item{showbarrier}{Boolean (FALSE). If TRUE, the option price and
 exercise barrier are returned as a list}
 }
 \value{
@@ -32,10 +32,6 @@ Option price, and optionally the optimal exercise barrier.
     prices of perpetual American options. The functions optionally
     return the exercise barriers (the prices at which the options
     are optimally exercised).
-
-If the dividend yield is zero, a perpetual call is never exercised
-and the value is zero. Similarly, if the risk-free rate is zero, a
-perpetual put is never exercised and the value is zero
 }
 \details{
 Returns a scalar or vector of option prices, depending on
@@ -43,11 +39,21 @@ the inputs
 
 \code{callperpetual(s, k, v, r, tt, d)}
 }
+\note{
+If the dividend yield is zero, a perpetual call is never
+    exercised. The pricing function in this case will return the
+    stock price, which is the limiting option price as the dividend
+    yield goes to zero.  Similarly, if the risk-free rate is zero,
+    a perpetual put is never exercised. The pricing function will
+    return the strike price in this case, which is the limiting
+    value of the pricing function as the interest rate approaches
+    zero.
+}
 \examples{
 s=40; k=40; v=0.30; r=0.08;  d=0.02;
 callperpetual(s, k, v, r, d)
 
-putperpetual(s, c(35, 40, 45), v, r, d, priceonly=FALSE)
+putperpetual(s, c(35, 40, 45), v, r, d, showbarrier=TRUE)
 
 
 }

@@ -15,18 +15,21 @@
 #' @aliases bsopt greeks greeks2
 #'
 #' @return A named list of Black-Scholes option prices and Greeks.
-#'
+#' @note The pricing function being passed to the greeks function must
+#'     return a numeric vector. For example, \code{callperpetual} must
+#'     be called with the option \code{showbarrier=FALSE} (the
+#'     default).
 #' @details Numerical derivatives are calculated using a simple
-#' difference. This can create numerical problems in edge cases. It
-#' might be good to use the package numDeriv or some other more
-#' sophisticated calculation, but the current approach works well with
-#' vectorization.
+#'     difference. This can create numerical problems in edge
+#'     cases. It might be good to use the package numDeriv or some
+#'     other more sophisticated calculation, but the current approach
+#'     works well with vectorization.
 #' 
 #' @usage
-#' bsopt(s, k, v, r, tt, d)
 #' greeks(f)
 #' # must used named list entries:
 #' greeks2(fn, ...)
+#' bsopt(s, k, v, r, tt, d)
 #'
 #' @param s Price of underlying asset
 #' @param k Strike price of the option
@@ -77,6 +80,9 @@ bsopt <- function(s, k, v, r, tt, d) {
     return(list(Call=xc, Put=xp))
 }
 
+
+## the focus so far has been on named vs unnamed parameters. We also
+## need to take care of implicit parameters Tue, Jun 21, 2016
 #' @export
 greeks <- function(f) {
     ## match.call() returns (I think) a pairlist, where the first

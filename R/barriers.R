@@ -119,6 +119,17 @@ cashdicall <- function(s, k, v, r, tt, d, H) {
                              .nd8(s, k, v, r, tt, d, H*pmin(H/k, 1))))
 }
 
+cashdicall2 <- function(s, k, v, r, tt, d, H) {
+    ##    tmp <- data.frame(s, k, v, r, tt, d, H)
+    ##   for (i in names(tmp)) {assign(i, tmp[, i])}
+    knockedin <- (s <= H)
+    knockedin*cashcall(s, k, v, r, tt, d) +
+        (1-knockedin)*exp(-r*tt)*(.nd2(s, k, v, r, tt, d) -
+                       .nd6(s, k, v, r, tt, d, pmax(k, H)) +
+                       (H/s)^(2*(r-d)/(v^2)-1)*
+                             .nd8(s, k, v, r, tt, d, H*pmin(H/k, 1)))
+}
+
 #' @export
 #' @family Barriers
 assetdicall <- function(s, k, v, r, tt, d, H) {
@@ -128,9 +139,6 @@ assetdicall <- function(s, k, v, r, tt, d, H) {
 #' @export
 #' @family Barriers
 cashdocall <- function(s, k, v, r, tt, d, H) {
-##    tmp <- vectorizesh(s, H)
-##    s <- tmp[[1]]
-##    h <- tmp[[2]]
     cashcall(s, k, v, r, tt, d) -
         cashdicall(s, k, v, r, tt, d, H)
 }

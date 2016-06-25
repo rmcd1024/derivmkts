@@ -27,10 +27,10 @@
 #' cashput(s, k, v, r, tt, d)
 #' 
 #'
-#' @param s Stock price
-#' @param k Strike price of the option
-#' @param v Volatility of the stock, defined as the annualized
-#' standard deviation of the continuously-compounded return
+#' @param s Price of the underlying asset
+#' @param k Strike price
+#' @param v Volatility of the asset price, defined as the annualized
+#'     standard deviation of the continuously-compounded return
 #' @param r Annual continuously-compounded risk-free interest rate
 #' @param tt Time to maturity in years
 #' @param d Dividend yield, annualized, continuously-compounded

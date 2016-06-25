@@ -8,32 +8,48 @@ m <- 8; numsim <- 1e04;
 x <- geomavgprice(s, k, v, r, tt, d, m)
 test_that('geomavgprice works', {
     expect_equivalent(x["Call"],  11.979449562844800)
+    expect_equivalent(geomavgpricecall(s, k, v, r, tt, d, m),
+                      11.979449562844800)
     expect_equivalent(x["Put"],  5.350469024489170000)
+    expect_equivalent(geomavgpriceput(s, k, v, r, tt, d, m),
+                      5.350469024489170000)
 }
 )
 print('geomavgprice OK')
 
 x <- geomavgprice(s, k, v, r, tt, d, m, cont=TRUE)
 test_that('geomavgprice works, cont=TRUE', {
-          expect_equivalent(x["Call"], 10.928656909353800)
-          expect_equivalent(x["Put"], 4.878795485237670000)
+    expect_equivalent(x["Call"], 10.928656909353800)
+    expect_equivalent(geomavgpricecall(s, k, v, r, tt, d, m, cont=TRUE),
+                      10.928656909353800)
+    expect_equivalent(x["Put"], 4.878795485237670000)
+    expect_equivalent(geomavgpriceput(s, k, v, r, tt, d, m, cont=TRUE),
+                      4.878795485237670000)
 }
 )
-print('geomavgprice OK with cont=TRUE')
+
 
           
 x <- geomavgstrike(s, km=k, v, r, tt, d, m)
 test_that('geomavgstrike works', {
     expect_equivalent(x["Call"], 11.804071467006300)
+    expect_equivalent(geomavgstrikecall(s, k, v, r, tt, d, m),
+                      11.804071467006300)
     expect_equivalent(x["Put"], 3.909402760594920000)
+    expect_equivalent(geomavgstrikeput(s, k, v, r, tt, d, m),
+                      3.909402760594920000)
 }
 )
 print('geomavgstrike OK')
 
 x <- geomavgstrike(s, km=k, v, r, tt, d, m, cont=TRUE)
 test_that('geomavgstrike works, cont=TRUE', {
-          expect_equivalent(x["Call"],  12.834623645733200)
-          expect_equivalent(x["Put"], 4.378209398509600000)
+    expect_equivalent(x["Call"],  12.834623645733200)
+    expect_equivalent(geomavgstrikecall(s, km=k, v, r, tt, d, m, cont=TRUE),
+                      12.834623645733200)
+    expect_equivalent(x["Put"], 4.378209398509600000)
+    expect_equivalent(geomavgstrikeput(s, km=k, v, r, tt, d, m, cont=TRUE),
+                      4.378209398509600000)
 }
 )
 print('geomavgstrike OK with cont=TRUE')

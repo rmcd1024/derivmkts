@@ -37,6 +37,12 @@ bsput(s, c(80, 100, 120), v, r, tt, d)
 uoput(s, c(80, 100, 120), v, r, tt, d, H)
 
 ## ------------------------------------------------------------------------
+s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0.04
+callperpetual(s, c(95, 100, 105), v, r, d)
+callperpetual(s, c(95, 100, 105), v, r, d, priceonly=FALSE)
+
+
+## ------------------------------------------------------------------------
 H <- 105
 greeks(uicall(s, k, v, r, tt, d, H))
 
@@ -45,6 +51,8 @@ greeks(uicall(s, k, v, r, tt, d, H))
 powercontract <- function(s, v, r, tt, d, a) {
     price <- exp(-r*tt)*s^a* exp((a*(r-d) + 1/2*a*(a-1)*v^2)*tt)
 }
+
+## ------------------------------------------------------------------------
 greeks(powercontract(s=40, v=.08, r=0.08, tt=0.25, d=0, a=2))
 
 ## ------------------------------------------------------------------------
@@ -86,46 +94,4 @@ binomopt(s, k, v, r, tt, d, nstep=3, returntrees=TRUE, putopt=TRUE)
 geomavgprice(s, k, v, r, tt, d, 3)
 geomavgstrike(s, k, v, r, tt, d, 3)
 
-
-## ------------------------------------------------------------------------
-arithasianmc(s, k, v, r, tt, d, 3, numsim=5000, printsds=TRUE)
-
-
-## ------------------------------------------------------------------------
-arithavgpricecv(s, k, v, r, tt, d, 3, numsim=5000)
-
-
-## ------------------------------------------------------------------------
-mertonjump(s, k, v, r, tt, d, lambda=0.5, alphaj=-0.2, vj=0.3)
-c(bscall(s, k, v, r, tt, d), bsput(s, k, v, r, tt, d))
-
-## ------------------------------------------------------------------------
-coupon <- 8; mat <- 20; yield <- 0.06; principal <- 100; 
-modified <- FALSE; freq <- 2
-price <- bondpv(coupon, mat, yield, principal, freq)
-price
-bondyield(price, coupon, mat, principal, freq)
-duration(price, coupon, mat, principal, freq, modified)
-convexity(price, coupon, mat, principal, freq)
-
-
-## ----quincunx, fig.cap='Output from the Quincunx function'---------------
-par(mar=c(2,2,2,2))
-quincunx(n=20, numballs=200, delay=0, probright=0.7)
-
-## ----binomplot1, fig.cap='Basic option plot showing stock prices and nodes at which the option is exercised.\\label{fig:binomplot1}'----
-binomplot(s, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE)
-
-
-## ----binomplot2, fig.cap='Same plot as Figure \\ref{fig:binomplot1} except that values and arrows are added to the plot.\\label{fig:binomplot2}'----
-binomplot(s, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE,
-    plotvalues=TRUE, plotarrows=TRUE)
-
-## ----binomplot3, fig.cap="Binomial plot when nstep is 40.\\label{fig:binomplot3}"----
-d <- 0.06
-binomplot(s, k, v, r, tt, d, nstep=40, american=TRUE)
-
-## ----binomplot4, fig.cap="Binomial plot when nstep is 40 using the argument ylimval to focus on a subset.\\label{fig:binomplot4}"----
-d <- 0.06
-binomplot(s, k, v, r, tt, d, nstep=40, american=TRUE, ylimval=c(75, 225))
 
