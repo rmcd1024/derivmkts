@@ -734,7 +734,7 @@ complicated calculations in a straightforward and intuitive way.
 \section{Bibliography}
 \bibliographystyle{book2}
 %\bibliography{rmcd, derivmkts}
-\bibliography{rmcd}
+\bibliography{derivmkts, rmcd}
 
 
 \end{document}
