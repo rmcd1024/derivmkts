@@ -12,4 +12,6 @@ DM_token
 *.sh
 pkg-status*
 todo.md*
+todo.org
 tests/scripts
+
