@@ -1,17 +1,22 @@
 # derivmkts 0.2.1
 
-* Binompopt
+* Binomopt
+
 	* Fixed: default dn=1.5 in binomopt and binomplot
 	* Added "returnprice" parameter to binomplot
-	
+
 * greeks
 	* Simplification of Greeks discussion in README.Rmd
 	* Greeks function ignores theta when appropriate (perpetual options)
 
 * callperpetual and putperpetual functions added to barriers.R
 
-* Added geomavgpricecall, geomavgpriceput, geomavgstrikecall, and
-  geomavgstrikeput functions. 
+* Asian options 
+
+	* Added geomavgpricecall, geomavgpriceput, geomavgstrikecall, and
+	  geomavgstrikeput functions.
+	* Fixed greeks functionality for asian options
+	
 
 # derivmkts 0.2.0
 
