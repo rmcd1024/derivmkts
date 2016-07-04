@@ -88,11 +88,12 @@ R, but this package has several distinguishing features:
 
 
 Table \ref{tab:bslist} lists the Black-Scholes related functions in
-the package.  The functions |bscall|, |bsput|, and |bsopt| provide
-basic pricing of European calls and puts. There are also options with
-binary payoffs: cash-or-nothing and asset-or-nothing options. All of
-these functions are vectorized. The function |bsopt| by default
-provides option greeks. Here are some examples:
+the package.\footnote{See \citet{black/scholes:73} and
+  \citet{merton:73-bell}.}  The functions |bscall|, |bsput|, and
+|bsopt| provide basic pricing of European calls and puts. There are
+also options with binary payoffs: cash-or-nothing and asset-or-nothing
+options. All of these functions are vectorized. The function |bsopt|
+by default provides option greeks. Here are some examples:
 
 <<>>=
 s <- 100; k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
@@ -121,7 +122,10 @@ bsput(s, c(95, 100, 105), v, r, tt, d)
 
 \section{Barrier Options}
 
-There are pricing functions for the following barrier options:
+There are pricing functions for the following barrier
+options:\footnote{See \citet[][p. 175]{merton:73-bell} for the
+  first derivation of a barrier option pricing formula and
+  \citet[][Chapter 14]{mcdonald:derivs:13} for an overview.}
 
 \begin{itemize}
 \item down-and-in and down-and-out barrier binary options
@@ -158,11 +162,13 @@ uoput(s, c(80, 100, 120), v, r, tt, d, H)
 \section{Perpetual American Options}
 
 The functions \lstinline{callperpetual} and \lstinline{putperetual}
-price infinitely-lived American options. The pricing formula assumes
-that all inputs (risk-free rate, volatility, dividend yield) are
-fixed. This is of course usual with the basic option pricing formulas,
-but it is more of a conceptual stretch for an infinitely-lived option
-than for a 3-month option.  
+price infinitely-lived American
+options.\footnote{\citet{merton:73-bell} derived the price of a
+  perpetual American put.} The pricing formula assumes that all inputs
+(risk-free rate, volatility, dividend yield) are fixed. This is of
+course usual with the basic option pricing formulas, but it is more of
+a conceptual stretch for an infinitely-lived option than for a 3-month
+option.
 
 In order for the option to have a determined value, the dividend yield
 on the underlying asset must be positive if the option is a call. If
@@ -189,9 +195,12 @@ callperpetual(s, c(95, 100, 105), v, r, d, showbarrier=TRUE)
 
 \section{Option Greeks}
 
-Greeks for vanilla and barrier options can be computed using the
-|greeks| function, which is a wrapper for any pricing function that
-returns the option price and which uses the default naming of
+Options greeks are mathematical derivatives of the option price with
+respect to inputs; see \citet[][Chapters 12 and
+13]{mcdonald:derivs:13} for a discussion of the greeks for vanilla
+options. Greeks for vanilla and barrier options can be computed using
+the |greeks| function, which is a wrapper for any pricing function
+that returns the option price and which uses the default naming of
 inputs.\footnote{In this version of the package, I have two
   alternative functions that return Greeks:
   \begin{itemize}
@@ -272,7 +281,10 @@ for (i in names(y)) {
 
 \section{Binomial Pricing of European and American Options}
 
-There are two functions related to binomial option pricing:
+There are two functions related to binomial option
+pricing:\footnote{See \citet{cox/ross/rubinstein:79},
+  \citet{rendleman/bartter:79-jf}, and \citet[][Chapter
+  11]{mcdonald:derivs:13}.}
 \begin{description}
 \item[binomopt] computes prices of American and European calls and
   puts. The function has three optional parameters that control output:
@@ -311,7 +323,8 @@ binomopt(s, k, v, r, tt, d, nstep=3, returntrees=TRUE, putopt=TRUE)
 \section{Asian Options}
 
 There are analytical functions for valuing geometric Asian options and
-Monte Carlo routines for valuing arithmetic Asian options. Be aware
+Monte Carlo routines for valuing arithmetic Asian
+options.\footnote{See \citet{kemna/vorst:90}.} Be aware
 that the \lstinline{greeks()} function at this time will not work
 automatically with geometric Asian options nor (for different reasons)
 with arithmetic Asian options. I plan to address this in a future
@@ -367,7 +380,8 @@ arithavgpricecv(s, k, v, r, tt, d, 3, numsim=5000)
 \label{sec:jumps}
 
 The \lstinline{mertonjump} function returns call and put prices for a
-stock that can jump discretely. A poisson process controls the
+stock that can jump discretely.\footnote{See \citet{merton/jfe/1976}.}
+A poisson process controls the
 occurrence of a jump and the size of the jump is lognormally
 distributed. The parameter \lstinline{lambda} is the mean number of
 jumps per year,  the parameter \lstinline{alphaj} is the log of the
@@ -733,8 +747,8 @@ complicated calculations in a straightforward and intuitive way.
 
 \section{Bibliography}
 \bibliographystyle{book2}
-\bibliography{rmcd, derivmkts}
-\bibliography{derivmkts}
+\bibliography{rmcd}
+%\bibliography{derivmkts}
 
 
 \end{document}
