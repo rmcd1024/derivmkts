@@ -2,10 +2,9 @@
 #'
 #' @name compound
 #'
-#' @description Compound options are options on options. The
-#'     definition of a compound option requires specifying the nature
-#'     of the options, two dates, and two strikes. Specifically, you
-#'     need to know
+#' @description A compound option is an option for which the
+#'     underlying asset is an option.  The definition of a compound
+#'     option requires specifying
 #'
 #' \itemize{
 #'
@@ -15,11 +14,12 @@
 #'    is an option) is a put or a call}
 #'
 #'    \item{the price at which you can buy or sell the underlying
-#' option (strike price \code{kco} --- the strike on the compound option)}
+#'    option (strike price \code{kco} --- the strike on the compound
+#'    option)}
 #'
 #'    \item{the price at which you can buy or sell the underlying
-#' asset should you exercise the compound option (strike price
-#' \code{kuo} --- the strike on the underlying option)}
+#'    asset should you exercise the compound option (strike price
+#'    \code{kuo} --- the strike on the underlying option)}
 #'
 #'
 #'    \item{the date at which you have the option to buy or sell the
@@ -40,14 +40,24 @@
 #' the underlying call by paying the present value of the strike,
 #' \code{kco}.
 #'
-#' @aliases binormsdist optionsoncall optionsonput
+#' @return The option price, and optionally, the stock price above or
+#'     below which the compound option is exercised. The compound
+#'     option functions are not vectorized, but the greeks function
+#'     should work, apart from theta.
+#' 
+#' @aliases binormsdist optionsoncall optionsonput calloncall
+#'     callonput putoncall putonput
 #' @usage
 #' binormsdist(x1, x2, rho)
 #' optionsoncall(s, kuo, kco, v, r, t1, t2, d)
 #' optionsonput(s, kuo, kco, v, r, t1, t2, d)
+#' calloncall(s, kuo, kco, v, r, t1, t2, d, returnscritical)
+#' callonput(s, kuo, kco, v, r, t1, t2, d, returnscritical)
+#' putoncall(s, kuo, kco, v, r, t1, t2, d, returnscritical)
+#' putonput(s, kuo, kco, v, r, t1, t2, d, returnscritical)
 #'
-#'
-#'
+#' @note The compound option formulas are not vectorized.
+#' 
 #' @param s Price of underlying asset
 #' @param v Volatility of the underlying asset, defined as the
 #'     annualized standard deviation of the continuously-compounded
@@ -63,6 +73,10 @@
 #' @param x1,x2 values at which the cumulative bivariate normal
 #'     distribution will be evaluated
 #' @param rho correlation between \code{x1} and \code{x2}
+#' @param returnscritical (FALSE) boolean determining whether the
+#'     function returns just the options price (the default) or the
+#'     option price along with the asset price above or below which
+#'     the compound option is exercised.
 #' @inheritParams bscall
 #'
 #' @importFrom stats uniroot
@@ -79,25 +93,6 @@ binormsdist <- function(x1, x2, rho) {
     pmnorm(c(x1, x2), varcov = matrix(c(1, rho, rho, 1), nrow=2))
 }
 
-###' @export
-##bscallimps <- function(s, k, v, r, tt, d, price) {
-##    tol <- 1e-07
-##    f <- function(s, k, v, r, tt, d, price) {
-##        return(bscall(s, k, v, r, tt, d) - price)
-##    }
-##    x <- uniroot(f, c(0.001,1000), k, v, r, tt, d, price, tol=tol)
-##    return(x$root)
-##}
-##
-###' @export
-##bsputimps <- function(s, k, v, r, tt, d, price) {
-##    f <- function(s, k, v, r, tt, d, price) {
-##        return(bsput(s, k, v, r, tt, d) - price)
-##    }
-##    x <- uniroot(f, c(0.001,1000), k, v, r, tt, d, price, tol=tol)
-##    return(x$root)
-##}
-##
 
 #' @export
 #' @inheritParams blksch
@@ -135,55 +130,67 @@ optionsonput <- function(s, kuo, kco, v, r, t1, t2, d) {
     return(c(callonput=cp, putonput=pp, scritical=SCritical))
 }
 
-###' @export
-##calloncall <- function(s, kuo, kco, v, r, t1, t2, d) {
-##    SCritical <- bscallimps(s, kuo, v, r, t2 - t1, d, kco)
-##    a1 <- .d1(s, SCritical, v, r, t1, d)
-##    a2 <- a1 - v * t1 ^ 0.5
-##    d1 <- .d1(s, kuo, v, r, t2, d)
-##    d2 <- d1 - v * t2 ^ 0.5
-##    temp <- (s * exp(-d * t2) * binormsdist(a1, d1, (t1 / t2) ^ 0.5)
-##             - kuo * exp(-r * t2) * binormsdist(a2, d2, (t1 / t2) ^ 0.5)
-##             - kco * exp(-r * t1) * pnorm(a2))
-##    return(c(price=temp, scritical=SCritical))
-##}
-##
-###' @export
-##putoncall <- function(s, kuo, kco, v, r, t1, t2, d) {
-##    SCritical <- bscallimps(s, kuo, v, r, t2 - t1, d, kco)
-##    a1 <- .d1(s, SCritical, v, r, t1, d)
-##    a2 <- a1 - v * t1 ^ 0.5
-##    d1 <- .d1(s, kuo, v, r, t2, d)
-##    d2 <- d1 - v * t2 ^ 0.5
-##    temp <- (-s * exp(-d * t2) * binormsdist(-a1, d1, -(t1 / t2) ^ 0.5)
-##             + kuo * exp(-r * t2) * binormsdist(-a2, d2, -(t1 / t2) ^ 0.5)
-##             + kco * exp(-r * t1) * pnorm(-a2))
-##    return(c(price=temp, scritical=SCritical))
-##}
-##
-###' @export
-##callonput <- function(s, kuo, kco, v, r, t1, t2, d) {
-##    SCritical <- bsputimps(s, kuo, v, r, t2 - t1, d, kco)
-##    a1 <- .d1(s, SCritical, v, r, t1, d)
-##    a2 <- a1 - v * t1 ^ 0.5
-##    d1 <- .d1(s, kuo, v, r, t2, d)
-##    d2 <- d1 - v * t2 ^ 0.5
-##    temp <- (-s * exp(-d * t2) * binormsdist(-a1, -d1, (t1 / t2) ^ 0.5)
-##             + kuo * exp(-r * t2) * binormsdist(-a2, -d2, (t1 / t2) ^ 0.5)
-##             - kco * exp(-r * t1) * pnorm(-a2))
-##    return(c(price=temp, scritical=SCritical))
-##}
-##
-###' @export
-##putonput <- function(s, kuo, kco, v, r, t1, t2, d) {
-##    SCritical <- bsputimps(s, kuo, v, r, t2 - t1, d, kco)
-##    a1 <- .d1(s, SCritical, v, r, t1, d)
-##    a2 <- a1 - v * t1 ^ 0.5
-##    d1 <- .d1(s, kuo, v, r, t2, d)
-##    d2 <- d1 - v * t2 ^ 0.5
-##    temp <- (s * exp(-d * t2) * binormSDist(a1, -d1, -(t1 / t2) ^ 0.5)
-##             - kuo * exp(-r * t2) * binormSDist(a2, -d2, -(t1 / t2) ^ 0.5)
-##             + kco * exp(-r * t1) * pnorm(a2))
-##    return(c(price=temp, scritical=SCritical))
-##}
-##
+#' @export
+calloncall <- function(s, kuo, kco, v, r, t1, t2, d,
+                       returnscritical=FALSE) {
+    SCritical <- bscallimps(s, kuo, v, r, t2 - t1, d, kco)
+    a1 <- .d1(s, SCritical, v, r, t1, d)
+    a2 <- a1 - v * t1 ^ 0.5
+    d1 <- .d1(s, kuo, v, r, t2, d)
+    d2 <- d1 - v * t2 ^ 0.5
+    temp <- (s * exp(-d * t2) * binormsdist(a1, d1, (t1 / t2) ^ 0.5)
+             - kuo * exp(-r * t2) * binormsdist(a2, d2, (t1 / t2) ^ 0.5)
+             - kco * exp(-r * t1) * pnorm(a2))
+    if (returnscritical)
+        return(c(price=temp, scritical=SCritical))
+    else return(c(price=temp))
+}
+
+#' @export
+putoncall <- function(s, kuo, kco, v, r, t1, t2, d,
+                       returnscritical=FALSE) {
+    SCritical <- bscallimps(s, kuo, v, r, t2 - t1, d, kco)
+    a1 <- .d1(s, SCritical, v, r, t1, d)
+    a2 <- a1 - v * t1 ^ 0.5
+    d1 <- .d1(s, kuo, v, r, t2, d)
+    d2 <- d1 - v * t2 ^ 0.5
+    temp <- (-s * exp(-d * t2) * binormsdist(-a1, d1, -(t1 / t2) ^ 0.5)
+             + kuo * exp(-r * t2) * binormsdist(-a2, d2, -(t1 / t2) ^ 0.5)
+             + kco * exp(-r * t1) * pnorm(-a2))
+    if (returnscritical)
+        return(c(price=temp, scritical=SCritical))
+    else return(c(price=temp))
+}
+
+#' @export
+callonput <- function(s, kuo, kco, v, r, t1, t2, d,
+                       returnscritical=FALSE) {
+    SCritical <- bsputimps(s, kuo, v, r, t2 - t1, d, kco)
+    a1 <- .d1(s, SCritical, v, r, t1, d)
+    a2 <- a1 - v * t1 ^ 0.5
+    d1 <- .d1(s, kuo, v, r, t2, d)
+    d2 <- d1 - v * t2 ^ 0.5
+    temp <- (-s * exp(-d * t2) * binormsdist(-a1, -d1, (t1 / t2) ^ 0.5)
+             + kuo * exp(-r * t2) * binormsdist(-a2, -d2, (t1 / t2) ^ 0.5)
+             - kco * exp(-r * t1) * pnorm(-a2))
+    if (returnscritical)
+        return(c(price=temp, scritical=SCritical))
+    else return(c(price=temp))
+}
+
+#' @export
+putonput <- function(s, kuo, kco, v, r, t1, t2, d,
+                       returnscritical=FALSE) {
+    SCritical <- bsputimps(s, kuo, v, r, t2 - t1, d, kco)
+    a1 <- .d1(s, SCritical, v, r, t1, d)
+    a2 <- a1 - v * t1 ^ 0.5
+    d1 <- .d1(s, kuo, v, r, t2, d)
+    d2 <- d1 - v * t2 ^ 0.5
+    temp <- (s * exp(-d * t2) * binormsdist(a1, -d1, -(t1 / t2) ^ 0.5)
+             - kuo * exp(-r * t2) * binormsdist(a2, -d2, -(t1 / t2) ^ 0.5)
+             + kco * exp(-r * t1) * pnorm(a2))
+    if (returnscritical)
+        return(c(price=temp, scritical=SCritical))
+    else return(c(price=temp))
+}
+

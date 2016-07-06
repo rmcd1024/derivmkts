@@ -81,8 +81,8 @@ arithasianmc <- function(s, k, v, r, tt, d, m, numsim=1000,
 #' @export
 #' @name geomasianmc
 #' @family Asian
-#' @inheritParams geomavgprice
-#' @inheritParams bslksch
+#' @inheritParams asiangeomavg
+#' @inheritParams blksch
 #' @inheritParams arithasianmc
 #' @description Geometric average Asian option prices
 #' @title Geometric Asian option prices computed by Monte Carlo
@@ -166,7 +166,7 @@ geomasianmc <- function(s, k, v, r, tt, d, m, numsim=1000,
 #' @family Asian
 #' @description Calculation of arithmetic-average Asian call price
 #'     using control variate Monte Carlo valuation
-#' @inheritParams geomavgprice
+#' @inheritParams asiangeomavg
 #' @inheritParams arithasianmc
 #' @inheritParams blksch
 #' @name arithavgpricecv

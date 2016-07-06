@@ -2,14 +2,22 @@
 % Please edit documentation in R/compound.R
 \name{compound}
 \alias{binormsdist}
+\alias{calloncall}
+\alias{callonput}
 \alias{compound}
 \alias{optionsoncall}
 \alias{optionsonput}
+\alias{putoncall}
+\alias{putonput}
 \title{Compound options}
 \usage{
 binormsdist(x1, x2, rho)
 optionsoncall(s, kuo, kco, v, r, t1, t2, d)
 optionsonput(s, kuo, kco, v, r, t1, t2, d)
+calloncall(s, kuo, kco, v, r, t1, t2, d, returnscritical)
+callonput(s, kuo, kco, v, r, t1, t2, d, returnscritical)
+putoncall(s, kuo, kco, v, r, t1, t2, d, returnscritical)
+putonput(s, kuo, kco, v, r, t1, t2, d, returnscritical)
 }
 \arguments{
 \item{s}{Price of underlying asset}
@@ -36,12 +44,22 @@ buy or sell the underlying option at time t1)}
 distribution will be evaluated}
 
 \item{rho}{correlation between \code{x1} and \code{x2}}
+
+\item{returnscritical}{(FALSE) boolean determining whether the
+function returns just the options price (the default) or the
+option price along with the asset price above or below which
+the compound option is exercised.}
+}
+\value{
+The option price, and optionally, the stock price above or
+    below which the compound option is exercised. The compound
+    option functions are not vectorized, but the greeks function
+    should work, apart from theta.
 }
 \description{
-Compound options are options on options. The
-    definition of a compound option requires specifying the nature
-    of the options, two dates, and two strikes. Specifically, you
-    need to know
+A compound option is an option for which the
+    underlying asset is an option.  The definition of a compound
+    option requires specifying
 
 \itemize{
 
@@ -51,11 +69,12 @@ Compound options are options on options. The
    is an option) is a put or a call}
 
    \item{the price at which you can buy or sell the underlying
-option (strike price \code{kco} --- the strike on the compound option)}
+   option (strike price \code{kco} --- the strike on the compound
+   option)}
 
    \item{the price at which you can buy or sell the underlying
-asset should you exercise the compound option (strike price
-\code{kuo} --- the strike on the underlying option)}
+   asset should you exercise the compound option (strike price
+   \code{kuo} --- the strike on the underlying option)}
 
 
    \item{the date at which you have the option to buy or sell the
@@ -75,5 +94,8 @@ Given the underlying option, there is a parity relationship: If you
 buy a call on a call and sell a call on a call, you have acquired
 the underlying call by paying the present value of the strike,
 \code{kco}.
+}
+\note{
+The compound option formulas are not vectorized.
 }
 

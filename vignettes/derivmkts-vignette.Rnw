@@ -374,6 +374,64 @@ regression coefficient used in the control variate correction:
 arithavgpricecv(s, k, v, r, tt, d, 3, numsim=5000)
 
 @ 
+
+\section{Compound Options}
+
+A compound option is an option where the underlying asset is an
+option. The definition of a compound option requires specifying
+
+\begin{itemize}
+\item whether you have the right to buy or sell an underlying option
+  
+\item whether the underlying option (the option upon which there is an
+  option) is a put or a call
+  
+\item the price at which you can buy or sell the underlying option (strike
+  price $k_{co}$ --- the strike on the compound option)
+  
+\item the price at which you can buy or sell the underlying asset should
+  you exercise the compound option (strike price $k_{uo}$ --- the strike on
+  the underlying option)
+
+\item the date at which you have the option to buy or sell the underlying
+  option (first exercise date, $t_{1}$)
+  
+\item the date at which the underlying option expires, $t_{2}$
+
+\end{itemize}
+Given these possibilities, you can have a call on a call, a put on a
+call, a call on a put, and a put on a put. The valuation procedure
+require calculating the underlying asset price at which you are
+indifferent about acquiring the underlying option.
+
+The price calculation requires computing the stock price above or
+below which you would optimally exercise the option at time
+$t_{1}$. 
+
+Consider the following inputs for a call option to buy a call option:
+<<>>=
+s <- 100; kuo <- 95; v <- 0.30; r <-  0.08; t1 <- 0.50; t2 <- 0.75; d <- 0
+kco <- 3.50
+
+calloncall(s, kuo, kco, v, r, t1, t2, d, returnscritical=TRUE)
+
+@ 
+
+With these parameters, after 6 months ($t_{1}=0.5$), the compound option buyer
+decides whether to pay \$5.50 to acquire a 3-month call on the
+underlying asset. It will be worthwhile to pay the \$5.50 compound
+strike as long as the underlying asset price exceeds
+\Sexpr{calloncall(s, kuo, kco, v, r, t1, t2, d, returnscritical=TRUE)['scritical']}. Similarly, there is a put on the call, and a call and put on
+the corresponding put:
+
+<<>>=
+putoncall(s, kuo, kco, v, r, t1, t2, d, returnscritical=TRUE)
+callonput(s, kuo, kco, v, r, t1, t2, d, returnscritical=TRUE)
+putonput(s, kuo, kco, v, r, t1, t2, d, returnscritical=TRUE)
+
+@ 
+
+
 \section{Jumps and Stochastic Volatility}
 \label{sec:jumps}
 

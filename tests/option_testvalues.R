@@ -83,6 +83,7 @@ for (i in bstestfns) {
     bsvals[, i] <- tmp
 }
 
+
 ############################################################
 ## Implied volatility and price tests
 ############################################################
@@ -150,6 +151,22 @@ binomvalsAmC <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d,
 binomvalsAmP <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d,
                              nstep, putOpt=TRUE, American=TRUE)
 
+############################################################
+## Compound option tests
+############################################################
+library(mnormt)
+compoundtestfns <- c('CallOnCall', 'CallOnPut', 'PutOnCall',
+                     'PutOnPut')
+kuo <- 41; kco <- 1.75; t1 <- 0.38; t2 <- 0.75
+compoundvals <- data.frame(row.names=c('price', 'scritical'))
+for (i in compoundtestfns) {
+    tmp <- do.call(i, list(s=s, k=kuo, x=kco, v=v, r=r,
+                           t1=t1, t2=t2, d=d))
+    compoundvals[, i] <- tmp
+}
+
+
+
 keeplist <- c('barriervals', 'barriertestfns',
               'barriervals2', 'barriertestfns2',
               'barriervals3', 'barriertestfns3',
@@ -164,8 +181,11 @@ keeplist <- c('barriervals', 'barriertestfns',
               'prices', 'jumpfns', 'jumpvals',
               'lambda', 'alphaj', 'vj',
               'nstep', 'binomvalsEurC', 'binomvalsEurP',
-              'binomvalsAmC', 'binomvalsAmP'              
+              'binomvalsAmC', 'binomvalsAmP',
+              'kuo', 'kco', 't1', 't2', 'compoundtestfns',
+              'compoundvals'
               )
 
 rm(list=setdiff(ls(), keeplist))
 save.image(file='~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
+
