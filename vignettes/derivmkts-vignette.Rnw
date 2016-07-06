@@ -32,6 +32,7 @@
 \lstMakeShortInline{|}
 
 <<echo=FALSE, message=FALSE, warning=FALSE>>=
+rm(list=ls())
 library(highlight)
 library(knitr)
 ##homedir <- '/home/rmcd/tex/d67/Rtutorial/'
@@ -59,6 +60,7 @@ opts_knit$set(highlight = TRUE,
 
 <<echo=FALSE>>=
 library(derivmkts)
+library(mnormt)
 library(markdown)
 
 opts_chunk$set(collapse=TRUE)

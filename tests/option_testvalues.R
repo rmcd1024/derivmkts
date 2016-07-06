@@ -166,6 +166,7 @@ for (i in compoundtestfns) {
 }
 
 
+rm(duration)
 
 keeplist <- c('barriervals', 'barriertestfns',
               'barriervals2', 'barriertestfns2',

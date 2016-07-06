@@ -1,6 +1,5 @@
 source('~/git/derivmkts/R/barriers.R')
 source('~/git/derivmkts/R/blksch.R')
-#source('~/inc/R/options.R')
 library(testthat)
 ## we will generally use these parameters:
 #kseq <- rep(c(35, 40, 45), times=3)
