@@ -4,7 +4,7 @@
 \usepackage{textcomp}
 \usepackage{amsmath}
 \usepackage{listings}
-\usepackage[linktocpage=TRUE, colorlinks=TRUE]{hyperref}
+\usepackage[linktocpage=TRUE, colorlinks=TRUE, citecolor=red]{hyperref}
 \usepackage{natbib}
     \lstset{
     language=R,
@@ -324,18 +324,16 @@ binomopt(s, k, v, r, tt, d, nstep=3, returntrees=TRUE, putopt=TRUE)
 
 There are analytical functions for valuing geometric Asian options and
 Monte Carlo routines for valuing arithmetic Asian
-options.\footnote{See \citet{kemna/vorst:90}.} Be aware
-that the \lstinline{greeks()} function at this time will not work
-automatically with geometric Asian options nor (for different reasons)
-with arithmetic Asian options. I plan to address this in a future
-release.\footnote{At this time the \lstinline{greeks()} function will
-  not work with options valued using Monte Carlo. The reason is that
-  each invocation of the pricing function will start with a different
-  random number seed, resulting in some price variation that is due
-  solely to random variation. Random number generation and setting the
-  seed is a global change. In a future release I hope to address this
-  by saving and restoring the seed within the greeks function. For the
-  curious,
+options.\footnote{See \citet{kemna/vorst:90}.} Be aware that the
+\lstinline{greeks()} function at this time will not work with the
+Monte Carlo valuation for arithmetic Asian options. I plan to address
+this in a future release.\footnote{As the functions are currently
+  written, each invocation of the pricing function will start with a
+  different random number seed, resulting in price variation that is
+  due solely to random variation. Moreover, random number generation
+  changes the random number seed globally. In a future release I
+  hope to address this by saving and restoring the seed within the
+  greeks function. For the curious,
   \href{http://stackoverflow.com/questions/14324096/setting-seed-locally-not-globally-in-r}{a
     Stackoverflow post} discusses this issue.}
 
