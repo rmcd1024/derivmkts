@@ -380,7 +380,9 @@ arithavgpricecv(s, k, v, r, tt, d, 3, numsim=5000)
 \section{Compound Options}
 
 A compound option is an option where the underlying asset is an
-option. The definition of a compound option requires specifying
+option.\footnote{See \citet{geske:79} and \citet[][Chapter
+  14]{mcdonald:derivs:13}.} The definition of a compound option
+requires specifying
 
 \begin{itemize}
 \item whether you have the right to buy or sell an underlying option
