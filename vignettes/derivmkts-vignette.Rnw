@@ -807,8 +807,8 @@ complicated calculations in a straightforward and intuitive way.
 
 \section{Bibliography}
 \bibliographystyle{book2}
-\bibliography{rmcd}
-%\bibliography{derivmkts}
+%\bibliography{rmcd}
+\bibliography{derivmkts}
 
 
 \end{document}
