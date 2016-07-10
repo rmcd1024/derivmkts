@@ -1,3 +1,7 @@
+# derivmkts 0.2.2
+
+* Functions for compound options
+
 # derivmkts 0.2.1
 
 * Binomopt
