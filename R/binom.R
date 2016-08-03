@@ -33,7 +33,7 @@
 #'     pointsize=4, ylimval=c(0,0),
 #'     saveplot = FALSE, saveplotfn='binomialplot.pdf',
 #'     crr=FALSE, jarrowrudd=FALSE, titles=TRUE, specifyupdn=FALSE,
-#'     up=1.5, dn=0.5, returnprice=FALSE)
+#'     up=1.5, dn=0.5, returnprice=FALSE, logy=FALSE)
 #'
 #'
 #' @param s Stock price
@@ -75,6 +75,11 @@
 #'     and y-axis labels
 #' @param returnprice if \code{TRUE}, the \code{binomplot} function
 #'     returns the option price
+#' @param logy (FALSE). If \code{TRUE}, y-axis is plotted on a log
+#'     scale
+#' 
+#' @importFrom graphics lines plot par points abline arrows mtext text 
+#' @importFrom grDevices dev.off pdf
 #' 
 #' @importFrom graphics lines plot par points abline arrows mtext text 
 #' @importFrom grDevices dev.off pdf
@@ -251,7 +256,7 @@ binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
                       saveplotfn='binomialplot.pdf', crr=FALSE,
                       jarrowrudd=FALSE, titles = TRUE,
                       specifyupdn=FALSE, up=1.5, dn=0.5,
-                      returnprice=FALSE) {
+                      returnprice=FALSE, logy=FALSE) {
     ## see binomopt for more details on tree
     ## construction. "plotvalues" shows stock price values;
     ## "drawstrike" if true draws a line at the strike price; "probs"
@@ -284,9 +289,12 @@ binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
     ## point of the stree restriction is not to plot zeros.
     plotcolor <- ifelse(exertree,"green3","red")
     if (saveplot) pdf(saveplotfn)
+    savepar <- par(no.readonly=TRUE)
+    if (logy) par("ylog"=TRUE)
     plot(rep(nn, nn+1)*h, stree[stree>0]
         ,ylim=ifelse(c(setylim, setylim),ylimval,
-                     c(min(stree[stree>1]-2),max(stree)*1.03))
+                     ## c(min(stree[stree>1]-0.95),max(stree)*1.03))
+                     c(0 ,max(stree)*1.03))
         ,col=plotcolor[stree>0]
         ,pch=21
          ## ifelse returns an object with the size of the first
@@ -295,9 +303,10 @@ binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
         ,cex=ifelse(stree[stree>0], sqrt(probtree[stree>0])*pointsize, 1)
         ,bg=plotcolor[stree>0] ## only matters for pch 21-25
         ,xlab=ifelse(titles, "Binomial Period", "")
-        ,ylab=ifelse(titles,  "Stock Price", "")
+        ,ylab=ifelse(titles, "Stock Price", "")
         ,main=if (titles) paste(ifelse(american,"American","European"),
                                 ifelse(putopt,"Put","Call"))
+        ,log=ifelse(logy, 'y', '')
          )
     if (titles)
         mtext(paste0("Stock = ",format(s, digits=3),

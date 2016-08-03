@@ -17,7 +17,7 @@ binomplot(s, k, v, r, tt, d, nstep, putopt=FALSE, american=TRUE,
     pointsize=4, ylimval=c(0,0),
     saveplot = FALSE, saveplotfn='binomialplot.pdf',
     crr=FALSE, jarrowrudd=FALSE, titles=TRUE, specifyupdn=FALSE,
-    up=1.5, dn=0.5, returnprice=FALSE)
+    up=1.5, dn=0.5, returnprice=FALSE, logy=FALSE)
 }
 \arguments{
 \item{s}{Stock price}
@@ -83,6 +83,9 @@ and y-axis labels}
 
 \item{returnprice}{if \code{TRUE}, the \code{binomplot} function
 returns the option price}
+
+\item{logy}{(FALSE). If \code{TRUE}, y-axis is plotted on a log
+scale}
 }
 \value{
 By default, \code{binomopt} returns the option price. If

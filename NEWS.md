@@ -1,6 +1,7 @@
 # derivmkts 0.2.2
 
 * Functions for compound options
+* Option for log y axis added in binomplot function
 
 # derivmkts 0.2.1
 
