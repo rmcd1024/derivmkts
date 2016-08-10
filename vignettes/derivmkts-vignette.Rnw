@@ -3,6 +3,8 @@
 \documentclass{article}
 \usepackage{textcomp}
 \usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
 \usepackage{listings}
 \usepackage[linktocpage=TRUE, colorlinks=TRUE, citecolor=red]{hyperref}
 \usepackage{natbib}
@@ -50,6 +52,7 @@ opts_knit$set(highlight = TRUE,
               prompt=TRUE,
               renderer=renderer_latex(document=FALSE),
               size='footnotesize')
+curr <- function(amt)  formatC(amt, format='f', digits=2)
 @
 
 
@@ -381,26 +384,84 @@ arithavgpricecv(s, k, v, r, tt, d, 3, numsim=5000)
 
 A compound option is an option where the underlying asset is an
 option.\footnote{See \citet{geske:79} and \citet[][Chapter
-  14]{mcdonald:derivs:13}.} The definition of a compound option
-requires specifying
+  14]{mcdonald:derivs:13}.} The terminology associated with compound
+options can be confusing, so it may be easiest to start with an
+example. 
+
+Figure \ref{fig:compoundopt} is a timeline for a compound
+option that is an option to buy a put. The compound option expires at
+$t_{1}$ and the put expires at $t_{2}$. The owner of the compound
+option only acquires the put if at time $t_{1}$ it is worth at least
+$k_{co}$, and only exercises the put if at time $t_{2}$ the stock
+price is less than $k_{uo}$. 
+
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \newcommand{\start}{0}
+    \newcommand{\finish}{9}
+    \newcommand{\midpt}{(\finish/2-\start/2}
+  \newcommand{\tickheight}{0.3}
+    \draw (\start,0) -- (\finish,0);
+    \draw (0,\tickheight) -- (0, -\tickheight) 
+    node[below] {\begin{tabular}{c} Time 0 \\   Buy compound option \end{tabular}};
+    \draw (\midpt,\tickheight) -- (\midpt, -\tickheight)
+    node[below] 
+    {\begin{tabular}{c} 
+       Time $t_{1}$ \\ 
+       Compound exercise decision \\
+       Pay $k_{co}$ to buy put?
+     \end{tabular}
+   };
+   \draw (\finish, \tickheight) -- (\finish, -\tickheight)
+   node[below] {
+     \begin{tabular}{c}
+       Time $t_{2}$ \\
+       Put exercise decision\\
+       Sell stock for $k_{uo}$?
+     \end{tabular}
+   };
+  \end{tikzpicture}
+  \caption{The timeline for a compound option: a call to buy a
+    put. The compound option expires at time $t_{1}$ and the
+    underlying asset is a put option that expires at time
+    $t_{2}$. At time $t_{1}$, the owner decides whether to pay
+    $k_{co}$ to buy a put option which has time to expiration
+    $t_{2} - t_{1}$. At time $t_{2}$ the owner decides whether to
+    exercise the put, selling the stock for the strike price of $k_{uo}$.}
+  \label{fig:compoundopt}
+\end{figure}
+
+\subsection{Definition of a Compound Option}
+
+Based on the example, you can see that there are three prices
+associated with a compound option:
+\begin{itemize}
+\item The price of an underlying asset.
+\item The price of the underlying option, which is an option to buy or
+  sell the underlying asset (we will refer to this as the price of
+  the underlying option)
+\item The price of the compound option, which gives us the right to
+  buy or sell the underlying option
+\end{itemize}
+
+
+The definition of a compound option therefore requires that we specify
 
 \begin{itemize}
-\item whether you have the right to buy or sell an underlying option
+\item whether the underlying option is a put or a call
+\item whether the compound option is a put or a call
   
-\item whether the underlying option (the option upon which there is an
-  option) is a put or a call
+ 
+\item the strike price at which you can exercise the underlying option
+  ($k_{uo}$)
+\item the strike price at which you can exercise the compound option ($k_{co}$)
   
-\item the price at which you can buy or sell the underlying option (strike
-  price $k_{co}$ --- the strike on the compound option)
+\item the date at which you can exercise the compound option (first
+  exercise date, $t_{1}$)
   
-\item the price at which you can buy or sell the underlying asset should
-  you exercise the compound option (strike price $k_{uo}$ --- the strike on
-  the underlying option)
-
-\item the date at which you have the option to buy or sell the underlying
-  option (first exercise date, $t_{1}$)
-  
-\item the date at which the underlying option expires, $t_{2}$
+\item the date at which you can exercise the underlying option expires, $t_{2}>t_{1}$.
 
 \end{itemize}
 Given these possibilities, you can have a call on a call, a put on a
@@ -412,21 +473,27 @@ The price calculation requires computing the stock price above or
 below which you would optimally exercise the option at time
 $t_{1}$. 
 
-Consider the following inputs for a call option to buy a call option:
+\subsection{Examples}
+
+As an example, consider the following inputs for a call option to buy
+a call option:
 <<>>=
 s <- 100; kuo <- 95; v <- 0.30; r <-  0.08; t1 <- 0.50; t2 <- 0.75; d <- 0
 kco <- 3.50
 
 calloncall(s, kuo, kco, v, r, t1, t2, d, returnscritical=TRUE)
-
 @ 
 
-With these parameters, after 6 months ($t_{1}=0.5$), the compound option buyer
-decides whether to pay \$5.50 to acquire a 3-month call on the
-underlying asset. It will be worthwhile to pay the \$5.50 compound
-strike as long as the underlying asset price exceeds
-\Sexpr{calloncall(s, kuo, kco, v, r, t1, t2, d, returnscritical=TRUE)['scritical']}. Similarly, there is a put on the call, and a call and put on
-the corresponding put:
+With these parameters, after 6 months ($t_{1}=0.5$), the compound
+option buyer decides whether to pay \$\Sexpr{formatC(kco, format='f',
+  digits=2)} to acquire a 3-month call on the underlying asset. (The
+volatility of the underlying asset is \Sexpr{v}.) It will be
+worthwhile to pay the compound strike, \$\Sexpr{curr(kco)}, as long as
+the underlying asset price exceeds \Sexpr{calloncall(s, kuo, kco, v,
+  r, t1, t2, d, returnscritical=TRUE)['scritical']}. 
+
+Similarly, there is a put on the call, and a call and put on the
+corresponding put:
 
 <<>>=
 putoncall(s, kuo, kco, v, r, t1, t2, d, returnscritical=TRUE)

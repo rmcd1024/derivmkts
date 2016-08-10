@@ -3,8 +3,9 @@
 #' @name compound
 #'
 #' @description A compound option is an option for which the
-#'     underlying asset is an option.  The definition of a compound
-#'     option requires specifying
+#'     underlying asset is an option. The underlying option (the
+#'     option on which there is an option) in turn has an underlying
+#'     asset. The definition of a compound option requires specifying
 #'
 #' \itemize{
 #'
@@ -34,7 +35,7 @@
 #'  procedure require knowing, among other things, the underlying
 #'  asset price at which it will be worthwhile to acquire the
 #'  underlying option.
-#'
+#' 
 #' Given the underlying option, there is a parity relationship: If you
 #' buy a call on a call and sell a call on a call, you have acquired
 #' the underlying call by paying the present value of the strike,
@@ -58,14 +59,14 @@
 #'
 #' @note The compound option formulas are not vectorized.
 #' 
-#' @param s Price of underlying asset
+#' @param s Price of underlying asset, i.e., the 
 #' @param v Volatility of the underlying asset, defined as the
 #'     annualized standard deviation of the continuously-compounded
 #'     return
 #' @param r Annual continuously-compounded risk-free interest rate
 #' @param d Dividend yield of the underlying asset, annualized,
 #'     continuously-compounded
-#' @param kuo strike on underlying option
+#' @param kuo strike on the underlying option
 #' @param kco strike on compound option (the price at which you would
 #'     buy or sell the underlying option at time t1)
 #' @param t1 time until exercise for the compound option
@@ -108,10 +109,6 @@ optionsoncall <- function(s, kuo, kco, v, r, t1, t2, d) {
         - kco * exp(-r * t1) * pnorm(a2))
     pc <- cc - bscall(s, kuo, v, r, t2, d) + kco*exp(-r*t1)
     return(c(calloncall=cc, putoncall=pc, scritical=SCritical))
-    ## cc - pc = call - pv(kco)
-    ## cp - pp = put - pv(kco)
-    ## cc - pc - (cp - pp) = call - pv(kco) -put + pv(kco)
-    ##
 }
 
 #' @export
@@ -121,7 +118,7 @@ optionsonput <- function(s, kuo, kco, v, r, t1, t2, d) {
     SCritical <- bsputimps(s, kuo, v, r, t2 - t1, d, kco)
     a1 <- .d1(s, SCritical, v, r, t1, d)
     a2 <- a1 - v * t1 ^ 0.5
-    d1 <- d1(s, kuo, v, r, t2, d)
+    d1 <- .d1(s, kuo, v, r, t2, d)
     d2 <- d1 - v * t2 ^ 0.5
     cp <- (-s * exp(-d * t2) * binormsdist(-a1, -d1, (t1 / t2) ^ 0.5)
         + kuo * exp(-r * t2) * binormsdist(-a2, -d2, (t1 / t2) ^ 0.5)
