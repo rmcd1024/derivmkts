@@ -15,6 +15,8 @@ The package includes functions for computing
 
 -   Barrier options
 
+-   Compound options
+
 -   Pricing of options with jumps using the Merton model
 
 -   Analytical and Monte Carlo pricing of Asian options
@@ -57,7 +59,7 @@ y <- bsopt(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0)
 will do the same for both calls and puts simultanteously. The delta
 values for the call would be `y[['Call']]['Delta', ]`
 -->
-My favorite example is this:
+My favorite example is this small bit of code, which computes and plots all call and put Greeks for 500 options. This produces 16 plots in all:
 
 ``` r
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
@@ -76,21 +78,21 @@ for (i in names(y)) {
 
 ![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
-This small bit of code computes and plots all call and put Greeks for 500 options. This is 16 plots in all. It's a great illustration of how powerful R can be.
+This is a great illustration of how powerful R can be.
 
 ### Binomial calculations
 
 #### binomopt
 
-By default the binomopt function returns the price of an American call. In adddition, with:
+By default the binomopt function returns the price of an American call. In adddition:
 
--   `putopt=TRUE` it returns the price of an American put.
+-   `putopt=TRUE` returns the price of an American put.
 
--   `returngreeks=TRUE` it returns a subset of the Greeks along with the binomial parameters.
+-   `returngreeks=TRUE` returns a subset of the Greeks along with the binomial parameters.
 
--   `returntrees=TRUE` it returns as a list all of the above plus the full binomial tree ($stree), the probability of reaching each node ($probtree), whether or not the option is exercised at each node ($exertree), and the replicating portfolio at each node ($deltatree and $bondtree).
+-   `returntrees=TRUE` returns as a list all of the above plus the full binomial tree ($stree), the probability of reaching each node ($probtree), whether or not the option is exercised at each node ($exertree), and the replicating portfolio at each node ($deltatree and $bondtree).
 
-Here is an example illustrating everything that the function can return:
+Here is an example illustrating everything that the `binomopt` function can return:
 
 ``` r
 x <- binomopt(41, 40, .3, .08, 1, 0, 3, putopt=TRUE, american=TRUE,

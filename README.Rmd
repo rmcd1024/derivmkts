@@ -37,7 +37,10 @@ The package includes functions for computing
 
 * Barrier options
 
+* Compound options
+
 * Pricing of options with jumps using the Merton model
+
 
 * Analytical and Monte Carlo pricing of Asian options 
 
