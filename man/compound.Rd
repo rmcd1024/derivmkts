@@ -20,7 +20,7 @@ putoncall(s, kuo, kco, v, r, t1, t2, d, returnscritical)
 putonput(s, kuo, kco, v, r, t1, t2, d, returnscritical)
 }
 \arguments{
-\item{s}{Price of underlying asset}
+\item{s}{Price of underlying asset, i.e., the}
 
 \item{v}{Volatility of the underlying asset, defined as the
 annualized standard deviation of the continuously-compounded
@@ -31,7 +31,7 @@ return}
 \item{d}{Dividend yield of the underlying asset, annualized,
 continuously-compounded}
 
-\item{kuo}{strike on underlying option}
+\item{kuo}{strike on the underlying option}
 
 \item{kco}{strike on compound option (the price at which you would
 buy or sell the underlying option at time t1)}
@@ -58,8 +58,9 @@ The option price, and optionally, the stock price above or
 }
 \description{
 A compound option is an option for which the
-    underlying asset is an option.  The definition of a compound
-    option requires specifying
+    underlying asset is an option. The underlying option (the
+    option on which there is an option) in turn has an underlying
+    asset. The definition of a compound option requires specifying
 
 \itemize{
 

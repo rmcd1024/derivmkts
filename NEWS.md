@@ -1,7 +1,11 @@
 # derivmkts 0.2.2
 
-* Functions for compound options
-* Option for log y axis added in binomplot function
+* Functions for compound options (call on call, call on put, etc.)
+
+* Binomplot: Option for log y axis
+
+* New vignette discussing alternative ways to write vectorized
+  functions
 
 # derivmkts 0.2.1
 
@@ -18,8 +22,8 @@
 
 * Asian options 
 
-	* Added geomavgpricecall, geomavgpriceput, geomavgstrikecall, and
-	  geomavgstrikeput functions.
+	* Added individual geomavgpricecall, geomavgpriceput,
+	  geomavgstrikecall, and geomavgstrikeput functions.
 	* Fixed greeks functionality for asian options
 	
 

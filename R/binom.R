@@ -289,12 +289,13 @@ binomplot <- function(s, k, v, r, tt, d, nstep, putopt=FALSE,
     ## point of the stree restriction is not to plot zeros.
     plotcolor <- ifelse(exertree,"green3","red")
     if (saveplot) pdf(saveplotfn)
+    ylim_default <- c(0 ,max(stree)*1.03)
     savepar <- par(no.readonly=TRUE)
     if (logy) par("ylog"=TRUE)
     plot(rep(nn, nn+1)*h, stree[stree>0]
         ,ylim=ifelse(c(setylim, setylim),ylimval,
-                     ## c(min(stree[stree>1]-0.95),max(stree)*1.03))
-                     c(0 ,max(stree)*1.03))
+                     c(min(stree[stree>1]-0.95),max(stree)*1.03)
+                     )
         ,col=plotcolor[stree>0]
         ,pch=21
          ## ifelse returns an object with the size of the first

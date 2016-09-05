@@ -59,7 +59,8 @@
 #'
 #' @note The compound option formulas are not vectorized.
 #' 
-#' @param s Price of underlying asset, i.e., the 
+#' @param s Price of the asset on which the underlying option is
+#'     written
 #' @param v Volatility of the underlying asset, defined as the
 #'     annualized standard deviation of the continuously-compounded
 #'     return

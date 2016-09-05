@@ -13,8 +13,7 @@ figure/
 DM_token
 make_readme.sh
 pkg-status.*
-todo.md*
-todo.org
+todo.*
 tests/scripts/
 bbl$
 blg$

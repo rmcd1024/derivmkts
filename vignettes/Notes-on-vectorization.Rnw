@@ -1,0 +1,339 @@
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{Notes on Vectorization}
+\documentclass{article}
+\usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{listings}
+\usepackage[linktocpage=TRUE, colorlinks=TRUE, citecolor=red]{hyperref}
+\usepackage{natbib}
+    \lstset{
+    language=R,
+    tabsize=2,
+    keepspaces,
+    extendedchars=true,
+    rulecolor=\color{black},
+    basicstyle=\footnotesize\ttfamily,
+    aboveskip=5pt,
+    upquote=true,
+    columns=fixed,
+    showstringspaces=false,
+    extendedchars=true,
+    breaklines=true,
+    frame=none,
+    showtabs=true,
+    showspaces=false,
+    showstringspaces=false,
+}
+
+\title{Notes on Vectorization}
+\author{Robert McDonald}
+\date{\today}
+
+\lstMakeShortInline{|}
+
+<<echo=FALSE, message=FALSE, warning=FALSE>>=
+rm(list=ls())
+library(highlight)
+library(knitr)
+##homedir <- '/home/rmcd/tex/d67/Rtutorial/'
+options(digits=4)
+figsize <- 4.5
+opts_chunk$set(size='footnotesize', prompt=FALSE, comment=NA,
+               fig.align='center', fig.width = figsize,
+               fig.height=figsize, out.width='3.75in')
+
+#              , fig.width=4.5*3.75/3.25, fig.height=4.5,
+#              , out.width='3.75in', out.height='3.25in'
+#               )
+opts_knit$set(highlight = TRUE,
+              eval.after='fig.cap',
+              prompt=TRUE,
+              renderer=renderer_latex(document=FALSE),
+              size='footnotesize')
+curr <- function(amt)  formatC(amt, format='f', digits=2)
+@
+
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+
+<<echo=FALSE>>=
+library(derivmkts)
+library(mnormt)
+library(markdown)
+
+opts_chunk$set(collapse=TRUE)
+@
+
+\section{Introduction}
+
+Many of the pricing functions in the  \emph{derivmkts} package are
+vectorized. This document summarizes some of the issues that arose
+when implementing vectorization.
+
+\section{Vectorization}
+
+Where possible, I have tried to make sure that the pricing functions
+return vectors. This is automatic in many cases (for example, with the
+Black-Scholes formula), but there are situations in which achieving
+robust vectorization requires care when constructing a function. The
+purpose of this section is to explain the problems I encountered and
+the solutions I considered. Perhaps I overlooked the obvious or I am
+ignorant of some details of R. In either case I hope you will let me
+know! Otherwise, I hope this discussion is helpful to others.
+
+\subsection{Automatic Vectorization}
+
+<<>>=
+f = function(a, b, k) a*b + k
+f(3, 5, 1) 
+f(1:5, 5, 1) 
+f(1:6, 1:2, 1) 
+@ 
+
+In this example, R automatically vectorizes the multiplication using
+the recycling rule. It's worth noting that the third example, in which
+both arguments are vectorized, but with different length vectors, is
+an unusual programming construct.\footnote{You can produce the same
+  output in python using the itertools module.} This property makes it
+trivial to perform what-if calculations for an option pricing formula.
+
+\subsection{Limitations of Automatic Vectorization}
+
+A problem with automatic vectorization occurs when there are
+conditional statements. With barrier options, for example, it is
+necessary to check whether the asset price is past the barrier. R's
+\lstinline{if} statement is not vectorized, and the
+\lstinline{ifelse} function returns output that has the dimension of
+the conditional. 
+
+<<>>=
+cond1 <- function(a, b, k) {
+    if (a > b) {
+        a*b + k
+    } else {
+        k
+    }
+}
+cond1(5, 3, 1)
+cond1(5, 7, 1)
+cond1(3:7, 5, 1)
+
+@ 
+
+The third invocation of \lstinline{cond1} causes an error because the
+\lstinline{if} statement is not vectorized. This can be fixed by
+rewriting the conditional using \lstinline{ifelse}, which is
+vectorized. The following examples all compute correctly because if
+either $a$ or $b$ are vectors, the conditional statement is
+vectorized:
+
+<<>>=
+cond2 <- function(a, b, k) {
+    ifelse(a > b, 
+           a*b + k,  
+           k
+           )
+}
+cond2(5, 3, 1)
+cond2(5, 7, 1)
+cond2(3:7, 5, 1)
+
+@ 
+
+There will, however, be a problem if only $k$ is a vector.  Suppose we
+set $a=5$, $b=7$, $k=1:3$. Because $a < b$, we want to produce the
+output $1, 2, 3$. The following example does not work as desired
+because neither of the variables in the conditional ($a$ and $b$) are
+a vector. Thus the calculation is not vectorized:
+<<>>=
+cond2(5, 7, 1:3)
+@ 
+
+The \lstinline{ifelse} function returns output with the dimension of
+the conditional expression, which in this case is a vector of length
+1.
+
+\subsection{Three Solutions}
+
+One solution is to write the function so as to vectorize all the
+inputs to match the vector length of the longest input. There are at
+least three ways to do this.
+
+\subsubsection{Use a Booleans in Place of \lstinline{ifelse}}
+
+We can create a boolean variable that is true if $a > b$. This will
+then control which expression is returned:
+
+<<>>=
+cond2b <- function(a, b, k) {
+    agtb <- (a > b)
+    agtb*(a*b + k) + (1-agtb)*k
+}
+
+cond2b(5, 3, 1)
+cond2b(5, 7, 1)
+cond2b(3:7, 5, 1)
+cond2b(5, 7, 1:3)
+
+@ 
+
+Whether this solution works in other functions depends on the
+structure of the calculation and the nature of the output. In
+particular, if the value of a boolean controls the  data structure
+the function returns (a vector vs a list, for example), then this
+solution does not work.
+
+\subsubsection{Create a Data Frame}
+
+We can enforce the recycling rule for all variables by creating a data
+frame consisting of the inputs and assigning the columns back to the
+original variables:
+
+<<>>=
+cond2c <- function(a, b, k) {
+    tmp <- data.frame(a, b, k)
+    for (i in names(tmp)) assign(i, tmp[[i]])
+    ifelse(a > b, 
+           a*b + k,  
+           k
+           )
+}
+
+cond2c(5, 3, 1)
+cond2c(5, 7, 1)
+cond2c(3:7, 5, 1)
+cond2c(5, 7, 1:3)
+
+@ 
+
+One drawback of this solution is that we have to be careful to update
+the \lstinline{data.frame()} definition within the function if we
+change the function inputs. It may be easy to overlook this when
+editing the function. The next solution is a more robust version of
+the same idea.
+
+\subsubsection{Create a Vectorization Function}
+
+A final alternative is to create a vectorization function that
+exploits R's functional capabilities and does not require
+modifications if the function definition changes. This approach can
+become quite complicated, but is relatively easy to understand in
+simple cases. We create a \lstinline{vectorizeinputs()} function that
+creates a data frame and vectorizes all variables:
+
+<<>>=
+vectorizeinputs <- function(e) {
+    ## e is the result of match.call() in the calling function
+    e[[1]] <- NULL
+    e <- as.data.frame(as.list(e))
+    for (i in names(e)) assign(i, eval(e[[i]]),
+                               envir=parent.frame())
+}
+@ 
+
+This function assumes that \lstinline{match.call()} has been invoked
+in the calling function. The result of that invocation is manipulated
+to provide information about the parameters passed to the function and
+used to create the data frame and pass the variables back to the
+calling function.
+
+<<>>=
+cond3 <- function(a, b, k) { 
+    vectorizeinputs(match.call())
+    ifelse(a > b, a*b + k, k)
+}
+cond3(5, 7, 1:3)
+cond3(3:7, 5, 1)
+cond3(3:7, 5, 1:5)
+cond3(k=1:5, 3:7, 5)
+
+@ 
+
+This approach becomes more complicated if there are implicit
+parameters in the function. If truly implicit, these will not be
+available via \lstinline{match.call()}, but they can affect the
+solution. Here is an example:
+
+<<>>=
+cond4 <- function(a, b, k, multby2=TRUE) {
+    vectorizeinputs(match.call())
+    ifelse(multby2, 
+           2*(a*b + k), 
+           a*b + k
+           )
+}
+cond4(5, 7, 1:3)
+cond4(3:7, 5, 1)
+cond4(3:7, 5, 1:5)
+cond4(k=1:5, 3:7, 5)
+
+@ 
+
+The output is not vectorized because the implicit parameter
+\lstinline{multby2} is implicit --- it is not explicit in the function
+call --- and therefore it is not vectorized. One way to handle this
+case is to rewrite the \lstinline{vectorizeinputs} function to
+retrieve the full set of function inputs for the called function.
+The name of the function is available through
+\lstinline{match.call()[[1]]}, and the function parameters are
+available using the \lstinline{formals} function. We can then add the
+implicit parameters to the vectorized set of inputs. The function
+\lstinline{vectorizeinputs2} takes this approach:
+
+<<>>=
+vectorizeinputs2 <- function(e) {
+    funcname <- e[[1]]
+    fvals <- formals(eval(funcname))
+    fnames <- names(fvals)
+    e[[1]] <- NULL
+    e <- as.data.frame(as.list(e))
+    implicit <- setdiff(fnames, names(e))
+    if (length(implicit) > 0) e <- data.frame(e, fvals[implicit])
+    for (i in names(e)) assign(i, eval(e[[i]]),
+                               envir=parent.frame())
+}
+
+cond5 <- function(a, b, k, multby2=TRUE, altmult=1) {
+    vectorizeinputs2(match.call())
+    ifelse(multby2, 
+           2*(a*b + k), 
+           altmult*(a*b + k)
+           )
+}
+cond5(5, 7, 1:3)
+cond5(3:7, 5, 1)
+cond5(3:7, 5, 1:5)
+cond5(k=1:5, 3:7, 5)
+cond5(k=1:5, 3:7, 5, multby2=FALSE)
+cond5(k=1:5, 3:7, 5, multby2=FALSE, altmult=5)
+
+@ 
+
+\subsection{Why Worry About Vectorization?}
+
+R provides looping constructs and \lstinline{apply} functions. It
+might seem that it's not necessary to worry about vectorization. There
+are two reasons that I choose to vectorize where feasible.
+
+First, I personally find vectorization convenient and transparent. I
+find vectorized code easier to read and it fits the way I like to
+work. This is an aesthetic argument.
+
+Second, in my experience the apply functions are a real hurdle for new
+R users. Automatic vectorization makes it possible to perform
+complicated calculations in a straightforward and intuitive way.
+
+\clearpage
+
+%\section{Bibliography}
+%\bibliographystyle{book2}
+%\bibliography{rmcd}
+%\bibliography{derivmkts}
+
+
+\end{document}
