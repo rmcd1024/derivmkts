@@ -14,4 +14,4 @@ pkg-status*
 todo.md*
 todo.org
 tests/scripts
-
+*.log

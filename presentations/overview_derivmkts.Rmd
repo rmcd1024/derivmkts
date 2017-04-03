@@ -1,0 +1,257 @@
+---
+title: "An Introduction to R and the derivmkts Package"
+author: "Robert McDonald"
+date: '`r format(Sys.Date(), format="%B %d, %Y")`'
+output:
+  html_document:
+    highlight: default
+    toc: yes
+    toc_float: yes
+  html_notebook: default
+linkcolor: red
+colorlinks: yes
+---
+	
+
+```{r, echo=FALSE}
+library(xtable)
+library(knitr)
+library(derivmkts)
+opts_chunk$set(message=FALSE,
+               comment=NA,
+               collapse=TRUE,
+               prompt=FALSE)
+# this is the first document we'll use Jan 24 2017
+```
+
+
+# Overview
+
+## Before we start...
+
+* Open a new "R Notebook" document in RStudio
+* Use this to take notes and copy examples
+* This will illustrate two things:
+    * R, a tool for computations and manipulating and analyzing data
+    * Rmarkdown, a tool for creating "statistically literate" documents
+* Ask questions at any time if something is not clear!
+
+
+## Goals
+
+1. Introduction to R: what is it, why learn it?
+2. Reproducibility and reporting
+3. The derivmkts package
+
+
+# The steps in data analysis
+
+## The Four Steps of Data Analysis
+
+1. Data acquisition
+1. Data "cleaning" (process the data to be researchable)
+1. Analysis
+1. Reporting (conveying your results)
+
+
+* R and RStudio provide a reproducible solution for steps 2-4
+	* and often step 1 as well...
+
+* Much of your time, and much of the reproducibility challenge, will be in step 2.
+* We will focus on basic data manipulation
+
+## The Ford Stock Data Example
+
+* The script you downloaded before class illustrates all four steps in data analysis:
+	1. Data acquisition (from Yahoo)
+	1. Data formatting (dates,  weekdays, and returns)
+	1. Analysis (plots and tables)
+	1. Reporting. 
+
+
+## What is R?
+
+* R is free, open source, statistical software
+	* It is a *functional*, *vectorized*, *object-oriented* programming
+      language
+* R is also part of an ecosystem
+    * R the language permits and encourages extensions; it is a development platform
+    * The community that writes R packages is large and vibrant
+<!--    * Some extensions are commonly used and widely considered "canonical"
+        * Packages published by Hadley Wickham and the RStudio team are   examples
+        * RCpp permits incorporation of C++ code into R programs
+-->
+	* R is part of a group of other free and open
+      source components
+	* This is an important reason there is rapid and enthusiastic
+      development surrounding R and RStudio
+  * I will say more about this later
+
+## Reproducible and transparent analytics
+
+* It is *essential* to have a data flow that is 
+	* robust  <!-- Not too tweaky, not fragile -->
+	* reproducible
+	* well-documented
+	* transparent
+* To the extent possible you want it to be scalable
+* R facilitates all this
+
+
+## R vs RStudio
+
+* R is the statistical package
+* RStudio is a "front-end" for accessing R
+* RStudio incorporates pandoc, for creating different document formats
+* If you install RStudio without also installing R, RStudio will be useless
+    * However, you can use R without RStudio 
+
+
+## An example of what you can do with RStudio
+
+* The RStudio folks are rapidly extending the capabilities of R by creating new packages and resources
+* RStudio maintains the "shiny" package and also a server to run shiny apps
+    * Examples are [here](https://shiny.rstudio.com)
+* My babynames shiny page: [https://rmcd1024.shinyapps.io/babynames_shiny](https://rmcd1024.shinyapps.io/babynames_shiny)
+* The code for this is on github: [https://github.com/rmcd1024/babynames_shiny](https://github.com/rmcd1024/babynames_shiny)
+
+## Setting expectations
+
+* R and extensions is a huge topic
+* The main goal of this workshop is to orient you sufficiently so that you can learn more on your own
+* There are wonderful resources on the web,
+  including
+    * [stackoverflow](http://stackoverflow.com/questions/tagged/r),
+    * [R tutorials](http://www.cyclismo.org/tutorial/R/index.html),
+    * [Radiant](https://vnijs.shinyapps.io/radiant/) and similar sites
+    * [Functions you should know](http://adv-r.had.co.nz/Vocabulary.html)
+
+* Google is your friend
+
+
+## Making sense of the pieces
+
+* Because of the ecosystem around R 
+    * It is powerful
+    * It is rapidly-evolving
+    * It can be confusing
+    
+* **Ask** if you don't understand where something fits
+
+## The derivmkts package
+
+* Derivatives analysis in Excel
+    * Easy to enter formulas and compute an output
+    * What if you want to compute many Greeks?
+    * What if you want to distribute your work to others?
+    
+## Simple option calculations
+
+* Compute one option price
+
+```{r}
+library(derivmkts)
+s = 100; k=100; v=0.3; r=0.08; tt=1; d=0
+bscall(s, k, v, r, tt, d)
+```
+
+* Compute greeks
+
+```{r}
+greeks(bscall(s, k, v, r, tt, d))
+```
+
+## More complex calculations
+
+* Compute many prices (R is vectorized)
+
+```{r}
+S = seq(98,102,by=0.5); k=100; v=0.3; r=0.08; tt=1; d=0
+bscall(S, k, v, r, tt, d)
+```
+
+* Compute many greeks
+
+```{r}
+greeks(bscall(S, k, v, r, tt, d))
+```
+
+## My favorite example
+
+```{r}
+k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
+S <- seq(.5, 250, by=.5)
+Call <- greeks(bscall(S, k, v, r, tt, d))
+Put <- greeks(bsput(S, k, v, r, tt, d))
+y <- list(Call=Call, Put=Put)
+par(mfrow=c(4, 4))  ## create a 4x4 plot
+par(mar=c(2,2,2,2))
+for (i in names(y)) {
+    for (j in rownames(y[[i]])) {  ## loop over greeks
+        plot(S, y[[i]][j, ], main=paste(i, j), ylab=j, type='l')
+    }
+}
+
+```
+
+## Greeks for your own pricing problem
+
+* Suppose you buy a 95 strike call and sell a 105-strike call
+* The following will work *provided* that you use "s", "v", "r", "tt", and "d"
+to name the respective inputs
+
+```{r}
+bullspread = function(s, v, r, tt, d, k1, k2) 
+  bscall(s, k1, v, r, tt, d) - bscall(s, k2, v, r, tt, d)
+k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
+S <- seq(.5, 250, by=.5)
+k1 = 95; k2 = 105
+S=100;
+bullspread(S, v, r, tt, d, k1, k2)
+greeks(bullspread(S, v, r, tt, d, k1, k2))
+```
+
+
+
+## Greeks for a bullspread
+
+```{r}
+S=seq(0.5, 250, by=0.5);
+y = greeks(bullspread(S, v, r, tt, d, k1, k2))
+par(mfrow=c(3,3), mar=c(2,2,2,2))
+for (j in rownames(y)) {  ## loop over greeks
+  plot(S, y[j,], main=j, ylab=j, type='l')
+}
+
+```
+
+## Binomial pricing
+
+```{r}
+s=100; k=95; r=0.08; tt=1; v=0.30; d=0.08
+n = 20;
+binomplot(s, k, v, r, tt, d, n=20)
+```
+```{r}
+binomplot(s, k, v, r, tt, d, n=20, plotvalues=TRUE)
+
+```
+```{r}
+b = binomopt(s, k, v, r, tt, d, n=5, returntrees=TRUE, 
+             returnparams=TRUE, returngreeks=TRUE)
+b
+```
+
+
+
+## A final note
+
+* As you start to use R you will likely translate tasks from other environments
+(Excel, Stata, SAS, etc.)
+* Do *not* try to translate line by line
+    * Big temptation, huge mistake
+* Instead: 
+    * understand the task
+    * ask how you would approach it in R
+    * look for packages that already do what you want
+* *Then* develop your solution in R
