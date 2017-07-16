@@ -1,4 +1,5 @@
 ---
+title: "Derivmkts: An option pricing package for R"
 output: 
   md_document:
     variant: markdown_github
