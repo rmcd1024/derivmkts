@@ -1,5 +1,8 @@
 [![Build Status](https://travis-ci.org/rmcd1024/derivmkts.svg?branch=master)](https://travis-ci.org/rmcd1024/derivmkts)[![](http://www.r-pkg.org/badges/version/derivmkts)](http://www.r-pkg.org/pkg/derivmkts)
 
+Derivmkts: An option pricing package for R
+==========================================
+
 Introduction
 ------------
 

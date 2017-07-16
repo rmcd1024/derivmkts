@@ -1,5 +1,4 @@
 ---
-title: "Derivmkts: An option pricing package for R"
 output: 
   md_document:
     variant: markdown_github
@@ -14,6 +13,7 @@ opts_chunk$set(comment=NA,
                collapse=TRUE)
 library(derivmkts)
 ```
+# Derivmkts: An option pricing package for R
 
 ## Introduction
 
