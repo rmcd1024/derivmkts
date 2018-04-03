@@ -47,4 +47,3 @@ geomasianmc(s, k, v, r, tt, d, m, numsim, printsds=FALSE)
 Other Asian: \code{\link{arithasianmc}},
   \code{\link{arithavgpricecv}}, \code{\link{asiangeomavg}}
 }
-

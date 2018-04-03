@@ -41,4 +41,3 @@ quincunx(n=10, numballs=200, delay=0)
 quincunx(n=20, numballs=200, delay=0, probright=0.7)
 
 }
-

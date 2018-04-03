@@ -2,9 +2,9 @@
 % Please edit documentation in R/binom.R
 \name{binom}
 \alias{binom}
-\alias{binomial}
 \alias{binomopt}
 \alias{binomplot}
+\alias{binomial}
 \title{Binomial option pricing}
 \usage{
 binomopt(s, k, v, r, tt, d, nstep = 10, american = TRUE,
@@ -176,4 +176,3 @@ binomplot(s, k, v, r, tt, d, nstep, american=FALSE, putopt=TRUE)
 
 
 }
-

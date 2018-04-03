@@ -28,13 +28,14 @@
 #'     works well with vectorization.
 #' 
 #' @usage
-#' greeks(f)
+#' greeks(f, tidygreeks=FALSE)
 #' # must used named list entries:
 #' greeks2(fn, ...)
 #' bsopt(s, k, v, r, tt, d)
 #'
 #' @param s Price of underlying asset c#' @param k Strike price of the
 #'     option
+#' @param k Option strike price 
 #' @param v Volatility of the underlying asset, defined as the
 #'     annualized standard deviation of the continuously-compounded
 #'     return
@@ -78,12 +79,13 @@
 #'         plot(S, y[[i]][j, ], main=paste(i, j), ylab=j, type='l')
 #'     }
 #' }
-#'
+#' \dontrun{
 #' ## Tidy version for calls
 #' library(tidyr); library(ggplot2)
 #' call_long <- greeks(bscall(S, k, v, r, tt, d), tidygreeks=TRUE)
 #' call_long <- tidyr::gather(call_long, key='greek', value='value', -(s:funcname))
 #' ggplot(call_long, aes(x=s, y=value)) + geom_line() + facet_wrap(~greek, scales='free')
+#' }
 
 #' @export
 bsopt <- function(s, k, v, r, tt, d) {

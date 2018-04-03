@@ -52,4 +52,3 @@ arithasianmc(s, k, v, r, tt, d, m, numsim, printsds=TRUE)
 Other Asian: \code{\link{arithavgpricecv}},
   \code{\link{asiangeomavg}}, \code{\link{geomasianmc}}
 }
-

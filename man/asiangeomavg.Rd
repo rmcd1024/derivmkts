@@ -63,4 +63,3 @@ geomavgpricecall(s, 38:42, v, r, tt, d, m, cont=TRUE)
 Other Asian: \code{\link{arithasianmc}},
   \code{\link{arithavgpricecv}}, \code{\link{geomasianmc}}
 }
-

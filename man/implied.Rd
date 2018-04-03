@@ -2,12 +2,12 @@
 % Please edit documentation in R/implied.R
 \docType{data}
 \name{implied}
-\alias{.tol}
-\alias{bscallimps}
-\alias{bscallimpvol}
-\alias{bsputimps}
-\alias{bsputimpvol}
 \alias{implied}
+\alias{.tol}
+\alias{bscallimpvol}
+\alias{bsputimpvol}
+\alias{bscallimps}
+\alias{bsputimps}
 \title{Black-Scholes implied volatility and price}
 \format{An object of class \code{numeric} of length 1.}
 \usage{
@@ -61,4 +61,3 @@ bsputimps(s, k, v, r, tt, d, 4)
 
 }
 \keyword{datasets}
-
