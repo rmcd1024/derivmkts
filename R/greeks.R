@@ -34,7 +34,7 @@
 #' bsopt(s, k, v, r, tt, d)
 #'
 #' @param s Price of underlying asset c#' @param k Strike price of the
-option
+#'     option
 #' @param v Volatility of the underlying asset, defined as the
 #'     annualized standard deviation of the continuously-compounded
 #'     return
