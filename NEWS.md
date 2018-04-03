@@ -1,3 +1,13 @@
+# derivmkts 0.2.2.0900
+
+* Added `tidygreeks` parameter to `greeks` function to return output
+  in tidy format. This is `FALSE` by default, for compatability. Still
+  need to add test for this output
+
+* Fixed: if a parameter in the function passed to greeks uses the
+  index "i", the eval step in Greeks fails (because the eval loop
+  also uses "i". The index variable cannot be `z91k25`
+    
 # derivmkts 0.2.2
 
 * Functions for compound options (call on call, call on put, etc.)

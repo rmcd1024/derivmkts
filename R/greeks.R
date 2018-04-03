@@ -14,11 +14,13 @@
 #' @name greeks
 #' @aliases bsopt greeks greeks2
 #'
-#' @return A named list of Black-Scholes option prices and Greeks.
+#' @return A named list of Black-Scholes option prices and Greeks, or
+#'     optionally (`tidygreeks=TRUE`) a long-form dataframe.
 #' @note The pricing function being passed to the greeks function must
 #'     return a numeric vector. For example, \code{callperpetual} must
 #'     be called with the option \code{showbarrier=FALSE} (the
-#'     default).
+#'     default). The pricing function call cannot contain a variable
+#'     named `z91k25`.
 #' @details Numerical derivatives are calculated using a simple
 #'     difference. This can create numerical problems in edge
 #'     cases. It might be good to use the package numDeriv or some
@@ -31,8 +33,8 @@
 #' greeks2(fn, ...)
 #' bsopt(s, k, v, r, tt, d)
 #'
-#' @param s Price of underlying asset
-#' @param k Strike price of the option
+#' @param s Price of underlying asset c#' @param k Strike price of the
+option
 #' @param v Volatility of the underlying asset, defined as the
 #'     annualized standard deviation of the continuously-compounded
 #'     return
@@ -44,6 +46,11 @@
 #' @param f Fully-specified option pricing function, including inputs
 #'     which need not be named. For example, you can enter
 #'     \code{greeks(bscall(40, 40, .3, .08, .25, 0))}
+#' @param tidygreeks FALSE. If TRUE, return a data frame with columns
+#'     equal to input parameters, function name, price, and greeks, in
+#'     semi-long format (each greek is a column). This is experimental
+#'     and the output may change. Can convert to true long format with
+#'     a call to tidyr::gather (see examples).
 #' @param ... Pricing function inputs, must be named, may either be a
 #'     list or not
 #' 
@@ -71,6 +78,12 @@
 #'         plot(S, y[[i]][j, ], main=paste(i, j), ylab=j, type='l')
 #'     }
 #' }
+#'
+#' ## Tidy version for calls
+#' library(tidyr); library(ggplot2)
+#' call_long <- greeks(bscall(S, k, v, r, tt, d), tidygreeks=TRUE)
+#' call_long <- tidyr::gather(call_long, key='greek', value='value', -(s:funcname))
+#' ggplot(call_long, aes(x=s, y=value)) + geom_line() + facet_wrap(~greek, scales='free')
 
 #' @export
 bsopt <- function(s, k, v, r, tt, d) {
@@ -84,7 +97,7 @@ bsopt <- function(s, k, v, r, tt, d) {
 ## the focus so far has been on named vs unnamed parameters. We also
 ## need to take care of implicit parameters Tue, Jun 21, 2016
 #' @export
-greeks <- function(f) {
+greeks <- function(f, tidygreeks=FALSE) {
     ## match.call() returns (I think) a pairlist, where the first
     ## argument is the function and the second is what follows. By
     ## extracting the second, we grab the function argument which in
@@ -122,8 +135,11 @@ greeks <- function(f) {
     ## some elements of x will have had explicit values in the call
     ## (e.g., "s=40"), while others will have inherited values from
     ## the environment (e.g. "s=s0"). The latter are unevaluated
-    ## language objects, so need to assign a value using eval(). 
-    for (i in 1:length(x)) x[[i]] <- eval(x[[i]])
+    ## language objects, so need to assign a value using eval().
+    ##
+    ## need to handle the case when the loop index appears in the
+    ## evaluted epxression. So pick a screwy loop index
+    for (z91k25 in 1:length(x)) x[[z91k25]] <- eval(x[[z91k25]])
     ## make sure that vectors have lengths appropriate for recycling
     .checkListRecycle(x)
     xlength <- sapply(x, length)
@@ -139,30 +155,37 @@ greeks <- function(f) {
     psi   <-  .FirstDer(funcname, 'd', x)/100
     elast <-  x[['s']]*delta/prem
     gamma <-  .SecondDer(funcname, 's', x)
-    numcols <- length(prem)
-    numrows <- 8
-    y <- t(matrix(c(prem,delta,gamma,vega,rho,theta,psi,elast),
-                  nrow=numcols,ncol=numrows))
-    rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
-                     "Psi", "Elasticity")
-
-    ## The following tests to see if there is variation in any inputs
-    ## (is xmaxlength > 1). If so, is there variation in more than one
-    ## input (length(maxarg) > 1). The column names are constructed 
-    ## in each case to state the parameter values for that column.
-    arggt1 <- which(xlength > 1) # which inputs are vectors
-    if (xmaxlength == 1) {
-        colnames(y) <- funcname
+    if (tidygreeks) {
+        ## Note: this will not work with a tibble, which doesn't
+        ## support recycling for vectors longer than length 1
+        return(cbind(as.data.frame(x), funcname, prem, delta, vega,
+                     rho, theta, psi, elast, gamma))  
     } else {
-        ## if we get here, there are multiple inputs with length > 1
-        tmp <- NULL
-        for (i in arggt1) {
-            tmp <- paste(tmp, format(x[[i]], digits=3, trim=TRUE),
-                         sep='_')
+        numcols <- length(prem)
+        numrows <- 8
+        y <- t(matrix(c(prem,delta,gamma,vega,rho,theta,psi,elast),
+                      nrow=numcols,ncol=numrows))
+        rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
+                         "Psi", "Elasticity")
+        
+        ## The following tests to see if there is variation in any inputs
+        ## (is xmaxlength > 1). If so, is there variation in more than one
+        ## input (length(maxarg) > 1). The column names are constructed 
+        ## in each case to state the parameter values for that column.
+        arggt1 <- which(xlength > 1) # which inputs are vectors
+        if (xmaxlength == 1) {
+            colnames(y) <- funcname
+        } else {
+            ## if we get here, there are multiple inputs with length > 1
+            tmp <- NULL
+            for (i in arggt1) {
+                tmp <- paste(tmp, format(x[[i]], digits=3, trim=TRUE),
+                             sep='_')
+            }
+            colnames(y) <- paste(funcname, tmp, sep='')
         }
-        colnames(y) <- paste(funcname, tmp, sep='')
+        return(y)
     }
-    return(y)
 }
 
 
