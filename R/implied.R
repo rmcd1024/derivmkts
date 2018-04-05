@@ -52,7 +52,6 @@ bscallimpvol <- function(s, k, r, tt, d, price) {
     ## this function is not vectorized
     if (price <= s*exp(-d*tt)-k*exp(-r*tt)) {
         print("Option price violates minimum bound")
-        break
     } else if (price > s*exp(-d*tt)) {
         print("Option price violates maximum bound")
     } else {

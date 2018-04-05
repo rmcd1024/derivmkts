@@ -28,3 +28,4 @@ test_that('Greeks for perpetual call work', {
     expect_equal(correct, unknown)
 }
 )
+

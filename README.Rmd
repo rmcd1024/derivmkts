@@ -65,24 +65,22 @@ x1 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0))
 x1
 ```
 
-<!--
-As alternatives that may become deprecated, `bsopt()` simultaneously
-computes prices and Greeks for European calls and puts and
-`greeks2()` uses a different calling convention than `greeks()`
+There is a new `tidy` option which produces output in a possibly
+more convenient format:
 
-The function
-```{r, eval=FALSE}
-x2 <- greeks2(bscall, s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0)
-y <- bsopt(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0)
+
+```{r}
+x2 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0),
+             tidy=TRUE)
+x2
+
 ```
 
-will do the same for both calls and puts simultanteously. The delta
-values for the call would be `y[['Call']]['Delta', ]`
--->
+\normalsize
 
-My favorite example is this small bit of code, which computes and
-plots all call and put Greeks for 500 options. This produces 16 plots in
-all:
+
+This small bit of code computes and plots all call and put Greeks for
+500 options, 16 plots in all:
 
 ```{r}
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0

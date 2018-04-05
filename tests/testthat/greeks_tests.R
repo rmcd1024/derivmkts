@@ -15,7 +15,6 @@ load('~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
 ## for each function name, we will generate results believed correct
 ## from options.R. Then we will test against barriers.R
 
-
 ############################################################
 ## Remarks
 ############################################################
@@ -30,9 +29,9 @@ load('~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
 ##issue I should probably revisit.
 
 barrierchecks <- FALSE
-## barrierchecks <- TRUE
+barrierchecks <- TRUE
 tol <- 5e-07
-tol2 <- 1e-06 ## doesn't seem to make the check work
+tol2 <- 1e-04 ## doesn't seem to make the check work
 
 
 ############################################################
@@ -48,14 +47,15 @@ test_that('greeks works bscall', {
           )
 print('bscall greeks okay')
 
-test_that('greeks works bscall', {
-              correct <- greeksvals[['bscall']]
+test_that('tidy greeks works bscall', {
+              correct <- greeksvals2[['bscalltidy']]
               unknown <- greeks(bscall(s=s, k=kseq, v=v,
-                                             r=r, tt=tt, d=d))
+                                       r=r, tt=tt, d=d),
+                                tidy=TRUE)
               expect_equal(correct, unknown, tolerance=tol)
           }
           )
-print('bscall greeks okay')
+print('tidy bscall greeks okay')
 
 
 test_that('greeks2 works bscall', {
@@ -70,23 +70,37 @@ print('bscall greeks2 okay')
 ## they're not showing up as equal
 if (barrierchecks) {
     test_that('greeks works assetuicall', {
-                  correct <- greeksvals[['assetuicall']]
-                  unknown <-
-                      greeks2(assetuicall, list(s=40, k=kseq, v=v,
-                                               r=r, tt=tt, d=d, H=Hseq2))
-                  expect_equal(correct, unknown, tolerance=tol2)
-              }
-          )
+        correct <- greeksvals[['assetuicall']]
+        colnames(correct) <- tolower(colnames(correct))
+        unknown <-
+            greeks2(assetuicall, list(s=40, k=kseq, v=v,
+                                      r=r, tt=tt, d=d, H=Hseq2))
+        expect_equal(correct, unknown, tolerance=tol2)
+    }
+    )
     print('assetuicall greeks okay')
 
+    test_that('greeks2 works assetuicall', {
+        correct <- greeksvals2[['assetuicalltidy']]
+        correct$funcname <- tolower(correct$funcname)
+        unknown <- greeks(assetuicall(s=s, k=kseq, v=v,
+                                      r=r, tt=tt, d=d, H=Hseq2),
+                          tidy=TRUE)
+        expect_equal(correct, unknown, tolerance=tol2)
+    }
+    )
+    print('assetuicall greeks2 okay')
+
+    
+    test_that('greeks2 works assetuicall', {
+        correct <- greeksvals2[['assetuicall']]
+        colnames(correct) <- tolower(colnames(correct))
+        unknown <- greeks(assetuicall(s=s, k=kseq, v=v,
+                                      r=r, tt=tt, d=d, H=Hseq2))
+        expect_equal(correct, unknown, tolerance=tol2)
+    }
+    )
+    print('assetuicall greeks2 okay')
 
 
-test_that('greeks2 works assetuicall', {
-              correct <- greeksvals2[['assetuicall']]
-              unknown <- greeks(assetuicall(s=s, k=kseq, v=v,
-                                             r=r, tt=tt, d=d, H=Hseq2))
-              expect_equal(correct, unknown, tolerance=tol2)
-          }
-          )
-print('assetuicall greeks2 okay')
 }

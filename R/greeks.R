@@ -15,7 +15,7 @@
 #' @aliases bsopt greeks greeks2
 #'
 #' @return A named list of Black-Scholes option prices and Greeks, or
-#'     optionally (`tidygreeks=TRUE`) a long-form dataframe.
+#'     optionally (`tidy=TRUE`) a long-form dataframe.
 #' @note The pricing function being passed to the greeks function must
 #'     return a numeric vector. For example, \code{callperpetual} must
 #'     be called with the option \code{showbarrier=FALSE} (the
@@ -28,7 +28,7 @@
 #'     works well with vectorization.
 #' 
 #' @usage
-#' greeks(f, tidygreeks=FALSE)
+#' greeks(f, tidy=FALSE)
 #' # must used named list entries:
 #' greeks2(fn, ...)
 #' bsopt(s, k, v, r, tt, d)
@@ -47,7 +47,7 @@
 #' @param f Fully-specified option pricing function, including inputs
 #'     which need not be named. For example, you can enter
 #'     \code{greeks(bscall(40, 40, .3, .08, .25, 0))}
-#' @param tidygreeks FALSE. If TRUE, return a data frame with columns
+#' @param tidy FALSE. If TRUE, return a data frame with columns
 #'     equal to input parameters, function name, price, and greeks, in
 #'     semi-long format (each greek is a column). This is experimental
 #'     and the output may change. Can convert to true long format with
@@ -82,7 +82,7 @@
 #' \dontrun{
 #' ## Tidy version for calls
 #' library(tidyr); library(ggplot2)
-#' call_long <- greeks(bscall(S, k, v, r, tt, d), tidygreeks=TRUE)
+#' call_long <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE)
 #' call_long <- tidyr::gather(call_long, key='greek', value='value', -(s:funcname))
 #' ggplot(call_long, aes(x=s, y=value)) + geom_line() + facet_wrap(~greek, scales='free')
 #' }
@@ -99,7 +99,7 @@ bsopt <- function(s, k, v, r, tt, d) {
 ## the focus so far has been on named vs unnamed parameters. We also
 ## need to take care of implicit parameters Tue, Jun 21, 2016
 #' @export
-greeks <- function(f, tidygreeks=FALSE) {
+greeks <- function(f, tidy=FALSE) {
     ## match.call() returns (I think) a pairlist, where the first
     ## argument is the function and the second is what follows. By
     ## extracting the second, we grab the function argument which in
@@ -157,11 +157,13 @@ greeks <- function(f, tidygreeks=FALSE) {
     psi   <-  .FirstDer(funcname, 'd', x)/100
     elast <-  x[['s']]*delta/prem
     gamma <-  .SecondDer(funcname, 's', x)
-    if (tidygreeks) {
+    if (tidy) {
         ## Note: this will not work with a tibble, which doesn't
         ## support recycling for vectors longer than length 1
-        return(cbind(as.data.frame(x), funcname, prem, delta, vega,
-                     rho, theta, psi, elast, gamma))  
+        return(cbind(as.data.frame(x, stringsAsFactors=FALSE),
+                     funcname, prem, delta, vega,
+                     rho, theta, psi, elast, gamma,
+               stringsAsFactors=FALSE))
     } else {
         numcols <- length(prem)
         numrows <- 8

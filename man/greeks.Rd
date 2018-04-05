@@ -6,7 +6,7 @@
 \alias{greeks2}
 \title{Calculate option Greeks}
 \usage{
-greeks(f, tidygreeks=FALSE)
+greeks(f, tidy=FALSE)
 # must used named list entries:
 greeks2(fn, ...)
 bsopt(s, k, v, r, tt, d)
@@ -34,7 +34,7 @@ continuously-compounded}
 which need not be named. For example, you can enter
 \code{greeks(bscall(40, 40, .3, .08, .25, 0))}}
 
-\item{tidygreeks}{FALSE. If TRUE, return a data frame with columns
+\item{tidy}{FALSE. If TRUE, return a data frame with columns
 equal to input parameters, function name, price, and greeks, in
 semi-long format (each greek is a column). This is experimental
 and the output may change. Can convert to true long format with
@@ -45,7 +45,7 @@ list or not}
 }
 \value{
 A named list of Black-Scholes option prices and Greeks, or
-    optionally (`tidygreeks=TRUE`) a long-form dataframe.
+    optionally (`tidy=TRUE`) a long-form dataframe.
 }
 \description{
 The functions \code{greeks} and \code{greeks2} provide
@@ -100,7 +100,7 @@ for (i in names(y)) {
 \dontrun{
 ## Tidy version for calls
 library(tidyr); library(ggplot2)
-call_long <- greeks(bscall(S, k, v, r, tt, d), tidygreeks=TRUE)
+call_long <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE)
 call_long <- tidyr::gather(call_long, key='greek', value='value', -(s:funcname))
 ggplot(call_long, aes(x=s, y=value)) + geom_line() + facet_wrap(~greek, scales='free')
 }

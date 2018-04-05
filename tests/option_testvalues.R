@@ -142,6 +142,10 @@ greeksvals2[['bscall']] <- Greeks2(bscall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d))
 greeksvals2[['assetuicall']] <- Greeks2(AssetUICall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d, H=Hseq2))
+greeksvals2[['bscalltidy']] <- Greeks2tidy(bscall(s=s, k=kseq, v=v,
+                                              r=r, tt=tt, d=d))
+greeksvals2[['assetuicalltidy']] <- Greeks2tidy(AssetUICall(s=s, k=kseq, v=v,
+                                              r=r, tt=tt, d=d, H=Hseq2))
 binomvalsEurC <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d, nstep,
                              putOpt=FALSE, American=FALSE)
 binomvalsEurP <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d,
@@ -176,6 +180,7 @@ keeplist <- c('barriervals', 'barriertestfns',
               'imptestfns', 'bsimpvals',
               'greeksvals', 'greeksvals2',
               'greeksinputs', 'greeksinputsH',
+              'greeksinputsnott',
               's', 'k', 'v', 'r', 'tt', 'd', 'H',
               'kseq0', 'kseq', 'Hseq', 'Hseq2', 'kseqbs',
               'kseq4', 'sseq4',
@@ -187,6 +192,6 @@ keeplist <- c('barriervals', 'barriertestfns',
               'compoundvals'
               )
 
-rm(list=setdiff(ls(), keeplist))
-save.image(file='~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
+save(list=keeplist,
+     file='~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
 
