@@ -1,11 +1,9 @@
 [![Build
 Status](https://travis-ci.org/rmcd1024/derivmkts.svg?branch=master)](https://travis-ci.org/rmcd1024/derivmkts)[![](http://www.r-pkg.org/badges/version/derivmkts)](http://www.r-pkg.org/pkg/derivmkts)
 
-Derivmkts: An option pricing package for R
-==========================================
+# Derivmkts: An option pricing package for R
 
-Introduction
-------------
+## Introduction
 
 This is a collection of option pricing functions for a course in
 financial derivatives. The names of the functions mostly match those in
@@ -22,20 +20,19 @@ that might be unique, which I describe below.
 
 The package includes functions for computing
 
--   Black-Scholes prices and greeks for European options
+  - Black-Scholes prices and greeks for European options
 
--   Option pricing and plotting using the binomial model
+  - Option pricing and plotting using the binomial model
 
--   Barrier options
+  - Barrier options
 
--   Compound options
+  - Compound options
 
--   Pricing of options with jumps using the Merton model
+  - Pricing of options with jumps using the Merton model
 
--   Analytical and Monte Carlo pricing of Asian options
+  - Analytical and Monte Carlo pricing of Asian options
 
-Things of note
---------------
+## Things of note
 
 ### Calculation of Greeks
 
@@ -79,6 +76,8 @@ x2
 3 -0.01336419 -0.02820079 11.577058 0.05629794
 ```
 
+\normalsize
+
 This small bit of code computes and plots all call and put Greeks for
 500 options, 16 plots in all:
 
@@ -97,7 +96,7 @@ for (i in names(y)) {
 }
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 This is a great illustration of how powerful R can be.
 
@@ -108,12 +107,12 @@ This is a great illustration of how powerful R can be.
 By default the binomopt function returns the price of an American call.
 In adddition:
 
--   `putopt=TRUE` returns the price of an American put.
+  - `putopt=TRUE` returns the price of an American put.
 
--   `returngreeks=TRUE` returns a subset of the Greeks along with the
+  - `returngreeks=TRUE` returns a subset of the Greeks along with the
     binomial parameters.
 
--   `returntrees=TRUE` returns as a list all of the above plus the full
+  - `returntrees=TRUE` returns as a list all of the above plus the full
     binomial tree ($stree), the probability of reaching each node
     ($probtree), whether or not the option is exercised at each node
     ($exertree), and the replicating portfolio at each node ($deltatree
@@ -191,7 +190,7 @@ occurs at that node.
 binomplot(41, 40, .3, .08, 1, 0, 3, putopt=TRUE, american=TRUE)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-6-1.png)
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ### Galton board or quincunx
 
@@ -210,12 +209,11 @@ You can see the Galton board in action with `quincunx()`:
 quincunx(n=11, numballs=250, delay=0, probright=0.5)
 ```
 
-![](README_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-Feedback
---------
+## Feedback
 
 Please feel free to contact me with bug reports or suggestions. Best
 would be to file an issue on Github, but email is fine as well.
 
-I hope you find this helpful!
+I hope you find this helpful\!
