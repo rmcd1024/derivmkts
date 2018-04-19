@@ -155,7 +155,7 @@ greeks <- function(f, tidy=FALSE) {
                     -.FirstDer(funcname, 'tt', x)/365,
                     NA)
     psi   <-  .FirstDer(funcname, 'd', x)/100
-    elast <-  x[['s']]*delta/prem
+    elast <-  ifelse(prem > 1e-06, x[['s']]*delta/prem, NA)
     gamma <-  .SecondDer(funcname, 's', x)
     if (tidy) {
         ## Note: this will not work with a tibble, which doesn't
