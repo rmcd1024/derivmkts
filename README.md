@@ -76,8 +76,6 @@ x2
 3 -0.01336419 -0.02820079 11.577058 0.05629794
 ```
 
-\normalsize
-
 This small bit of code computes and plots all call and put Greeks for
 500 options, 16 plots in all:
 
@@ -97,6 +95,21 @@ for (i in names(y)) {
 ```
 
 ![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+And here is the tidy version, using `tidyverse`. You can run this if you
+have `tidyverse` installed.
+
+``` r
+library(tidyverse)
+k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
+S <- seq(.5, 250, by=.5)
+yc <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE)
+yp <- greeks(bsput(S, k, v, r, tt, d), tidy=TRUE)
+yg = gather(bind_rows(yc, yp), key='Greek', value='Value',
+            -(s:funcname))
+ggplot(yg, aes(x=s, y=Value, color=funcname)) + geom_line() +
+    facet_wrap(~ Greek, scales='free_y')
+```
 
 This is a great illustration of how powerful R can be.
 
@@ -190,7 +203,7 @@ occurs at that node.
 binomplot(41, 40, .3, .08, 1, 0, 3, putopt=TRUE, american=TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ### Galton board or quincunx
 
@@ -209,7 +222,7 @@ You can see the Galton board in action with `quincunx()`:
 quincunx(n=11, numballs=250, delay=0, probright=0.5)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ## Feedback
 

@@ -65,8 +65,9 @@ x1 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0))
 x1
 ```
 
-There is a new `tidy` option which produces output in a possibly
-more convenient format:
+There is a new `tidy` option which produces output in a possibly more
+convenient format (note that `tidy` here refers to the function's
+output; tidy packages are not required).
 
 
 ```{r}
@@ -96,6 +97,22 @@ for (i in names(y)) {
     }
 }
 ```
+
+And here is the tidy version, using `tidyverse`. You can run this if
+you have `tidyverse` installed.
+
+```{r, warnings=FALSE, eval=FALSE}
+library(tidyverse)
+k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
+S <- seq(.5, 250, by=.5)
+yc <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE)
+yp <- greeks(bsput(S, k, v, r, tt, d), tidy=TRUE)
+yg = gather(bind_rows(yc, yp), key='Greek', value='Value',
+            -(s:funcname))
+ggplot(yg, aes(x=s, y=Value, color=funcname)) + geom_line() +
+    facet_wrap(~ Greek, scales='free_y')
+```
+
 
 This is a great illustration of how powerful R can be.
 

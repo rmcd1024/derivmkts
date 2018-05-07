@@ -1,16 +1,21 @@
+# derivmkts 0.2.2.1.0900
+
+* Fixed greeks `elast` calculation for barrier options --- would return Inf when
+ close to out barrier (fixelast branch)
+
+
 # derivmkts 0.2.2.1
 
 Primarily a maintenance release with one new feature (tidy output)
 
-* Added `tidygreeks` parameter to `greeks` function to return output
-  in tidy format. This is `FALSE` by default, for compatability. Still
-  need to add test for this output
+* Added `tidy` parameter to `greeks` function to return output in wide
+  tidy format. This is `FALSE` by default, for compatability.
 
-* Fixed: if a parameter in the function passed to greeks uses the
+* Fix: if a parameter in the function passed to greeks uses the
   index "i", the eval step in Greeks fails (because the eval loop
-  also uses "i". The index variable cannot be `z91k25`
+  also uses "i"). The index variable is now `z91k25`
 
-* Fixed: spurious "break" in implied.Ri
+* Fix: spurious "break" in implied.R
    
 # derivmkts 0.2.2
 
