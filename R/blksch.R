@@ -3,13 +3,16 @@
 #' @description \code{bscall} and \code{bsput} compute Black-Scholes
 #' call and put prices. The functions \code{assetcall},
 #' \code{assetput}, \code{cashcall}, and \code{cashput} provide the
-#' prices of binary options that pay a share (the asset options) or $1
+#' prices of binary options that pay one share (the asset options) or $1
 #' (the cash options) if at expiration the asset price exceeds the
 #' strike (the calls) or is below the strike (the puts). We have the
 #' identities
 #'
 #' \code{bscall(s, k, v, r, tt, d)
 #'   = assetcall(s, k, v, r, tt, d) - k*cashcall(s, k, v, r, tt, d)}
+#'
+#' \code{bsput(s, k, v, r, tt, d)
+#'   = k*cashput(s, k, v, r, tt, d) - assetput(s, k, v, r, tt, d)}
 #'
 #'
 #' @name blksch

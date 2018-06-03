@@ -33,8 +33,7 @@
 #' greeks2(fn, ...)
 #' bsopt(s, k, v, r, tt, d)
 #'
-#' @param s Price of underlying asset c#' @param k Strike price of the
-#'     option
+#' @param s Price of underlying asset c
 #' @param k Option strike price 
 #' @param v Volatility of the underlying asset, defined as the
 #'     annualized standard deviation of the continuously-compounded

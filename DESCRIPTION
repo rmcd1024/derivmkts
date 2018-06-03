@@ -7,7 +7,7 @@ Authors@R: c(person("Robert", "McDonald", email = "rmcd1024@gmail.com",
 Maintainer: Robert McDonald <rmcd1024@gmail.com>
 Description: A set of pricing and expository functions that should
     be useful in teaching a course on financial derivatives.
-Imports: graphics, stats, grDevices, mnormt
+Imports: graphics, stats, grDevices, mnormt, testthat
 Depends: R (>= 3.0.0)
 Suggests: highlight, markdown, knitr, rmarkdown
 License: MIT + file LICENSE

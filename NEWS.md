@@ -1,8 +1,9 @@
 # derivmkts 0.2.2.1.0900
 
-* Fixed greeks `elast` calculation for barrier options --- would return Inf when
- close to out barrier (fixelast branch)
+* Fixed greeks `elast` calculation for barrier options --- would
+ return Inf when close to out barrier (fixelast branch)
 
+* added dependency on `testthat`
 
 # derivmkts 0.2.2.1
 
