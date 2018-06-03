@@ -91,7 +91,7 @@ if (barrierchecks) {
     )
     print('assetuicall greeks2 okay')
 
-    
+
     test_that('greeks2 works assetuicall', {
         correct <- greeksvals2[['assetuicall']]
         colnames(correct) <- tolower(colnames(correct))

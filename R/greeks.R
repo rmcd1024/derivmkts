@@ -28,14 +28,14 @@
 #'     works well with vectorization.
 #' 
 #' @usage
-#' greeks(f, tidy=FALSE)
+#' greeks(f, tidy=FALSE, long=FALSE, initcaps=FALSE)
 #' # must used named list entries:
 #' greeks2(fn, ...)
 #' bsopt(s, k, v, r, tt, d)
 #'
 #' @param s Price of underlying asset c#' @param k Strike price of the
 #'     option
-#' @param k Option strike price 
+#' @param k Option strike price
 #' @param v Volatility of the underlying asset, defined as the
 #'     annualized standard deviation of the continuously-compounded
 #'     return
@@ -47,17 +47,25 @@
 #' @param f Fully-specified option pricing function, including inputs
 #'     which need not be named. For example, you can enter
 #'     \code{greeks(bscall(40, 40, .3, .08, .25, 0))}
-#' @param tidy FALSE. If TRUE, return a data frame with columns
-#'     equal to input parameters, function name, price, and greeks, in
+#' @param tidy FALSE. If TRUE, return a data frame with columns equal
+#'     to input parameters, function name, premium, and greeks, in
 #'     semi-long format (each greek is a column). This is experimental
 #'     and the output may change. Can convert to true long format with
 #'     a call to tidyr::gather (see examples).
+#' @param long FALSE. If \code{tidy=TRUE}, then \code{long=TRUE} will
+#'     return a long data frame, where each row contains input
+#'     parameters, function name, and either the premium or one of the
+#'     greeks
+#' @param initcaps FALSE. If true, capitalize names (e.g. "Delta" vs
+#'     "delta")
 #' @param ... Pricing function inputs, must be named, may either be a
 #'     list or not
+#'
+#' @importFrom stats reshape
 #' 
 #' @examples
 #' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
-#' greeks(bscall(s, k, v, r, tt, d))
+#' greeks(bscall(s, k, v, r, tt, d), tidy=FALSE, long=FALSE, initcaps=FALSE)
 #' greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
 #' greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))[c('Delta', 'Gamma'), ]
 #' bsopt(s, k, v, r, tt, d)
@@ -81,10 +89,9 @@
 #' }
 #' \dontrun{
 #' ## Tidy version for calls
-#' library(tidyr); library(ggplot2)
-#' call_long <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE)
-#' call_long <- tidyr::gather(call_long, key='greek', value='value', -(s:funcname))
-#' ggplot(call_long, aes(x=s, y=value)) + geom_line() + facet_wrap(~greek, scales='free')
+#' call_long <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE, long=TRUE)
+#' ggplot2::ggplot(call_long, aes(x=s, y=value)) +
+#'       geom_line() + facet_wrap(~greek, scales='free')
 #' }
 
 #' @export
@@ -99,7 +106,7 @@ bsopt <- function(s, k, v, r, tt, d) {
 ## the focus so far has been on named vs unnamed parameters. We also
 ## need to take care of implicit parameters Tue, Jun 21, 2016
 #' @export
-greeks <- function(f, tidy=FALSE) {
+greeks <- function(f, tidy=FALSE, long=FALSE, initcaps=FALSE) {
     ## match.call() returns (I think) a pairlist, where the first
     ## argument is the function and the second is what follows. By
     ## extracting the second, we grab the function argument which in
@@ -147,29 +154,40 @@ greeks <- function(f, tidy=FALSE) {
     xlength <- sapply(x, length)
     xmaxlength <- max(xlength)
     includetheta <- rep(includetheta, xmaxlength)
-    prem  <-  do.call(funcname, x)
-    delta <-  .FirstDer(funcname, 's', x)
-    vega  <-  .FirstDer(funcname, 'v', x)/100
-    rho   <-  .FirstDer(funcname, 'r', x)/100
-    theta <- ifelse(includetheta,
+    Premium  <-  do.call(funcname, x)
+    Delta <-  .FirstDer(funcname, 's', x)
+    Vega  <-  .FirstDer(funcname, 'v', x)/100
+    Rho   <-  .FirstDer(funcname, 'r', x)/100
+    Theta <- ifelse(includetheta,
                     -.FirstDer(funcname, 'tt', x)/365,
                     NA)
-    psi   <-  .FirstDer(funcname, 'd', x)/100
-    elast <-  ifelse(prem > 1e-06, x[['s']]*delta/prem, NA)
-    gamma <-  .SecondDer(funcname, 's', x)
+    Psi   <-  .FirstDer(funcname, 'd', x)/100
+    Elast <-  ifelse(Premium > 1e-06, x[['s']]*Delta/Premium, NA)
+    Gamma <-  .SecondDer(funcname, 's', x)
     if (tidy) {
         ## Note: this will not work with a tibble, which doesn't
         ## support recycling for vectors longer than length 1
-        return(cbind(as.data.frame(x, stringsAsFactors=FALSE),
-                     funcname, prem, delta, vega,
-                     rho, theta, psi, elast, gamma,
-               stringsAsFactors=FALSE))
+        tmp <- cbind(as.data.frame(x, stringsAsFactors=FALSE),
+                     funcname, Premium, Delta, Vega,
+                     Rho, Theta, Psi, Elast, Gamma,
+                     stringsAsFactors=FALSE)
+        if (!initcaps) colnames(tmp) <- tolower(colnames(tmp))
+        if (long)
+            tmp <- stats::reshape(tmp,
+                                  direction='long',
+                                  varying=8:15,
+                                  v.names='value',
+                                  timevar='greek',
+                                  times=names(tmp)[8:15])
+        row.names(tmp) <- NULL
+        tmp[['id']] <- NULL
+        return(tmp)
     } else {
-        numcols <- length(prem)
+        numcols <- length(Premium)
         numrows <- 8
-        y <- t(matrix(c(prem,delta,gamma,vega,rho,theta,psi,elast),
+        y <- t(matrix(c(Premium,Delta,Gamma,Vega,Rho,Theta,Psi,Elast),
                       nrow=numcols,ncol=numrows))
-        rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
+        rownames(y) <- c("Premium", "Delta", "Gamma", "Vega", "Rho", "Theta",
                          "Psi", "Elasticity")
         
         ## The following tests to see if there is variation in any inputs
