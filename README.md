@@ -28,8 +28,6 @@ The package includes functions for computing
 
   - Analytical and Monte Carlo pricing of Asian options
 
-# Things of note
-
 ## Calculation of Greeks
 
 I have tried to make calculation of Greeks easy. The function `greeks()`
@@ -102,8 +100,8 @@ x3
 24 40 45 0.3 0.08 0.25 0   bscall   gamma  0.05629794
 ```
 
-This small bit of code computes and plots all call and put Greeks for
-500 options, 16 plots in all:
+The following computes and plots all call and put Greeks for 500
+options, 16 plots in all:
 
 ``` r
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
@@ -129,15 +127,11 @@ have `tidyverse` installed.
 library(tidyverse)
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 S <- seq(.5, 250, by=.5)
-yc <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE)
-yp <- greeks(bsput(S, k, v, r, tt, d), tidy=TRUE)
-yg = gather(bind_rows(yc, yp), key='Greek', value='Value',
-            -(s:funcname))
-ggplot(yg, aes(x=s, y=Value, color=funcname)) + geom_line() +
-    facet_wrap(~ Greek, scales='free_y')
+yc <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE, long=TRUE)
+yp <- greeks(bsput(S, k, v, r, tt, d), tidy=TRUE, long=TRUE)
+ggplot(bind_rows(yc, yp), aes(x=s, y=value, color=funcname)) + geom_line() +
+    facet_wrap(~ greek, scales='free_y')
 ```
-
-This is a great illustration of how powerful R can be.
 
 ## Binomial calculations
 
