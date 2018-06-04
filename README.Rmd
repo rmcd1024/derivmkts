@@ -1,4 +1,5 @@
 ---
+title: "derivmkts: An option pricing package"
 output: 
   md_document:
      variant: gfm
@@ -13,9 +14,7 @@ opts_chunk$set(comment=NA,
                collapse=TRUE)
 library(derivmkts)
 ```
-# Derivmkts: An option pricing package for R
 
-## Introduction
 
 This is a collection of option pricing functions for a course in
 financial derivatives. The names of the functions mostly match those
@@ -45,9 +44,9 @@ The package includes functions for computing
 
 * Analytical and Monte Carlo pricing of Asian options 
 
-## Things of note
+# Things of note
 
-### Calculation of Greeks
+## Calculation of Greeks
 
 I have tried to make calculation of Greeks easy. The
 function `greeks()` accepts an option pricing function call as an
@@ -65,16 +64,19 @@ x1 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0))
 x1
 ```
 
-There is a new `tidy` option which produces output in a possibly more
+There is a new `tidy` option which produces output in a  more
 convenient format (note that `tidy` here refers to the function's
-output; tidy packages are not required).
+output; `tidyverse` packages are not required). If `tidy=TRUE`,
+`long=TRUE` will produce long-form output.
 
 
 ```{r}
 x2 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0),
              tidy=TRUE)
 x2
-
+x3 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0),
+             tidy=TRUE, long=TRUE)
+x3
 ```
 
 \normalsize
@@ -116,9 +118,9 @@ ggplot(yg, aes(x=s, y=Value, color=funcname)) + geom_line() +
 
 This is a great illustration of how powerful R can be.
 
-### Binomial calculations
+## Binomial calculations
 
-#### binomopt
+### binomopt
 
 By default the binomopt function returns the price of an American
 call. In adddition:
@@ -143,7 +145,7 @@ x <- binomopt(41, 40, .3, .08, 1, 0, 3, putopt=TRUE, american=TRUE,
 x
 ```
 
-#### binomplot
+### binomplot
 
 This function plots the binomial tree, providing a visual depiction of
 the nodes, the probability of reaching each node, and whether exercise
@@ -154,7 +156,7 @@ binomplot(41, 40, .3, .08, 1, 0, 3, putopt=TRUE, american=TRUE)
 
 ```
 
-### Galton board or quincunx
+## Galton board or quincunx
 
 The [Galton board](http://mathworld.wolfram.com/GaltonBoard.html) is a
 pegboard that illustrates the central limit theorem. Balls drop from

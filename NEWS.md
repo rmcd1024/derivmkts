@@ -1,7 +1,16 @@
 # derivmkts 0.2.2.1.0900
 
-* Fixed greeks `elast` calculation for barrier options --- would
- return Inf when close to out barrier (fixelast branch)
+* Added options to `greeks`: 
+  * `long` (if `tidy=TRUE`, return tidy long form output)
+  * `initcaps`: capitalize "Delta", "Gamma", etc.
+
+* Changes:
+  * option value is now returned as "premium" rather than "price";
+    the term "price" is ambiguous (the oil futures price is 100 but
+    the value of the cotract --- the premium --- is 0)
+
+* Fixed greeks `elast` calculation for barrier options --- would return Inf when
+ close to out barrier (fixelast branch)
 
 * added dependency on `testthat`
 
