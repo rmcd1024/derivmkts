@@ -8,6 +8,7 @@ vignettes/figure/
 ./derivmkts.pdf
 README.Rmd
 README.md
+README.html
 README_files/
 figure/
 DM_token
