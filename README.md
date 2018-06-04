@@ -120,8 +120,7 @@ for (i in names(y)) {
 
 ![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-And here is the tidy version, using `tidyverse`. You can run this if you
-have `tidyverse` installed.
+And here is a version of the plot using `ggplot`:
 
 ``` r
 library(tidyverse)

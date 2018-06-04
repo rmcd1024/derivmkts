@@ -98,8 +98,7 @@ for (i in names(y)) {
 }
 ```
 
-And here is the tidy version, using `tidyverse`. You can run this if
-you have `tidyverse` installed.
+And here is a version of the plot using `ggplot`:
 
 ```{r, warnings=FALSE, eval=FALSE}
 library(tidyverse)
