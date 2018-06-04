@@ -26,15 +26,14 @@
 #'     cases. It might be good to use the package numDeriv or some
 #'     other more sophisticated calculation, but the current approach
 #'     works well with vectorization.
-#' 
+#'
 #' @usage
 #' greeks(f, tidy=FALSE, long=FALSE, initcaps=FALSE)
 #' # must used named list entries:
 #' greeks2(fn, ...)
 #' bsopt(s, k, v, r, tt, d)
 #'
-#' @param s Price of underlying asset c#' @param k Strike price of the
-#'     option
+#' @param s Price of underlying asset
 #' @param k Option strike price
 #' @param v Volatility of the underlying asset, defined as the
 #'     annualized standard deviation of the continuously-compounded
@@ -62,7 +61,7 @@
 #'     list or not
 #'
 #' @importFrom stats reshape
-#' 
+#'
 #' @examples
 #' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
 #' greeks(bscall(s, k, v, r, tt, d), tidy=FALSE, long=FALSE, initcaps=FALSE)
@@ -138,7 +137,7 @@ greeks <- function(f, tidy=FALSE, long=FALSE, initcaps=FALSE) {
         ##  restrict range in setdiff to account for implicit
         ##  parameters in fnames but not in function call
         names(args)[which(names(args) == "")] <-
-            setdiff(fnames, names(args))[1:numunnamedargs] 
+            setdiff(fnames, names(args))[1:numunnamedargs]
     }
     x <- as.list(args)
     ## some elements of x will have had explicit values in the call
@@ -189,10 +188,10 @@ greeks <- function(f, tidy=FALSE, long=FALSE, initcaps=FALSE) {
                       nrow=numcols,ncol=numrows))
         rownames(y) <- c("Premium", "Delta", "Gamma", "Vega", "Rho", "Theta",
                          "Psi", "Elasticity")
-        
+
         ## The following tests to see if there is variation in any inputs
         ## (is xmaxlength > 1). If so, is there variation in more than one
-        ## input (length(maxarg) > 1). The column names are constructed 
+        ## input (length(maxarg) > 1). The column names are constructed
         ## in each case to state the parameter values for that column.
         arggt1 <- which(xlength > 1) # which inputs are vectors
         if (xmaxlength == 1) {
@@ -220,20 +219,20 @@ greeks2 <- function(fn, ...) {
     includetheta <- ('tt' %in% names(x))
     ## make sure recycling rule will work, stop if not
     .checkListRecycle(x)
-    prem  <-  do.call(fn, x)
+    premium  <-  do.call(fn, x)
     delta <-  .FirstDer(fn, 's', x)
     vega  <-  .FirstDer(fn, 'v', x)/100
     rho   <-  .FirstDer(fn, 'r', x)/100
     if (includetheta) theta <- -.FirstDer(fn, 'tt', x)/365
     else theta <- NA
     psi   <-  .FirstDer(fn, 'd', x)/100
-    elast <-  x[['s']]*delta/prem
+    elast <-  x[['s']]*delta/premium
     gamma <-  .SecondDer(fn, 1, x)
-    numcols <- length(prem)
+    numcols <- length(premium)
     numrows <- 8
-    y <- t(matrix(c(prem,delta,gamma,vega,rho,theta,psi,elast),
+    y <- t(matrix(c(premium,delta,gamma,vega,rho,theta,psi,elast),
                   nrow=numcols,ncol=numrows))
-    rownames(y) <- c("Price", "Delta", "Gamma", "Vega", "Rho", "Theta",
+    rownames(y) <- c("Premium", "Delta", "Gamma", "Vega", "Rho", "Theta",
                      "Psi", "Elasticity")
     funcname <- as.character(match.call()[[2]])
 
@@ -264,7 +263,7 @@ greeks2 <- function(fn, ...) {
 .FirstDer <- function(fn, pos, arglist) {
     ## compute first derivative of function fn
     ## arglist must be a list
-    epsilon <- 1e-04 
+    epsilon <- 1e-04
     xup <- xdn <- arglist
     xup[[pos]] <- xup[[pos]] + epsilon
     xdn[[pos]] <- xdn[[pos]] - epsilon
@@ -278,7 +277,7 @@ greeks2 <- function(fn, ...) {
     ##   compute second derivative of function fn
     if (is.list(c(...))) arglist <- c(...)
     else arglist <- list(...)
-    epsilon <- 5e-04 
+    epsilon <- 5e-04
     xup <- xdn <- arglist
     xup[[pos]] <- xup[[pos]] + epsilon
     xdn[[pos]] <- xdn[[pos]] - epsilon

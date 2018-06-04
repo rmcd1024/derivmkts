@@ -92,7 +92,7 @@ for (i in bstestfns) {
 prices <- 4
 imptestfns <- c('bscallimpvol', 'bsputimpvol', 'bscallimpS', 'bsputimpS')
 bsimpvals <- data.frame(pricevals=prices)
-for (i in imptestfns[1:2]) { 
+for (i in imptestfns[1:2]) {
     tmp <- do.call(i, list(s=s, k=k, r=r, tt=tt, d=d, price=prices))
     bsimpvals[, i] <- tmp
 }
@@ -143,9 +143,10 @@ greeksvals2[['bscall']] <- Greeks2(bscall(s=s, k=kseq, v=v,
 greeksvals2[['assetuicall']] <- Greeks2(AssetUICall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d, H=Hseq2))
 greeksvals2[['bscalltidy']] <- Greeks2tidy(bscall(s=s, k=kseq, v=v,
-                                              r=r, tt=tt, d=d))
+                                              r=r, tt=tt, d=d), tidy=TRUE)
 greeksvals2[['assetuicalltidy']] <- Greeks2tidy(AssetUICall(s=s, k=kseq, v=v,
-                                              r=r, tt=tt, d=d, H=Hseq2))
+                                              r=r, tt=tt, d=d, H=Hseq2),
+                                              tidy=TRUE)
 binomvalsEurC <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d, nstep,
                              putOpt=FALSE, American=FALSE)
 binomvalsEurP <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d,
@@ -194,4 +195,5 @@ keeplist <- c('barriervals', 'barriertestfns',
 
 save(list=keeplist,
      file='~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
+
 
