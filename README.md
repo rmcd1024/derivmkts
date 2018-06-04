@@ -1,10 +1,6 @@
 [![Build
 Status](https://travis-ci.org/rmcd1024/derivmkts.svg?branch=master)](https://travis-ci.org/rmcd1024/derivmkts)[![](http://www.r-pkg.org/badges/version/derivmkts)](http://www.r-pkg.org/pkg/derivmkts)
 
-# Derivmkts: An option pricing package for R
-
-## Introduction
-
 This is a collection of option pricing functions for a course in
 financial derivatives. The names of the functions mostly match those in
 my book *Derivatives Markets*, which explains the package name. This is
@@ -32,9 +28,9 @@ The package includes functions for computing
 
   - Analytical and Monte Carlo pricing of Asian options
 
-## Things of note
+# Things of note
 
-### Calculation of Greeks
+## Calculation of Greeks
 
 I have tried to make calculation of Greeks easy. The function `greeks()`
 accepts an option pricing function call as an argument, and returns a
@@ -49,7 +45,7 @@ can access the delta values, for example, using `x['Delta', ]`.
 x1 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0))
 x1
              bscall_35   bscall_40   bscall_45
-Price       6.13481997  2.78473666  0.97436823
+Premium     6.13481997  2.78473666  0.97436823
 Delta       0.86401619  0.58251565  0.28200793
 Gamma       0.03636698  0.06506303  0.05629794
 Vega        0.04364029  0.07807559  0.06755753
@@ -59,14 +55,16 @@ Psi        -0.08640162 -0.05825156 -0.02820079
 Elasticity  5.63352271  8.36726367 11.57705764
 ```
 
-There is a new `tidy` option which produces output in a possibly more
-convenient format:
+There is a new `tidy` option which produces output in a more convenient
+format (note that `tidy` here refers to the function’s output;
+`tidyverse` packages are not required). If `tidy=TRUE`, `long=TRUE` will
+produce long-form output.
 
 ``` r
 x2 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0),
              tidy=TRUE)
 x2
-   s  k   v    r   tt d funcname      prem     delta       vega        rho
+   s  k   v    r   tt d funcname   premium     delta       vega        rho
 1 40 35 0.3 0.08 0.25 0   bscall 6.1348200 0.8640162 0.04364029 0.07106457
 2 40 40 0.3 0.08 0.25 0   bscall 2.7847367 0.5825156 0.07807559 0.05128972
 3 40 45 0.3 0.08 0.25 0   bscall 0.9743682 0.2820079 0.06755753 0.02576487
@@ -74,6 +72,34 @@ x2
 1 -0.01340407 -0.08640162  5.633523 0.03636698
 2 -0.01733098 -0.05825156  8.367264 0.06506303
 3 -0.01336419 -0.02820079 11.577058 0.05629794
+x3 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0),
+             tidy=TRUE, long=TRUE)
+x3
+    s  k   v    r   tt d funcname   greek       value
+1  40 35 0.3 0.08 0.25 0   bscall premium  6.13481997
+2  40 40 0.3 0.08 0.25 0   bscall premium  2.78473666
+3  40 45 0.3 0.08 0.25 0   bscall premium  0.97436823
+4  40 35 0.3 0.08 0.25 0   bscall   delta  0.86401619
+5  40 40 0.3 0.08 0.25 0   bscall   delta  0.58251565
+6  40 45 0.3 0.08 0.25 0   bscall   delta  0.28200793
+7  40 35 0.3 0.08 0.25 0   bscall    vega  0.04364029
+8  40 40 0.3 0.08 0.25 0   bscall    vega  0.07807559
+9  40 45 0.3 0.08 0.25 0   bscall    vega  0.06755753
+10 40 35 0.3 0.08 0.25 0   bscall     rho  0.07106457
+11 40 40 0.3 0.08 0.25 0   bscall     rho  0.05128972
+12 40 45 0.3 0.08 0.25 0   bscall     rho  0.02576487
+13 40 35 0.3 0.08 0.25 0   bscall   theta -0.01340407
+14 40 40 0.3 0.08 0.25 0   bscall   theta -0.01733098
+15 40 45 0.3 0.08 0.25 0   bscall   theta -0.01336419
+16 40 35 0.3 0.08 0.25 0   bscall     psi -0.08640162
+17 40 40 0.3 0.08 0.25 0   bscall     psi -0.05825156
+18 40 45 0.3 0.08 0.25 0   bscall     psi -0.02820079
+19 40 35 0.3 0.08 0.25 0   bscall   elast  5.63352271
+20 40 40 0.3 0.08 0.25 0   bscall   elast  8.36726367
+21 40 45 0.3 0.08 0.25 0   bscall   elast 11.57705764
+22 40 35 0.3 0.08 0.25 0   bscall   gamma  0.03636698
+23 40 40 0.3 0.08 0.25 0   bscall   gamma  0.06506303
+24 40 45 0.3 0.08 0.25 0   bscall   gamma  0.05629794
 ```
 
 This small bit of code computes and plots all call and put Greeks for
@@ -113,9 +139,9 @@ ggplot(yg, aes(x=s, y=Value, color=funcname)) + geom_line() +
 
 This is a great illustration of how powerful R can be.
 
-### Binomial calculations
+## Binomial calculations
 
-#### binomopt
+### binomopt
 
 By default the binomopt function returns the price of an American call.
 In adddition:
@@ -193,7 +219,7 @@ $bondtree
 [3,]  0.00000  0.000000 38.947430
 ```
 
-#### binomplot
+### binomplot
 
 This function plots the binomial tree, providing a visual depiction of
 the nodes, the probability of reaching each node, and whether exercise
@@ -205,7 +231,7 @@ binomplot(41, 40, .3, .08, 1, 0, 3, putopt=TRUE, american=TRUE)
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-### Galton board or quincunx
+## Galton board or quincunx
 
 The [Galton board](http://mathworld.wolfram.com/GaltonBoard.html) is a
 pegboard that illustrates the central limit theorem. Balls drop from the
