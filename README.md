@@ -54,14 +54,13 @@ Psi        -0.08640162 -0.05825156 -0.02820079
 Elasticity  5.63352271  8.36726367 11.57705764
 ```
 
-There is a new `tidy` option which produces output in a more convenient
-format (note that `tidy` here refers to the function’s output;
-`tidyverse` packages are not required). If `tidy=TRUE`, `long=TRUE` will
-produce long-form output.
+There is a new `complete` option which produces output in a more
+convenient format. If `complete=TRUE`, `long=TRUE` will produce
+long-form output.
 
 ``` r
 x2 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0),
-             tidy=TRUE)
+             complete=TRUE)
 x2
    s  k   v    r   tt d funcname   premium     delta       vega        rho
 1 40 35 0.3 0.08 0.25 0   bscall 6.1348200 0.8640162 0.04364029 0.07106457
@@ -72,7 +71,7 @@ x2
 2 -0.01733098 -0.05825156  8.367264 0.06506303
 3 -0.01336419 -0.02820079 11.577058 0.05629794
 x3 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0),
-             tidy=TRUE, long=TRUE)
+             complete=TRUE, long=TRUE)
 x3
     s  k   v    r   tt d funcname   greek       value
 1  40 35 0.3 0.08 0.25 0   bscall premium  6.13481997
@@ -128,8 +127,8 @@ library(derivmkts)
 library(ggplot2)
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 S <- seq(.5, 250, by=.5)
-yc <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE, long=TRUE)
-yp <- greeks(bsput(S, k, v, r, tt, d), tidy=TRUE, long=TRUE)
+yc <- greeks(bscall(S, k, v, r, tt, d), complete=TRUE, long=TRUE)
+yp <- greeks(bsput(S, k, v, r, tt, d), complete=TRUE, long=TRUE)
 ggplot(rbind(yc, yp), aes(x=s, y=value, color=funcname)) + geom_line() +
     facet_wrap(~ greek, scales='free_y')
 ```
