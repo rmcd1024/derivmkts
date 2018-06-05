@@ -3,16 +3,17 @@ Status](https://travis-ci.org/rmcd1024/derivmkts.svg?branch=master)](https://tra
 
 This is a collection of option pricing functions for a course in
 financial derivatives. The names of the functions mostly match those in
-my book *Derivatives Markets*, which explains the package name. This is
-the initial version; I expect to add and refine functions over time.
-Depending upon the level of the course, this package may or may not be
-helpful for students. I hope that at a minimum it will be helpful for
-instructors.
+my book *Derivatives Markets*, which explains the package name. This
+should be useful for students comfortable with R. In any case, I hope it
+will be helpful for instructors.
 
 There are of course other option pricing packages in R, notably
-RQuantLib and fOptions. I don’t claim to add significant pricing
-functionality to those. This package does, however, have a few aspects
-that might be unique, which I describe below.
+[RQuantLib](https://cran.r-project.org/package=RQuantLib) and
+[fOptions](https://cran.r-project.org/package=RQuantLib). I don’t add
+significant pricing functionality to those. This package does, however,
+have a few aspects that might be unique, which I describe below:
+calculation of greeks; display of binomial formula output and trees; and
+a quincunx function.
 
 The package includes functions for computing
 
@@ -30,10 +31,10 @@ The package includes functions for computing
 
 ## Calculation of Greeks
 
-I have tried to make calculation of Greeks easy. The function `greeks()`
-accepts an option pricing function call as an argument, and returns a
-vectorized set of greeks for any pricing function that uses standard
-input names (i.e., the asset price is `s`, the volatility is `v`, etc.).
+The function `greeks()` accepts an option pricing function call as an
+argument, and returns a vectorized set of greeks for any pricing
+function that uses standard input names (i.e., the asset price is `s`,
+the volatility is `v`, etc.).
 
 As an example, the following calculation will produce the full
 complement of greeks for a call, for each of three strike prices. You
@@ -123,14 +124,17 @@ for (i in names(y)) {
 And here is a version of the plot using `ggplot`:
 
 ``` r
-library(tidyverse)
+library(derivmkts)
+library(ggplot2)
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 S <- seq(.5, 250, by=.5)
 yc <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE, long=TRUE)
 yp <- greeks(bsput(S, k, v, r, tt, d), tidy=TRUE, long=TRUE)
-ggplot(bind_rows(yc, yp), aes(x=s, y=value, color=funcname)) + geom_line() +
+ggplot(rbind(yc, yp), aes(x=s, y=value, color=funcname)) + geom_line() +
     facet_wrap(~ greek, scales='free_y')
 ```
+
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ## Binomial calculations
 
