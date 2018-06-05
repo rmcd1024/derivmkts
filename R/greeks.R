@@ -15,7 +15,7 @@
 #' @aliases bsopt greeks greeks2
 #'
 #' @return A named list of Black-Scholes option prices and Greeks, or
-#'     optionally (`tidy=TRUE`) a long-form dataframe.
+#'     optionally (`complete=TRUE`) a dataframe.
 #' @note The pricing function being passed to the greeks function must
 #'     return a numeric vector. For example, \code{callperpetual} must
 #'     be called with the option \code{showbarrier=FALSE} (the
@@ -28,7 +28,7 @@
 #'     works well with vectorization.
 #'
 #' @usage
-#' greeks(f, tidy=FALSE, long=FALSE, initcaps=FALSE)
+#' greeks(f, complete=FALSE, long=FALSE, initcaps=FALSE)
 #' # must used named list entries:
 #' greeks2(fn, ...)
 #' bsopt(s, k, v, r, tt, d)
@@ -46,12 +46,11 @@
 #' @param f Fully-specified option pricing function, including inputs
 #'     which need not be named. For example, you can enter
 #'     \code{greeks(bscall(40, 40, .3, .08, .25, 0))}
-#' @param tidy FALSE. If TRUE, return a data frame with columns equal
-#'     to input parameters, function name, premium, and greeks, in
-#'     semi-long format (each greek is a column). This is experimental
-#'     and the output may change. Can convert to true long format with
-#'     a call to tidyr::gather (see examples).
-#' @param long FALSE. If \code{tidy=TRUE}, then \code{long=TRUE} will
+#' @param complete FALSE. If TRUE, return a data frame with columns
+#'     equal to input parameters, function name, premium, and greeks
+#'     (each greek is a column). This is experimental and the output
+#'     may change. Convert to long format using \code{long=TRUE}.
+#' @param long FALSE. If \code{complete=TRUE}, then \code{long=TRUE} will
 #'     return a long data frame, where each row contains input
 #'     parameters, function name, and either the premium or one of the
 #'     greeks
@@ -64,7 +63,7 @@
 #'
 #' @examples
 #' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
-#' greeks(bscall(s, k, v, r, tt, d), tidy=FALSE, long=FALSE, initcaps=FALSE)
+#' greeks(bscall(s, k, v, r, tt, d), complete=FALSE, long=FALSE, initcaps=FALSE)
 #' greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
 #' greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))[c('Delta', 'Gamma'), ]
 #' bsopt(s, k, v, r, tt, d)
@@ -87,8 +86,8 @@
 #'     }
 #' }
 #' \dontrun{
-#' ## Tidy version for calls
-#' call_long <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE, long=TRUE)
+#' ## Using complete option for calls
+#' call_long <- greeks(bscall(S, k, v, r, tt, d), complete=TRUE, long=TRUE)
 #' ggplot2::ggplot(call_long, aes(x=s, y=value)) +
 #'       geom_line() + facet_wrap(~greek, scales='free')
 #' }
@@ -105,7 +104,7 @@ bsopt <- function(s, k, v, r, tt, d) {
 ## the focus so far has been on named vs unnamed parameters. We also
 ## need to take care of implicit parameters Tue, Jun 21, 2016
 #' @export
-greeks <- function(f, tidy=FALSE, long=FALSE, initcaps=FALSE) {
+greeks <- function(f, complete=FALSE, long=FALSE, initcaps=FALSE) {
     ## match.call() returns (I think) a pairlist, where the first
     ## argument is the function and the second is what follows. By
     ## extracting the second, we grab the function argument which in
@@ -163,7 +162,7 @@ greeks <- function(f, tidy=FALSE, long=FALSE, initcaps=FALSE) {
     Psi   <-  .FirstDer(funcname, 'd', x)/100
     Elast <-  ifelse(Premium > 1e-06, x[['s']]*Delta/Premium, NA)
     Gamma <-  .SecondDer(funcname, 's', x)
-    if (tidy) {
+    if (complete) {
         ## Note: this will not work with a tibble, which doesn't
         ## support recycling for vectors longer than length 1
         tmp <- cbind(as.data.frame(x, stringsAsFactors=FALSE),

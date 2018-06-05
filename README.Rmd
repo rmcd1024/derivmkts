@@ -62,18 +62,17 @@ x1 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0))
 x1
 ```
 
-There is a new `tidy` option which produces output in a  more
-convenient format (note that `tidy` here refers to the function's
-output; `tidyverse` packages are not required). If `tidy=TRUE`,
-`long=TRUE` will produce long-form output.
+There is a new `complete` option which produces output in a more
+convenient format. If `complete=TRUE`, `long=TRUE` will produce
+long-form output.
 
 
 ```{r}
 x2 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0),
-             tidy=TRUE)
+             complete=TRUE)
 x2
 x3 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0),
-             tidy=TRUE, long=TRUE)
+             complete=TRUE, long=TRUE)
 x3
 ```
 
@@ -105,8 +104,8 @@ library(derivmkts)
 library(ggplot2)
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 S <- seq(.5, 250, by=.5)
-yc <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE, long=TRUE)
-yp <- greeks(bsput(S, k, v, r, tt, d), tidy=TRUE, long=TRUE)
+yc <- greeks(bscall(S, k, v, r, tt, d), complete=TRUE, long=TRUE)
+yp <- greeks(bsput(S, k, v, r, tt, d), complete=TRUE, long=TRUE)
 ggplot(rbind(yc, yp), aes(x=s, y=value, color=funcname)) + geom_line() +
     facet_wrap(~ greek, scales='free_y')
 ```

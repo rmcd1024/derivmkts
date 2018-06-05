@@ -6,7 +6,7 @@
 \alias{greeks2}
 \title{Calculate option Greeks}
 \usage{
-greeks(f, tidy=FALSE, long=FALSE, initcaps=FALSE)
+greeks(f, complete=FALSE, long=FALSE, initcaps=FALSE)
 # must used named list entries:
 greeks2(fn, ...)
 bsopt(s, k, v, r, tt, d)
@@ -33,13 +33,12 @@ continuously-compounded}
 which need not be named. For example, you can enter
 \code{greeks(bscall(40, 40, .3, .08, .25, 0))}}
 
-\item{tidy}{FALSE. If TRUE, return a data frame with columns equal
-to input parameters, function name, premium, and greeks, in
-semi-long format (each greek is a column). This is experimental
-and the output may change. Can convert to true long format with
-a call to tidyr::gather (see examples).}
+\item{complete}{FALSE. If TRUE, return a data frame with columns
+equal to input parameters, function name, premium, and greeks
+(each greek is a column). This is experimental and the output
+may change. Convert to long format using \code{long=TRUE}.}
 
-\item{long}{FALSE. If \code{tidy=TRUE}, then \code{long=TRUE} will
+\item{long}{FALSE. If \code{complete=TRUE}, then \code{long=TRUE} will
 return a long data frame, where each row contains input
 parameters, function name, and either the premium or one of the
 greeks}
@@ -52,7 +51,7 @@ list or not}
 }
 \value{
 A named list of Black-Scholes option prices and Greeks, or
-    optionally (`tidy=TRUE`) a long-form dataframe.
+    optionally (`complete=TRUE`) a dataframe.
 }
 \description{
 The functions \code{greeks} and \code{greeks2} provide
@@ -82,7 +81,7 @@ The pricing function being passed to the greeks function must
 }
 \examples{
 s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
-greeks(bscall(s, k, v, r, tt, d), tidy=FALSE, long=FALSE, initcaps=FALSE)
+greeks(bscall(s, k, v, r, tt, d), complete=FALSE, long=FALSE, initcaps=FALSE)
 greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
 greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))[c('Delta', 'Gamma'), ]
 bsopt(s, k, v, r, tt, d)
@@ -105,8 +104,8 @@ for (i in names(y)) {
     }
 }
 \dontrun{
-## Tidy version for calls
-call_long <- greeks(bscall(S, k, v, r, tt, d), tidy=TRUE, long=TRUE)
+## Using complete option for calls
+call_long <- greeks(bscall(S, k, v, r, tt, d), complete=TRUE, long=TRUE)
 ggplot2::ggplot(call_long, aes(x=s, y=value)) +
       geom_line() + facet_wrap(~greek, scales='free')
 }

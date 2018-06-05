@@ -143,10 +143,10 @@ greeksvals2[['bscall']] <- Greeks2(bscall(s=s, k=kseq, v=v,
 greeksvals2[['assetuicall']] <- Greeks2(AssetUICall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d, H=Hseq2))
 greeksvals2[['bscalltidy']] <- Greeks2tidy(bscall(s=s, k=kseq, v=v,
-                                              r=r, tt=tt, d=d), tidy=TRUE)
+                                              r=r, tt=tt, d=d), complete=TRUE)
 greeksvals2[['assetuicalltidy']] <- Greeks2tidy(AssetUICall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d, H=Hseq2),
-                                              tidy=TRUE)
+                                              complete=TRUE)
 binomvalsEurC <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d, nstep,
                              putOpt=FALSE, American=FALSE)
 binomvalsEurP <- BinomSimple(s=s, k=k, v=v, r=r, tt=tt, d=d,
