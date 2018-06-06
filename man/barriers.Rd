@@ -48,14 +48,14 @@ calldownin(s, k, v, r, tt, d, H)
 calldownout(s, k, v, r, tt, d, H)
 putdownin(s, k, v, r, tt, d, H)
 putdownout(s, k, v, r, tt, d, H)
-uicall(s, k, v, r, tt, d, H)
-uocall(s, k, v, r, tt, d, H)
-dicall(s, k, v, r, tt, d, H)
-docall(s, k, v, r, tt, d, H)
-uiput(s, k, v, r, tt, d, H)
-uoput(s, k, v, r, tt, d, H)
-diput(s, k, v, r, tt, d, H)
-doput(s, k, v, r, tt, d, H)
+uicall(s, k, v, r, tt, d, H) ## same as callupin
+uocall(s, k, v, r, tt, d, H) ## same as callupout
+uiput(s, k, v, r, tt, d, H)  ## same as putupin
+uoput(s, k, v, r, tt, d, H)  ## same as putupout
+dicall(s, k, v, r, tt, d, H) ## same as calldownin
+docall(s, k, v, r, tt, d, H) ## same as calldownout
+diput(s, k, v, r, tt, d, H)  ## same as putdownin
+doput(s, k, v, r, tt, d, H)  ## same as putdownout
 cashuicall(s, k, v, r, tt, d, H)
 cashuiput(s, k, v, r, tt, d, H)
 cashdicall(s, k, v, r, tt, d, H)
