@@ -1,15 +1,16 @@
-# derivmkts 0.2.2.1.0900
+# derivmkts 0.2.2.2
 
 * greeks `tidy` option renamed to `complete`
 
 * Added options to `greeks`: 
+  * `complete` if `TRUE`, return all inputs and greeks for each case 
   * `long` (if `complete=TRUE`, return long form output)
   * `initcaps`: capitalize "Delta", "Gamma", etc.
 
 * Breaking change:
   * option value is now returned as "premium" rather than "price";
-    the term "price" is ambiguous (the oil futures price is 100 but
-    the value of the cotract --- the premium --- is 0)
+    the term "price" is ambiguous (e.g. a futures price is 100 but
+    the value of the contract --- the premium --- is 0)
 
 * Fixed greeks `elast` calculation for barrier options --- would return Inf when
  close to out barrier (fixelast branch)
