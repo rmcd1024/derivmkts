@@ -15,7 +15,6 @@ for (i in barriertestfns4) {
                            list(s=sseq4, k=kseq4, v=v, r=r, d=d)
                            )
         expect_equal(correct, unknown)
-
     }
     )
     print(paste(testfn, 'okay'))
@@ -24,7 +23,7 @@ for (i in barriertestfns4) {
 test_that('Greeks for perpetual call work', {
     correct <-  greeksvals[["callperpetual"]]
     for (i in names(greeksinputsnott)) assign(i, greeksinputsnott[i])
-    unknown <-  greeks(callperpetual(s, k, v, r, d))
+    unknown <-  greeks(callperpetual(s, k, v, r, d), initcaps=TRUE)
     expect_equal(correct, unknown)
 }
 )

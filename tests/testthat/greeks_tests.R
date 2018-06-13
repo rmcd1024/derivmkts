@@ -41,7 +41,8 @@ tol2 <- 1e-04 ## doesn't seem to make the check work
 test_that('greeks works bscall', {
               correct <- greeksvals[['bscall']]
               unknown <- greeks(bscall(s=s, k=kseq, v=v,
-                                             r=r, tt=tt, d=d))
+                                       r=r, tt=tt, d=d),
+                                initcaps=TRUE)
               expect_equal(correct, unknown, tolerance=tol)
           }
           )
@@ -79,7 +80,6 @@ if (barrierchecks) {
     }
     )
     print('assetuicall greeks okay')
-
     test_that('greeks2 works assetuicall', {
         correct <- greeksvals2[['assetuicalltidy']]
         correct$funcname <- tolower(correct$funcname)
@@ -90,17 +90,14 @@ if (barrierchecks) {
     }
     )
     print('assetuicall greeks2 okay')
-
-
     test_that('greeks2 works assetuicall', {
         correct <- greeksvals2[['assetuicall']]
         colnames(correct) <- tolower(colnames(correct))
         unknown <- greeks(assetuicall(s=s, k=kseq, v=v,
-                                      r=r, tt=tt, d=d, H=Hseq2))
+                                      r=r, tt=tt, d=d, H=Hseq2),
+                          initcaps=TRUE)
         expect_equal(correct, unknown, tolerance=tol2)
     }
     )
     print('assetuicall greeks2 okay')
-
-
 }

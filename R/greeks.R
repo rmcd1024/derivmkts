@@ -169,19 +169,26 @@ greeks <- function(f, complete=FALSE, long=FALSE, initcaps=FALSE) {
                      funcname, Premium, Delta, Vega,
                      Rho, Theta, Psi, Elast, Gamma,
                      stringsAsFactors=FALSE)
-        if (!initcaps) colnames(tmp) <- tolower(colnames(tmp))
         if (long) {
             premcol <- which(colnames(tmp) == 'premium')
             gammacol <- which(colnames(tmp) == 'gamma')
+            greekcols <- which(colnames(tmp) %in%
+                               c('Premium', 'Delta', 'Vega',
+                                 'Rho', 'Theta', 'Psi', 'Elast',
+                                 'Gamma'))
             tmp <- stats::reshape(tmp,
                                   direction='long',
-                                  varying=premcol:gammacol,
+                                  ##varying=premcol:gammacol,
+                                  varying=greekcols,
                                   v.names='value',
                                   timevar='greek',
-                                  times=names(tmp)[premcol:gammacol])
+                                  ##times=names(tmp)[premcol:gammacol])
+                                  times=names(tmp)[greekcols]
+                                  )
             }
         row.names(tmp) <- NULL
         tmp[['id']] <- NULL
+        if (!initcaps) colnames(tmp) <- tolower(colnames(tmp))
         return(tmp)
     } else {
         numcols <- length(Premium)
@@ -207,6 +214,7 @@ greeks <- function(f, complete=FALSE, long=FALSE, initcaps=FALSE) {
             }
             colnames(y) <- paste(funcname, tmp, sep='')
         }
+        if (!initcaps) rownames(y) <- tolower(rownames(y))
         return(y)
     }
 }
