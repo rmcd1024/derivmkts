@@ -170,13 +170,16 @@ greeks <- function(f, complete=FALSE, long=FALSE, initcaps=FALSE) {
                      Rho, Theta, Psi, Elast, Gamma,
                      stringsAsFactors=FALSE)
         if (!initcaps) colnames(tmp) <- tolower(colnames(tmp))
-        if (long)
+        if (long) {
+            premcol <- which(colnames(tmp) == 'premium')
+            gammacol <- which(colnames(tmp) == 'gamma')
             tmp <- stats::reshape(tmp,
                                   direction='long',
-                                  varying=8:15,
+                                  varying=premcol:gammacol,
                                   v.names='value',
                                   timevar='greek',
-                                  times=names(tmp)[8:15])
+                                  times=names(tmp)[premcol:gammacol])
+            }
         row.names(tmp) <- NULL
         tmp[['id']] <- NULL
         return(tmp)
