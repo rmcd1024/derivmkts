@@ -1,9 +1,10 @@
-# derivmkts 0.2.2.2
+# derivmkts 0.2.3
 
 * greeks `tidy` option renamed to `complete`
 
 * Added options to `greeks`: 
   * `complete` if `TRUE`, return all inputs and greeks for each case 
+* greeks `tidy` option renamed to `complete`. By default, this returns wide form results
   * `long` (if `complete=TRUE`, return long form output)
   * `initcaps`: capitalize "Delta", "Gamma", etc.
 
