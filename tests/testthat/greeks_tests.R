@@ -52,7 +52,7 @@ test_that('tidy greeks works bscall', {
               correct <- greeksvals2[['bscalltidy']]
               unknown <- greeks(bscall(s=s, k=kseq, v=v,
                                        r=r, tt=tt, d=d),
-                                complete=TRUE)
+                                complete=TRUE, initcaps=FALSE)
               expect_equal(correct, unknown, tolerance=tol)
           }
           )
@@ -75,7 +75,8 @@ if (barrierchecks) {
         colnames(correct) <- tolower(colnames(correct))
         unknown <-
             greeks2(assetuicall, list(s=40, k=kseq, v=v,
-                                      r=r, tt=tt, d=d, H=Hseq2))
+                                      r=r, tt=tt, d=d, H=Hseq2)
+                    )
         expect_equal(correct, unknown, tolerance=tol2)
     }
     )
@@ -85,7 +86,7 @@ if (barrierchecks) {
         correct$funcname <- tolower(correct$funcname)
         unknown <- greeks(assetuicall(s=s, k=kseq, v=v,
                                       r=r, tt=tt, d=d, H=Hseq2),
-                          complete=TRUE)
+                          complete=TRUE, initcaps=FALSE)
         expect_equal(correct, unknown, tolerance=tol2)
     }
     )

@@ -28,7 +28,7 @@
 #'     works well with vectorization.
 #'
 #' @usage
-#' greeks(f, complete=FALSE, long=FALSE, initcaps=FALSE)
+#' greeks(f, complete=FALSE, long=FALSE, initcaps=TRUE)
 #' # must used named list entries:
 #' greeks2(fn, ...)
 #' bsopt(s, k, v, r, tt, d)
@@ -54,7 +54,7 @@
 #'     return a long data frame, where each row contains input
 #'     parameters, function name, and either the premium or one of the
 #'     greeks
-#' @param initcaps FALSE. If true, capitalize names (e.g. "Delta" vs
+#' @param initcaps TRUE. If true, capitalize names (e.g. "Delta" vs
 #'     "delta")
 #' @param ... Pricing function inputs, must be named, may either be a
 #'     list or not
@@ -63,7 +63,7 @@
 #'
 #' @examples
 #' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
-#' greeks(bscall(s, k, v, r, tt, d), complete=FALSE, long=FALSE, initcaps=FALSE)
+#' greeks(bscall(s, k, v, r, tt, d), complete=FALSE, long=FALSE, initcaps=TRUE)
 #' greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))
 #' greeks2(bscall, list(s=s, k=k, v=v, r=r, tt=tt, d=d))[c('Delta', 'Gamma'), ]
 #' bsopt(s, k, v, r, tt, d)
@@ -104,7 +104,7 @@ bsopt <- function(s, k, v, r, tt, d) {
 ## the focus so far has been on named vs unnamed parameters. We also
 ## need to take care of implicit parameters Tue, Jun 21, 2016
 #' @export
-greeks <- function(f, complete=FALSE, long=FALSE, initcaps=FALSE) {
+greeks <- function(f, complete=FALSE, long=FALSE, initcaps=TRUE) {
     ## match.call() returns (I think) a pairlist, where the first
     ## argument is the function and the second is what follows. By
     ## extracting the second, we grab the function argument which in
