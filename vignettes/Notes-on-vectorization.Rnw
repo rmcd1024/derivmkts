@@ -78,13 +78,36 @@ when implementing vectorization.
 \section{Vectorization}
 
 Where possible, I have tried to make sure that the pricing functions
-return vectors. This is automatic in many cases (for example, with the
-Black-Scholes formula), but there are situations in which achieving
-robust vectorization requires care when constructing a function. The
-purpose of this section is to explain the problems I encountered and
-the solutions I considered. Perhaps I overlooked the obvious or I am
-ignorant of some details of R. In either case I hope you will let me
-know! Otherwise, I hope this discussion is helpful to others.
+return vectors when inputs are vectors. This is automatic in many
+cases (for example, with the Black-Scholes formula), but there are
+situations in which achieving robust vectorization requires care when
+constructing a function. The purpose of this section is to explain the
+problems I encountered and the solutions I considered. Perhaps I
+overlooked the obvious or I am ignorant of some details of R. In
+either case I hope you will let me know! Otherwise, I hope this
+discussion is helpful to others.
+
+\subsection{What about R's Vectorize function?}
+
+R's \lstinline{Vectorize} function transparently invokes
+\lstinline{mapply} to create vectorized output. It is extraordinarily
+useful, but it is slow. For example if you compute 500 European call
+prices, automatic vectorization is about 70 times faster than the use
+of \lstinline{Vectorize}. You can run this to see for yourself:
+
+<<eval=FALSE>>=
+library(derivmkts)
+library(microbenchmark)
+S <- seq(0.5, 250, by=0.5)
+bsv <- Vectorize(bscall)
+microbenchmark(out1 <- bsv(S, 40, .3, .08, .25, 0))
+microbenchmark(out2 <- bscall(S, 40, .3, .08, .25, 0))
+all.equal(out1, out2)
+@ 
+
+We won't further discuss \lstinline{Vectorize}, but it is useful, for
+example, when peforming binomial pricing calculations, which are not
+vectorized by default.
 
 \subsection{Automatic Vectorization}
 
@@ -99,7 +122,7 @@ In this example, R automatically vectorizes the multiplication using
 the recycling rule. It's worth noting that the third example, in which
 both arguments are vectorized, but with different length vectors, is
 an unusual programming construct.\footnote{You can produce the same
-  output in python using the itertools module.} This property makes it
+s  output in python using the itertools module.} This property makes it
 trivial to perform what-if calculations for an option pricing formula.
 
 \subsection{Limitations of Automatic Vectorization}
