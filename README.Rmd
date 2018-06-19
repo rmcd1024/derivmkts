@@ -44,13 +44,16 @@ The package includes functions for computing
 
 * Analytical and Monte Carlo pricing of Asian options 
 
+[derivmkts-vignette.pdf](vignettes/derivmkts-vignette.pdf) provides an
+overview of the package, which an emphasis on what is novel.
 
 ## Calculation of Greeks
 
 The function `greeks()` accepts an option pricing function call as an
 argument, and returns a vectorized set of greeks for any pricing
-function that uses standard input names (i.e., the asset price is `s`,
-the volatility is `v`, etc.).
+function that uses the input names standard in the package (i.e., the
+asset price is `s`, the volatility is `v`, the interest rate is `r`,
+the dividend yield is `d`, and the time to maturity is `tt`).
 
 As an example, the following calculation will produce the full
 complement of greeks for a call, for each of three strike prices. You
