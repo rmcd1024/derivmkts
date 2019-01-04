@@ -82,10 +82,6 @@ x3
 
 \normalsize
 
-<!--
-The following computes and plots all call and put Greeks for
-500 options, 16 plots in all:
--->
 
 ```{r, include=FALSE}
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
@@ -180,4 +176,4 @@ quincunx(n=11, numballs=250, delay=0, probright=0.5)
 Please feel free to contact me with bug reports or suggestions. Best
 would be to file an issue on Github, but email is fine as well.
 
-I hope you find this helpful!
+

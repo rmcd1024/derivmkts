@@ -105,11 +105,6 @@ x3
 24 40 45 0.3 0.08 0.25 0   bscall   Gamma  0.05629794
 ```
 
-<!--
-The following computes and plots all call and put Greeks for
-500 options, 16 plots in all:
--->
-
 The following computes and plots all call and put Greeks for 500
 options:
 
@@ -241,5 +236,3 @@ quincunx(n=11, numballs=250, delay=0, probright=0.5)
 
 Please feel free to contact me with bug reports or suggestions. Best
 would be to file an issue on Github, but email is fine as well.
-
-I hope you find this helpful\!
