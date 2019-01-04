@@ -100,7 +100,7 @@ The following computes and plots all call and put Greeks for
 500 options:
 
 
-```{r, warnings=FALSE, eval=TRUE}
+```{r greekplot, warnings=FALSE, eval=TRUE}
 library(derivmkts)
 library(ggplot2)
 s <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
@@ -109,6 +109,7 @@ yc <- greeks(bscall(s, k, v, r, tt, d), complete=TRUE, long=TRUE)
 yp <- greeks(bsput(s, k, v, r, tt, d), complete=TRUE, long=TRUE)
 ggplot(rbind(yc, yp), aes(x=k, y=value, color=funcname)) +
     geom_line() +
+    labs(x='Strike price') +
     facet_wrap(~ greek, scales='free_y')
 ```
 

@@ -114,10 +114,11 @@ yc <- greeks(bscall(s, k, v, r, tt, d), complete=TRUE, long=TRUE)
 yp <- greeks(bsput(s, k, v, r, tt, d), complete=TRUE, long=TRUE)
 ggplot(rbind(yc, yp), aes(x=k, y=value, color=funcname)) +
     geom_line() +
+    labs(x='Strike price') +
     facet_wrap(~ greek, scales='free_y')
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/greekplot-1.png)<!-- -->
 
 ## Binomial calculations
 
@@ -209,7 +210,7 @@ occurs at that node.
 binomplot(41, 40, .3, .08, 1, 0, 3, putopt=TRUE, american=TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ## Galton board or quincunx
 
@@ -228,7 +229,7 @@ You can see the Galton board in action with `quincunx()`:
 quincunx(n=11, numballs=250, delay=0, probright=0.5)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ## Feedback
 
