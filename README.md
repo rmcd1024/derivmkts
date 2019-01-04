@@ -74,6 +74,7 @@ x2
 1 -0.01340407 -0.08640162  5.633523 0.03636698
 2 -0.01733098 -0.05825156  8.367264 0.06506303
 3 -0.01336419 -0.02820079 11.577058 0.05629794
+
 x3 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0),
              complete=TRUE, long=TRUE)
 x3
@@ -104,27 +105,13 @@ x3
 24 40 45 0.3 0.08 0.25 0   bscall   Gamma  0.05629794
 ```
 
+<!--
+The following computes and plots all call and put Greeks for
+500 options, 16 plots in all:
+-->
+
 The following computes and plots all call and put Greeks for 500
-options, 16 plots in all:
-
-``` r
-k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
-S <- seq(.5, 250, by=.5)
-y <- list(Call=greeks(bscall(S, k, v, r, tt, d)),
-          Put=greeks(bsput(S, k, v, r, tt, d))
-          )
-par(mfrow=c(4, 4))  ## create a 4x4 plot
-par(mar=c(2,2,2,2)) ## shrink some of the margins
-for (i in names(y)) {
-    for (j in rownames(y[[i]])) {  ## loop over greeks
-        plot(S, y[[i]][j, ], main=paste(i, j), ylab=j, type='l')
-    }
-}
-```
-
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
-
-And here is a version of the plot using `ggplot`:
+options:
 
 ``` r
 library(derivmkts)

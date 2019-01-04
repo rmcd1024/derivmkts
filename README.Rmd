@@ -74,6 +74,7 @@ long-form output.
 x2 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0),
              complete=TRUE)
 x2
+
 x3 <- greeks(bscall(s=40, k=c(35, 40, 45), v=0.3, r=0.08, tt=0.25, d=0),
              complete=TRUE, long=TRUE)
 x3
@@ -81,11 +82,12 @@ x3
 
 \normalsize
 
-
+<!--
 The following computes and plots all call and put Greeks for
 500 options, 16 plots in all:
+-->
 
-```{r}
+```{r, include=FALSE}
 k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 S <- seq(.5, 250, by=.5)
 y <- list(Call=greeks(bscall(S, k, v, r, tt, d)),
@@ -100,7 +102,9 @@ for (i in names(y)) {
 }
 ```
 
-And here is a version of the plot using `ggplot`:
+The following computes and plots all call and put Greeks for
+500 options:
+
 
 ```{r, warnings=FALSE, eval=TRUE}
 library(derivmkts)
