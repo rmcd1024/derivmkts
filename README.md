@@ -29,9 +29,6 @@ The package includes functions for computing
 
   - Analytical and Monte Carlo pricing of Asian options
 
-[derivmkts-vignette.pdf](vignettes/derivmkts-vignette.pdf) provides an
-overview of the package, which an emphasis on what is novel.
-
 ## Calculation of Greeks
 
 The function `greeks()` accepts an option pricing function call as an
@@ -111,10 +108,10 @@ options:
 ``` r
 library(derivmkts)
 library(ggplot2)
-k <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
-S <- seq(.5, 250, by=.5)
-yc <- greeks(bscall(S, k, v, r, tt, d), complete=TRUE, long=TRUE)
-yp <- greeks(bsput(S, k, v, r, tt, d), complete=TRUE, long=TRUE)
+s <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
+k <- seq(.5, 250, by=.5)
+yc <- greeks(bscall(s, k, v, r, tt, d), complete=TRUE, long=TRUE)
+yp <- greeks(bsput(s, k, v, r, tt, d), complete=TRUE, long=TRUE)
 ggplot(rbind(yc, yp), aes(x=s, y=value, color=funcname)) + geom_line() +
     facet_wrap(~ greek, scales='free_y')
 ```
