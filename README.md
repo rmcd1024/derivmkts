@@ -112,7 +112,8 @@ s <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 k <- seq(.5, 250, by=.5)
 yc <- greeks(bscall(s, k, v, r, tt, d), complete=TRUE, long=TRUE)
 yp <- greeks(bsput(s, k, v, r, tt, d), complete=TRUE, long=TRUE)
-ggplot(rbind(yc, yp), aes(x=s, y=value, color=funcname)) + geom_line() +
+ggplot(rbind(yc, yp), aes(x=k, y=value, color=funcname)) +
+    geom_line() +
     facet_wrap(~ greek, scales='free_y')
 ```
 
