@@ -43,3 +43,4 @@ arithavgpricecv(s, k, v, r, tt, d, m, numsim)
 Other Asian: \code{\link{arithasianmc}},
   \code{\link{asiangeomavg}}, \code{\link{geomasianmc}}
 }
+\concept{Asian}

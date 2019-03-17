@@ -142,8 +142,11 @@ greeksvals2[['bscall']] <- Greeks2(bscall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d))
 greeksvals2[['assetuicall']] <- Greeks2(AssetUICall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d, H=Hseq2))
-greeksvals2[['bscalltidy']] <- Greeks2tidy(bscall(s=s, k=kseq, v=v,
+bgreeksvals2[['bscalltidy']] <- Greeks2tidy(bscall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d), complete=TRUE)
+greeksvals2[['bscalltidylong']] <- Greeks2tidy(bscall(s=s, k=kseq0, v=v,
+                                                      r=r, tt=tt, d=d),
+                                               long=TRUE, complete=TRUE)
 greeksvals2[['assetuicalltidy']] <- Greeks2tidy(AssetUICall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d, H=Hseq2),
                                               complete=TRUE)

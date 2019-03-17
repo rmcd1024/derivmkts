@@ -50,10 +50,10 @@
 #'     equal to input parameters, function name, premium, and greeks
 #'     (each greek is a column). This is experimental and the output
 #'     may change. Convert to long format using \code{long=TRUE}.
-#' @param long FALSE. If \code{complete=TRUE}, then \code{long=TRUE} will
-#'     return a long data frame, where each row contains input
-#'     parameters, function name, and either the premium or one of the
-#'     greeks
+#' @param long FALSE. Setting \code{long=TRUE} returns a long data
+#'     frame, where each row contains input parameters, function name,
+#'     and either the premium or one of the greeks. \code{long=TRUE}
+#'     implies \code{complete=TRUE}
 #' @param initcaps TRUE. If true, capitalize names (e.g. "Delta" vs
 #'     "delta")
 #' @param ... Pricing function inputs, must be named, may either be a
@@ -162,6 +162,7 @@ greeks <- function(f, complete=FALSE, long=FALSE, initcaps=TRUE) {
     Psi   <-  .FirstDer(funcname, 'd', x)/100
     Elast <-  ifelse(Premium > 1e-06, x[['s']]*Delta/Premium, NA)
     Gamma <-  .SecondDer(funcname, 's', x)
+    if (long) complete <- TRUE
     if (complete) {
         ## Note: this will not work with a tibble, which doesn't
         ## support recycling for vectors longer than length 1
@@ -185,6 +186,7 @@ greeks <- function(f, complete=FALSE, long=FALSE, initcaps=TRUE) {
                                   ##times=names(tmp)[premcol:gammacol])
                                   times=names(tmp)[greekcols]
                                   )
+            if (!initcaps) tmp$greek = tolower(tmp$greek)
             }
         row.names(tmp) <- NULL
         tmp[['id']] <- NULL

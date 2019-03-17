@@ -1,3 +1,8 @@
+# derivmkts 0.2.3.990
+
+* In `greeks`, specifying `long=TRUE` now also implies `complete=TRUE`
+  (#3)
+
 # derivmkts 0.2.3
 
 * greeks `tidy` option renamed to `complete`

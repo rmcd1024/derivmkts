@@ -38,10 +38,10 @@ equal to input parameters, function name, premium, and greeks
 (each greek is a column). This is experimental and the output
 may change. Convert to long format using \code{long=TRUE}.}
 
-\item{long}{FALSE. If \code{complete=TRUE}, then \code{long=TRUE} will
-return a long data frame, where each row contains input
-parameters, function name, and either the premium or one of the
-greeks}
+\item{long}{FALSE. Setting \code{long=TRUE} returns a long data
+frame, where each row contains input parameters, function name,
+and either the premium or one of the greeks. \code{long=TRUE}
+implies \code{complete=TRUE}}
 
 \item{initcaps}{TRUE. If true, capitalize names (e.g. "Delta" vs
 "delta")}

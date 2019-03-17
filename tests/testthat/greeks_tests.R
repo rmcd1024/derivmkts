@@ -58,6 +58,18 @@ test_that('tidy greeks works bscall', {
           )
 print('complete bscall greeks okay')
 
+test_that('long tidy greeks works bscall', {
+              correct <- greeksvals2[['bscalltidylong']]
+              unknown <- greeks(bscall(s=s, k=kseq0, v=v,
+                                       r=r, tt=tt, d=d),
+                                long=TRUE,
+                                initcaps=FALSE)
+              expect_equivalent(correct, unknown, tolerance=tol)
+              ## attributes aren't the same because of capitalization
+          }
+          )
+print('complete long bscall greeks okay')
+
 
 test_that('greeks2 works bscall', {
               correct <- greeksvals2[['bscall']]
