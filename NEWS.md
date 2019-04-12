@@ -1,5 +1,8 @@
 # derivmkts 0.2.3.990
 
+* New function `simprice`, which simulates lognormal price paths, with
+  or without jumps
+
 * In `greeks`, specifying `long=TRUE` now also implies `complete=TRUE`
   (#3)
 
