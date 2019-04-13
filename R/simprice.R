@@ -4,16 +4,15 @@
 #'     paths, with or without jumps. Saves and restores random number
 #'     seed.
 #'
-#' \code{simprice(s0, v, r, tt, d, m, n, jump = FALSE, lambda = 0,
-#' alphaj = 0, vj = 0, seed = NULL, long = TRUE)}
+#' \code{simprice(s0, v, r, tt, d, trials, periods = 1,  jump = FALSE,
+#' lambda = 0, alphaj = 0, vj = 0, seed = NULL, long = TRUE)}
 #'
 #' @name simprice
 #' @importFrom stats rnorm rpois
-#' @return A dataframe with \code{n} simulated stock price paths
+#' @return A dataframe with \code{trials} simulated stock price paths
 #'
-#' @usage
-#' simprice(s0, v, r, tt, d, m, n, jump=FALSE, lambda=0, alphaj=0,
-#' vj=0, seed=NULL, long=TRUE)
+#' @usage simprice(s0, v, r, tt, d, trials, periods=1, jump=FALSE,
+#'     lambda=0, alphaj=0, vj=0, seed=NULL, long=TRUE)
 #'
 #' @param s0 Initial price of the underlying asset
 #' @param v Volatility of the asset price, defined as the annualized
@@ -40,14 +39,14 @@
 #' # periods we can compute options prices for \code{tt} and
 #' # \code{tt/2}
 #' s0=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
-#' st = simprice(s0, k, v, r, tt, d, m=2, n=3)
+#' st = simprice(s0, k, v, r, tt, d, periods=2, trials=3)
 #' callprice1 = exp(-r*tt/2)*mean(pmax(st[st$period==1,] - k, 0))
 #' callprice2 = exp(-r*tt)*mean(pmax(st[st$period==2,] - k, 0))
 #' 
 #' 
 #' @export
-simprice <- function(s0, v, r, tt, d, periods, trials, jump = FALSE, 
-                     lambda = 0, alphaj = 0, vj = 0,
+simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
+                     jump = FALSE, lambda = 0, alphaj = 0, vj = 0,
                      seed = NULL, long = TRUE) {
     if (exists(".Random.seed")) {
         oldseed <- .Random.seed
@@ -80,10 +79,13 @@ simprice <- function(s0, v, r, tt, d, periods, trials, jump = FALSE,
         if (periods != 1) jumpfactor <- t(jumpfactor)
         log_s <- log_s + jumpfactor
     }
-    s <- data.frame(trial = 1:trials, exp(log_s))
-    colnames(s)[2:ncol(s)] <- paste0('h', 1:periods)
     if (savedseed) .Random.seed <- oldseed
-    if (long) {
+    if (long == FALSE) {
+        s <- data.frame(exp(log_s))
+        colnames(s) <- paste0('h', 1:periods)
+        return(s)
+    } else {
+        s <- data.frame(trial = 1:trials, exp(log_s))    
         slong <- stats::reshape(s,
                                 direction = 'long',
                                 varying = colnames(s)[-1],
@@ -92,6 +94,6 @@ simprice <- function(s0, v, r, tt, d, periods, trials, jump = FALSE,
                                 idvar = 'trial',
                                 new.row.names = NULL)
         return(slong[order(slong$trial, slong$period), ])
-    } else return(s)
+    } 
 }
 

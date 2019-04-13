@@ -1,6 +1,12 @@
+^[\\.].*$
+^.*/[\\.].*$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 stuff/
+[.]Rhistory$
+^.*/[.]Rhistory$
+~$
+^.*/.*~$
 README.tex
 README.log
 ^.git
