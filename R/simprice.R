@@ -20,7 +20,8 @@
 #' @param r Annual continuously-compounded risk-free interest rate
 #' @param tt Time to maturity in years
 #' @param d Dividend yield, annualized, continuously-compounded
-#' @param periods number of equal-length periods in each simulated path
+#' @param periods number of equal-length periods in each simulated
+#'     path
 #' @param trials number of simulated price paths
 #' @param jump boolean controlling use of jump parameters
 #' @param lambda expected number of jumps in one year
@@ -30,8 +31,8 @@
 #' @param seed random number seed
 #' @param long if \code{TRUE}, return a long-form dataframe with
 #'     columns indicating the price, trial, and period. If
-#'     \code{FALSE}, the returned data is wide: each row is a trial
-#'     and each column is a period
+#'     \code{FALSE}, the returned data is wide, containing only
+#'     prices: each row is a trial and each column is a period
 #' 
 #' 
 #' @examples
