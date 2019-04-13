@@ -1,6 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 stuff/
+README.tex
+README.log
 ^.git
 tests/option_testvalues.R
 .travis.yml
@@ -11,6 +13,7 @@ README.md
 README.html
 README_files/
 figure/
+R/*~
 DM_token
 make_readme.sh
 pkg-status.*
@@ -19,3 +22,4 @@ tests/scripts/
 bbl$
 blg$
 presentations/
+R/testsim.R

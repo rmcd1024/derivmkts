@@ -105,7 +105,7 @@ for (i in names(y)) {
 }
 \dontrun{
 ## Using complete option for calls
-call_long <- greeks(bscall(S, k, v, r, tt, d), complete=TRUE, long=TRUE)
+call_long <- greeks(bscall(S, k, v, r, tt, d), long=TRUE)
 ggplot2::ggplot(call_long, aes(x=s, y=value)) +
       geom_line() + facet_wrap(~greek, scales='free')
 }

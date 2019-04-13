@@ -8,18 +8,13 @@
 #'
 #' @name simprice
 #' @importFrom stats rnorm rpois
-#' @return A dataframe with `n` simulated stock price paths
+#' @return A dataframe with \code{n} simulated stock price paths
 #'
 #' @usage
-#' simprice(s, k, v, r, tt, d, m, n, jump=FALSE)
-#' bsput(s, k, v, r, tt, d)
-#' assetcall(s, k, v, r, tt, d)
-#' cashcall(s, k, v, r, tt, d)
-#' assetput(s, k, v, r, tt, d)
-#' cashput(s, k, v, r, tt, d)
-#' 
+#' simprice(s0, v, r, tt, d, m, n, jump=FALSE, lambda=0, alphaj=0,
+#' vj=0, seed=NULL, long=TRUE)
 #'
-#' @param s Price of the underlying asset
+#' @param s0 Initial price of the underlying asset
 #' @param v Volatility of the asset price, defined as the annualized
 #'     standard deviation of the continuously-compounded return
 #' @param r Annual continuously-compounded risk-free interest rate
@@ -43,12 +38,10 @@
 #' # simple Monte Carlo option price example. Since there are two
 #' # periods we can compute options prices for \code{tt} and
 #' # \code{tt/2}
-#' s=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
+#' s0=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
 #' st = simprice(s0, k, v, r, tt, d, m=2, n=3)
-#' callprice1 = exp(-r*tt/2)*mean(pmax(st[st$period==1] - k, 0))
-#' callprice2 = exp(-r*tt)*mean(pmax(st[st$period==2] - k, 0))
-#' 
-#' @inheritParams bscall jumps
+#' callprice1 = exp(-r*tt/2)*mean(pmax(st[st$period==1,] - k, 0))
+#' callprice2 = exp(-r*tt)*mean(pmax(st[st$period==2,] - k, 0))
 #' 
 #' 
 #' @export
@@ -86,9 +79,9 @@ simprice <- function(s0, v, r, tt, d, m, n, jump = FALSE,
                                 varying = colnames(s)[-1],
                                 v.names = 'price',
                                 timevar = 'period',
-                                    idvar = 'trial',
+                                idvar = 'trial',
                                 new.row.names = NULL)
-        return(slong)
+        return(slong[order(slong$trial, slong$period), ])
     } else return(s)
 }
 

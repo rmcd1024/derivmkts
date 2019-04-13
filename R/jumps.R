@@ -93,7 +93,7 @@ mertonjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj) {
 }
 
 
-jumpprice <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
+.jumpprice <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
                        pricingfunc) {
     eps <- 1e-10
     lambdap <- lambda * exp(alphaj)
