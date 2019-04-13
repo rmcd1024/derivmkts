@@ -1,7 +1,8 @@
 #' @title Simulate asset prices
 #'
 #' @description \code{simprice} computes simulated lognormal price
-#'     paths, with or without jumps.
+#'     paths, with or without jumps. Saves and restores random number
+#'     seed.
 #'
 #' \code{simprice(s0, v, r, tt, d, m, n, jump = FALSE, lambda = 0,
 #' alphaj = 0, vj = 0, seed = NULL, long = TRUE)}
@@ -20,8 +21,8 @@
 #' @param r Annual continuously-compounded risk-free interest rate
 #' @param tt Time to maturity in years
 #' @param d Dividend yield, annualized, continuously-compounded
-#' @param m number of equal-length periods in each simulated path
-#' @param n number of simulated price paths
+#' @param periods number of equal-length periods in each simulated path
+#' @param trials number of simulated price paths
 #' @param jump boolean controlling use of jump parameters
 #' @param lambda expected number of jumps in one year
 #'     (\code{lambda*tt}) is the Poisson parameter
@@ -45,34 +46,43 @@
 #' 
 #' 
 #' @export
-simprice <- function(s0, v, r, tt, d, m, n, jump = FALSE, 
+simprice <- function(s0, v, r, tt, d, periods, trials, jump = FALSE, 
                      lambda = 0, alphaj = 0, vj = 0,
                      seed = NULL, long = TRUE) {
+    if (exists(".Random.seed")) {
+        oldseed <- .Random.seed
+        savedseed <- TRUE
+    } else {
+        savedseed <- FALSE
+    }
     if (!is.null(seed)) set.seed(seed)
     ## set.seed(1)
-    ##s0=40; k=40; v=0.30; r=0.08; tt=0.25; d=0; ;m <- 2;
+    ##s0=40; k=40; v=0.30; r=0.08; tt=0.25; d=0; ;periods <- 2;
     ##
-    ## n <- 3; lambda=2; alphaj=-.2; vj=.4; jump=TRUE
+    ## trials <- 3; lambda=2; alphaj=-.2; vj=.4; jump=TRUE
     ##
     ## a row of dimension m is a simulated stock price path
-    h <- tt/m
+    h <- tt/periods
     k <- exp(alphaj) - 1 
-    zc <- matrix(rnorm(m*n), nrow = n, ncol = m)
+    zc <- matrix(rnorm(periods*trials), nrow = trials, ncol = periods)
     ## apply function output differs for vectors and dataframes
-    if (m != 1) zc <- t(apply(zc, 1, cumsum))
-    hmat <- matrix(rep(1:m, times = n), nrow = n, ncol = m, byrow = TRUE)
+    if (periods != 1) zc <- t(apply(zc, 1, cumsum))
+    hmat <- matrix(rep(1:periods, times = trials), nrow = trials,
+                   ncol = periods, byrow = TRUE)
     log_s <- log(s0) + (r - d - jump*k*lambda - 0.5*v^2)*h*hmat + v*sqrt(h)*zc
     if (jump) {
         lambda <- lambda
-        nj <- matrix(rpois(m*n, lambda = lambda*h), nrow = n, ncol = m)
-        zj <- matrix(rnorm(m*n), nrow = n, ncol = m)
+        nj <- matrix(rpois(periods*trials, lambda = lambda*h),
+                     nrow = trials, ncol = periods)
+        zj <- matrix(rnorm(periods*trials), nrow = trials, ncol = periods)
         jumpfactor <- (alphaj-0.5*vj^2)*nj + vj*sqrt(nj)*zj
         jumpfactor <- apply(jumpfactor, 1, cumsum)
-        if (m != 1) jumpfactor <- t(jumpfactor)
+        if (periods != 1) jumpfactor <- t(jumpfactor)
         log_s <- log_s + jumpfactor
     }
-    s <- data.frame(trial = 1:n, exp(log_s))
-    colnames(s)[2:ncol(s)] <- paste0('h', 1:m)
+    s <- data.frame(trial = 1:trials, exp(log_s))
+    colnames(s)[2:ncol(s)] <- paste0('h', 1:periods)
+    if (savedseed) .Random.seed <- oldseed
     if (long) {
         slong <- stats::reshape(s,
                                 direction = 'long',
