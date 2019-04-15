@@ -79,6 +79,8 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
         jumpfactor <- apply(jumpfactor, 1, cumsum)
         if (periods != 1) jumpfactor <- t(jumpfactor)
         log_s <- log_s + jumpfactor
+    } else {
+        nj <- matrix(0, nrow = trials,  ncol = periods)
     }
     if (savedseed) .Random.seed <- oldseed
     if (long == FALSE) {
@@ -86,11 +88,14 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
         colnames(s) <- paste0('h', 1:periods)
         return(s)
     } else {
-        s <- data.frame(trial = 1:trials, exp(log_s))    
+        print(paste(dim(nj),  dim(log_s) ))
+        s <- data.frame(trial = 1:trials, njump = nj, smat = exp(log_s))
         slong <- stats::reshape(s,
                                 direction = 'long',
-                                varying = colnames(s)[-1],
-                                v.names = 'price',
+                                varying = list(grep('njump', names(s), value = TRUE),
+                                               grep('smat', names(s), value = TRUE)),
+                                ##varying = colnames(s)[-1],
+                                v.names = c('numjumps', 'price'),
                                 timevar = 'period',
                                 idvar = 'trial',
                                 new.row.names = NULL)
