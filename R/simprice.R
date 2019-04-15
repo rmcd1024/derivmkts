@@ -88,7 +88,6 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
         colnames(s) <- paste0('h', 1:periods)
         return(s)
     } else {
-        print(paste(dim(nj),  dim(log_s) ))
         s <- data.frame(trial = 1:trials, njump = nj, smat = exp(log_s))
         slong <- stats::reshape(s,
                                 direction = 'long',
