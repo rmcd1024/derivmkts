@@ -34,7 +34,7 @@
 #' @param alphaj Mean change in log price conditional on a jump
 #' @param vj Standard deviation of change in log price conditional on
 #'     a jump
-#'
+#' @param long Return inputs along with prices, all in a data frame
 #' @details Returns a scalar or vector of option prices, depending on
 #' the inputs
 #' @importFrom stats dpois ppois
@@ -70,7 +70,8 @@
 cashjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj) {
     Call <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj, cashcall)
     Put <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj, cashput)
-    return(c(Call=Call, Put=Put))
+    ##return(c(Call=Call, Put=Put))
+    return(c(Call = Call, Put = Put))
 }
 
 #' @export
@@ -83,12 +84,15 @@ assetjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj) {
 }
 
 #' @export
-mertonjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj) {
+mertonjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
+                       long = TRUE) {
     Call <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
                bscall)
     Put <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
                bsput)
-    return(c(Call=Call, Put=Put))
+    return(data.frame(s = s, k = k, v = v, r = r, tt = tt, d = d,
+                      lambda = lambda, alphaj = alphaj,
+                      vj = vj, Call=Call, Put=Put))
 
 }
 
@@ -97,20 +101,21 @@ mertonjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj) {
                        pricingfunc) {
     eps <- 1e-10
     lambdap <- lambda * exp(alphaj)
-    if (ppois(0, lambdap*tt) > 1-eps) {
-        price <- pricingfunc(s, k, v, r, tt, d)
-    } else {
-        cum <- 0.0
-        i <- 0
-        kappa  <-  exp(alphaj) - 1
-        while (ppois(i,lambdap*tt) <= 1-eps) {
-            p <- dpois(i,lambdap * tt)
-            vp <- (v^2 + i*vj^2 / tt)^(0.5)
-            rp <- r - lambda * kappa + i * alphaj / tt
-            cum <- cum + p * pricingfunc(s, k, vp, rp, tt, d)
-            i <- i + 1
-        }
-        price <- cum
-    }
+    w <- expand.grid(s, k, v, r, tt, d, lambda, alphaj, vj, lambdap)
+    price <- with(w, ifelse(ppois(0, lambdap*tt) > 1-eps,
+                    price <- pricingfunc(s, k, v, r, tt, d),
+                    {
+                        cum <- 0.0
+                        i <- 0
+                        kappa  <-  exp(alphaj) - 1
+                        while (all(ppois(i,lambdap*tt) <= 1-eps)) {
+                            p <- dpois(i,lambdap * tt)
+                            vp <- (v^2 + i*vj^2 / tt)^(0.5)
+                            rp <- r - lambda * kappa + i * alphaj / tt
+                            cum <- cum + p * pricingfunc(s, k, vp, rp, tt, d)
+                            i <- i + 1
+                        }
+                        price <- cum
+                    }))
     return(price)
 }
