@@ -66,13 +66,6 @@
 #'     ylab='Implied volatility', ylim=c(0.30, 0.50))
 
 
-#' @export
-cashjump_old <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
-                     complete = FALSE) {
-    Call <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj, cashcall)
-    Put <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj, cashput)
-    return(c(Call = Call, Put = Put))
-}
 
 #' @export
 cashjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
@@ -80,16 +73,6 @@ cashjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
     mertonjump(s = s, k = k, v = v, r = r, tt = tt, d = d,
                lambda = lambda, alphaj = alphaj, vj = vj,
                complete = complete, fn = fn)
-}
-
-#' @export
-assetjump_old <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
-                      complete = FALSE) {
-    Call <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
-               assetcall)
-    Put <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
-               assetput)
-    return(c(Call=Call, Put=Put))
 }
 
 #' @export
@@ -115,33 +98,6 @@ mertonjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
 
     }
 
-
-.jumpprice2 <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
-                       pricingfunc) {
-    eps <- 1e-10
-    w <- expand.grid(s = s, k = k, v = v, r = r, tt = tt, d = d,
-                     lambda = lambda, alphaj = alphaj, vj = vj)
-    w$lambdap <-  w$lambda * exp(w$alphaj)
-    price <-
-        with(w,
-             ifelse(ppois(0, lambdap*tt) > 1-eps,
-                    price <- pricingfunc(s, k, v, r, tt, d),
-                    {
-                        cum <- 0.0
-                        i <- 0
-                        kappa  <-  exp(alphaj) - 1
-                        while (all(ppois(i,lambdap*tt) <= 1-eps)) {
-                            p <- dpois(i,lambdap * tt)
-                            vp <- (v^2 + i*vj^2 / tt)^(0.5)
-                            rp <- r - lambda * kappa + i * alphaj / tt
-                            cum <- cum + p * pricingfunc(s, k, vp, rp, tt, d)
-                            i <- i + 1
-                            print(i)
-                        }
-                        price <- cum
-                    }))
-    return(price)
-}
 
 
 .jumpprice <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
