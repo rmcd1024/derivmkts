@@ -18,9 +18,9 @@
 #'     lognormal jump formula.
 #'
 #' @usage
-#' assetjump(s, k, v, r, tt, d, lambda, alphaj, vj)
-#' cashjump(s, k, v, r, tt, d, lambda, alphaj, vj)
-#' mertonjump(s, k, v, r, tt, d, lambda, alphaj, vj)
+#' assetjump(s, k, v, r, tt, d, lambda, alphaj, vj, complete)
+#' cashjump(s, k, v, r, tt, d, lambda, alphaj, vj, complete)
+#' mertonjump(s, k, v, r, tt, d, lambda, alphaj, vj, complete)
 #'
 #'
 #' @param s Stock price
@@ -54,7 +54,7 @@
 #' k*cashjump(s, k, v, r, tt, d, lambda, alphaj, vj))
 #'
 #' ## return call prices for different strikes
-#' kseq <- 20:60
+#' kseq <- 35:45
 #' cp <- mertonjump(s, kseq, v, r, tt, d, lambda, alphaj,
 #'     vj)$Call
 #'

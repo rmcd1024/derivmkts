@@ -7,9 +7,9 @@
 \alias{mertonjump}
 \title{Option pricing with jumps}
 \usage{
-assetjump(s, k, v, r, tt, d, lambda, alphaj, vj)
-cashjump(s, k, v, r, tt, d, lambda, alphaj, vj)
-mertonjump(s, k, v, r, tt, d, lambda, alphaj, vj)
+assetjump(s, k, v, r, tt, d, lambda, alphaj, vj, complete)
+cashjump(s, k, v, r, tt, d, lambda, alphaj, vj, complete)
+mertonjump(s, k, v, r, tt, d, lambda, alphaj, vj, complete)
 }
 \arguments{
 \item{s}{Stock price}
@@ -31,6 +31,8 @@ standard deviation of the continuously-compounded return}
 
 \item{vj}{Standard deviation of change in log price conditional on
 a jump}
+
+\item{complete}{Return inputs along with prices, all in a data frame}
 }
 \value{
 A vector of call and put prices computed using the Merton
@@ -60,9 +62,9 @@ c(1, -1)*(assetjump(s, k, v, r, tt, d, lambda, alphaj, vj) -
 k*cashjump(s, k, v, r, tt, d, lambda, alphaj, vj))
 
 ## return call prices for different strikes
-kseq <- 20:60
+kseq <- 35:45
 cp <- mertonjump(s, kseq, v, r, tt, d, lambda, alphaj,
-    vj)[paste0('Call', 1:length(kseq))]
+    vj)$Call
 
 ## Implied volatilities: Compute Black-Scholes implied volatilities
 ## for options priced using the Merton jump model
