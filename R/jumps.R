@@ -34,7 +34,7 @@
 #' @param alphaj Mean change in log price conditional on a jump
 #' @param vj Standard deviation of change in log price conditional on
 #'     a jump
-#' @param long Return inputs along with prices, all in a data frame
+#' @param complete Return inputs along with prices, all in a data frame
 #' @details Returns a scalar or vector of option prices, depending on
 #' the inputs
 #' @importFrom stats dpois ppois
@@ -67,15 +67,24 @@
 
 
 #' @export
-cashjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj) {
+cashjump_old <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
+                     complete = FALSE) {
     Call <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj, cashcall)
     Put <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj, cashput)
-    ##return(c(Call=Call, Put=Put))
     return(c(Call = Call, Put = Put))
 }
 
 #' @export
-assetjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj) {
+cashjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
+                      complete = FALSE, fn = c(cashcall, cashput)) {
+    mertonjump(s = s, k = k, v = v, r = r, tt = tt, d = d,
+               lambda = lambda, alphaj = alphaj, vj = vj,
+               complete = complete, fn = fn)
+}
+
+#' @export
+assetjump_old <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
+                      complete = FALSE) {
     Call <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
                assetcall)
     Put <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
@@ -84,25 +93,38 @@ assetjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj) {
 }
 
 #' @export
-mertonjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
-                       long = TRUE) {
-    Call <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
-               bscall)
-    Put <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
-               bsput)
-    return(data.frame(s = s, k = k, v = v, r = r, tt = tt, d = d,
-                      lambda = lambda, alphaj = alphaj,
-                      vj = vj, Call=Call, Put=Put))
-
+assetjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
+                      complete = FALSE, fn = c(assetcall, assetput)) {
+    mertonjump(s, k, v, r, tt, d, lambda, alphaj, vj, complete, fn)
 }
 
+#' @export
+mertonjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
+                       complete = FALSE, fn = c(bscall, bsput)) {
+    Call <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
+               fn[[1]])
+    Put <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
+                      fn[[2]])
+    if (complete) {
+        return(data.frame(s = s, k = k, v = v, r = r, tt = tt, d = d,
+                                 lambda = lambda, alphaj = alphaj,
+                                 vj = vj, Call=Call, Put=Put)) 
+    } else {
+        return(data.frame(Call = Call,  Put = Put))
+    }
 
-.jumpprice <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
+    }
+
+
+.jumpprice2 <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
                        pricingfunc) {
     eps <- 1e-10
-    lambdap <- lambda * exp(alphaj)
-    w <- expand.grid(s, k, v, r, tt, d, lambda, alphaj, vj, lambdap)
-    price <- with(w, ifelse(ppois(0, lambdap*tt) > 1-eps,
+    w <- expand.grid(s = s, k = k, v = v, r = r, tt = tt, d = d,
+                     lambda = lambda, alphaj = alphaj, vj = vj)
+    w$lambdap <-  w$lambda * exp(w$alphaj)
+    price <-
+        with(w,
+             ifelse(ppois(0, lambdap*tt) > 1-eps,
                     price <- pricingfunc(s, k, v, r, tt, d),
                     {
                         cum <- 0.0
@@ -114,8 +136,40 @@ mertonjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
                             rp <- r - lambda * kappa + i * alphaj / tt
                             cum <- cum + p * pricingfunc(s, k, vp, rp, tt, d)
                             i <- i + 1
+                            print(i)
                         }
                         price <- cum
                     }))
+    return(price)
+}
+
+
+.jumpprice <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
+                       pricingfunc) {
+    eps <- 1e-12
+    w <- expand.grid(s = s, k = k, v = v, r = r, tt = tt, d = d,
+                     lambda = lambda, alphaj = alphaj, vj = vj)
+    w <- data.frame(s = s, k = k, v = v, r = r, tt = tt, d = d,
+                     lambda = lambda, alphaj = alphaj, vj = vj)
+    w$lambdap <-  w$lambda * exp(w$alphaj)
+    price <-
+        with(w,
+             if (all(ppois(0, lambdap*tt) > 1-eps)) {
+                 price <- pricingfunc(s, k, v, r, tt, d)
+             } else {
+                 ##print(ppois(0, lambdap*tt))
+                 cum <- 0.0
+                 i <- 0
+                 kappa  <-  exp(alphaj) - 1
+                 while (all(ppois(i,lambdap*tt) <= 1-eps)) {
+                     p <- dpois(i,lambdap * tt)
+                     vp <- (v^2 + i*vj^2 / tt)^(0.5)
+                     rp <- r - lambda * kappa + i * alphaj / tt
+                     cum <- cum + p * pricingfunc(s, k, vp, rp, tt, d)
+                     i <- i + 1
+                   ##  print(i)
+                 }
+                 price <- cum
+             })
     return(price)
 }

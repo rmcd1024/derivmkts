@@ -106,16 +106,25 @@ for (i in imptestfns[3:4]) {
 ## Merton jump tests
 ############################################################
 ## Only test call values for each function
-lambda <- 0.5; alphaj <- -0.15; vj <- 0.20;
+## Need to make sure vectorization is working
+lambda <- c(0.5, 1.5)
+jumpvals <- expand.grid(lambda = lambda, kseq0 = kseq0)
+lambda <- jumpvals$lambda
+kseqjump <- jumpvals$kseq0
+alphaj <- -0.15; vj <- 0.20;
 jumpfns <- c('CashCallJump', 'AssetCallJump', 'MertonJump')
-jumpvals <- data.frame(kvals=kseq0)
+paramlist <- list(s = s, k = kseqjump, v = v, r = r, tt = tt,
+                  d = d, lambda = lambda,
+                  alphaj = alphaj, vj = vj)
 for (i in jumpfns[1:2]) {
-    tmp <- do.call(i, list(s=s, k=kseq0, v=v, r=r, tt=tt, d=d,
-                           lambda=lambda, alphaj=alphaj, vj=vj))
+#    tmp <- do.call(i, list(s=s, k=kseq0, v=v, r=r, tt=tt, d=d,
+#                           lambda=lambda, alphaj=alphaj, vj=vj))
+#    tmp2 <- do.call(i, as.list(params))
+    tmp <- do.call(i, paramlist)
     jumpvals[i] <- tmp
 }
 i <- jumpfns[3]
-tmp <- do.call(i, list(s=s, k=kseq0, v=v, r=r, tt=tt, d=d,
+tmp <- do.call(i, list(s=s, k=kseqjump, v=v, r=r, tt=tt, d=d,
                        lambda=lambda, alphaj=alphaj, vj=vj))
 jumpvals[i] <- tmp[grep('Call', names(tmp))]
 
@@ -142,7 +151,7 @@ greeksvals2[['bscall']] <- Greeks2(bscall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d))
 greeksvals2[['assetuicall']] <- Greeks2(AssetUICall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d, H=Hseq2))
-bgreeksvals2[['bscalltidy']] <- Greeks2tidy(bscall(s=s, k=kseq, v=v,
+greeksvals2[['bscalltidy']] <- Greeks2tidy(bscall(s=s, k=kseq, v=v,
                                               r=r, tt=tt, d=d), complete=TRUE)
 greeksvals2[['bscalltidylong']] <- Greeks2tidy(bscall(s=s, k=kseq0, v=v,
                                                       r=r, tt=tt, d=d),
@@ -187,7 +196,7 @@ keeplist <- c('barriervals', 'barriertestfns',
               'greeksinputsnott',
               's', 'k', 'v', 'r', 'tt', 'd', 'H',
               'kseq0', 'kseq', 'Hseq', 'Hseq2', 'kseqbs',
-              'kseq4', 'sseq4',
+              'kseq4', 'sseq4', 'kseqjump',
               'prices', 'jumpfns', 'jumpvals',
               'lambda', 'alphaj', 'vj',
               'nstep', 'binomvalsEurC', 'binomvalsEurP',

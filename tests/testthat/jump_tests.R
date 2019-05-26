@@ -17,17 +17,20 @@ load('~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
 
 
 for (i in jumpfns) {
+##    i <- 'CashCallJump'
     jumpfn <- gsub('call', '', tolower(i))
     test_that(paste(jumpfn, 'works'), {
-                  correct <- jumpvals[, i]
-                  tmp <- do.call(jumpfn,
-                                     list(s=s, k=kseq0, v=v, r=r,
-                                          tt=tt, d=d, lambda=lambda,
-                                          alphaj=alphaj, vj=vj))
-                  unknown <- tmp[grep('Call', names(tmp))]
-                  expect_equivalent(correct, unknown)
-              }
-              )
+        correct <- jumpvals[, i]
+        p <- list(s=s, k=kseqjump, v=v, r=r,
+                            tt=tt, d=d, lambda=lambda,
+                            alphaj=alphaj, vj=vj,
+                            complete = TRUE
+                            )
+        tmp <- unique(do.call(jumpfn, p)[c('Call', 'Put')])
+        unknown <- tmp[grep('Call', names(tmp))][[1]]
+        expect_equivalent(correct, unknown)
+    }
+    )
     print(paste(i, 'okay'))
 }
 
