@@ -56,7 +56,7 @@
 #' ## return call prices for different strikes
 #' kseq <- 20:60
 #' cp <- mertonjump(s, kseq, v, r, tt, d, lambda, alphaj,
-#'     vj)[paste0('Call', 1:length(kseq))]
+#'     vj)$Call
 #'
 #' ## Implied volatilities: Compute Black-Scholes implied volatilities
 #' ## for options priced using the Merton jump model
