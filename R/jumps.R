@@ -69,34 +69,41 @@
 
 #' @export
 cashjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
-                      complete = FALSE, fn = c(cashcall, cashput)) {
-    mertonjump(s = s, k = k, v = v, r = r, tt = tt, d = d,
+                      complete = FALSE) {
+    .mertonjump(s = s, k = k, v = v, r = r, tt = tt, d = d,
                lambda = lambda, alphaj = alphaj, vj = vj,
-               complete = complete, fn = fn)
+               complete = complete, fn = c(cashcall, cashput))
 }
 
 #' @export
 assetjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
-                      complete = FALSE, fn = c(assetcall, assetput)) {
-    mertonjump(s, k, v, r, tt, d, lambda, alphaj, vj, complete, fn)
+                      complete = FALSE) {
+    .mertonjump(s, k, v, r, tt, d, lambda, alphaj, vj, complete,
+               fn = c(assetcall, assetput))
 }
 
 #' @export
 mertonjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
-                       complete = FALSE, fn = c(bscall, bsput)) {
+                       complete = FALSE) {
+    .mertonjump(s, k, v, r, tt, d, lambda, alphaj, vj, complete,
+               fn = c(bscall, bsput))
+}
+
+
+.mertonjump <- function(s, k, v, r, tt, d, lambda, alphaj, vj,
+                        complete = FALSE, fn = c(bscall, bsput)) {
     Call <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
-               fn[[1]])
+                       fn[[1]])
     Put <- .jumpprice(s, k, v, r, tt, d, lambda, alphaj, vj,
                       fn[[2]])
     if (complete) {
         return(data.frame(s = s, k = k, v = v, r = r, tt = tt, d = d,
-                                 lambda = lambda, alphaj = alphaj,
-                                 vj = vj, Call=Call, Put=Put)) 
+                          lambda = lambda, alphaj = alphaj,
+                          vj = vj, Call=Call, Put=Put)) 
     } else {
         return(data.frame(Call = Call,  Put = Put))
     }
-
-    }
+}
 
 
 
