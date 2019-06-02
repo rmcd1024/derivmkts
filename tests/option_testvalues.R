@@ -183,6 +183,15 @@ for (i in compoundtestfns) {
 }
 
 
+simprice_params <- list(s0 = 40, v = 0.30, r = 0.08, tt = 1, d = 0,
+                        periods = 12, lambda = 2, alphaj = -0.2,
+                        vj = 0.4, trials = 100, seed = 1, long = FALSE,
+                        jump = TRUE)
+tmp <- simprice_params
+names(tmp)[which(names(tmp) == 'periods')] <- 'm'
+names(tmp)[which(names(tmp) == 'trials')] <- 'n'
+simprice_S <- do.call(pricesim,  tmp)
+
 rm(duration)
 
 keeplist <- c('barriervals', 'barriertestfns',
@@ -202,7 +211,8 @@ keeplist <- c('barriervals', 'barriertestfns',
               'nstep', 'binomvalsEurC', 'binomvalsEurP',
               'binomvalsAmC', 'binomvalsAmP',
               'kuo', 'kco', 't1', 't2', 'compoundtestfns',
-              'compoundvals'
+              'compoundvals', 'simprice_params',
+              'simprice_S'
               )
 
 save(list=keeplist,

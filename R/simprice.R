@@ -1,4 +1,11 @@
-#' @title Simulate asset prices
+##' purpose of this test file is to add a period 0 with the intitial
+##' price. We need to vet the results in this file against those of
+##' simprice to be sure we haven't broken anything...
+##'
+##' The script `test_simprice_outputs` verifies that this produces the
+##' same output as simprice.R in 4 test cases, with and without jumps
+##'
+##' @title Simulate asset prices
 #'
 #' @description \code{simprice} computes simulated lognormal price
 #'     paths, with or without jumps. Saves and restores random number
@@ -49,6 +56,15 @@
 simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
                      jump = FALSE, lambda = 0, alphaj = 0, vj = 0,
                      seed = NULL, long = TRUE) {
+    testing <- FALSE
+    ##testing <- TRUE
+    if (testing) {
+        set.seed(1)
+        s0=40; k=40; v=0.30; r=0.08; tt=0.25; d=0; periods <- 2;
+        trials <- 3; lambda=2; alphaj=-.2; vj=.4; jump=TRUE
+        long <- TRUE;
+##        jump <- FALSE
+    }
     if (exists(".Random.seed")) {
         oldseed <- .Random.seed
         savedseed <- TRUE
@@ -56,11 +72,6 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
         savedseed <- FALSE
     }
     if (!is.null(seed)) set.seed(seed)
-    ## set.seed(1)
-    ##s0=40; k=40; v=0.30; r=0.08; tt=0.25; d=0; ;periods <- 2;
-    ##
-    ## trials <- 3; lambda=2; alphaj=-.2; vj=.4; jump=TRUE
-    ##
     ## a row of dimension m is a simulated stock price path
     h <- tt/periods
     k <- exp(alphaj) - 1 
@@ -70,6 +81,7 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
     hmat <- matrix(rep(1:periods, times = trials), nrow = trials,
                    ncol = periods, byrow = TRUE)
     log_s <- log(s0) + (r - d - jump*k*lambda - 0.5*v^2)*h*hmat + v*sqrt(h)*zc
+    log_s <- cbind(log(s0), log_s)
     if (jump) {
         lambda <- lambda
         nj <- matrix(rpois(periods*trials, lambda = lambda*h),
@@ -78,14 +90,15 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
         jumpfactor <- (alphaj-0.5*vj^2)*nj + vj*sqrt(nj)*zj
         jumpfactor <- apply(jumpfactor, 1, cumsum)
         if (periods != 1) jumpfactor <- t(jumpfactor)
-        log_s <- log_s + jumpfactor
+        nj <- cbind(0, nj)
+        log_s <- log_s + cbind(0, jumpfactor)
     } else {
-        nj <- matrix(0, nrow = trials,  ncol = periods)
+        nj <- matrix(0, nrow = trials,  ncol = periods + 1)
     }
     if (savedseed) .Random.seed <- oldseed
     if (long == FALSE) {
         s <- data.frame(exp(log_s))
-        colnames(s) <- paste0('h', 1:periods)
+        colnames(s) <- paste0('h', 0:periods)
         return(s)
     } else {
         s <- data.frame(trial = 1:trials, njump = nj, smat = exp(log_s))
@@ -98,6 +111,7 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
                                 timevar = 'period',
                                 idvar = 'trial',
                                 new.row.names = NULL)
+        slong$period <- slong$period - 1
         return(slong[order(slong$trial, slong$period), ])
     } 
 }
