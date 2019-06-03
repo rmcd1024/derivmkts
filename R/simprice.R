@@ -40,8 +40,8 @@
 #'     columns indicating the price, trial, and period. If
 #'     \code{FALSE}, the returned data is wide, containing only
 #'     prices: each row is a trial and each column is a period
-#' 
-#' 
+#'
+#'
 #' @examples
 #' # simple Monte Carlo option price example. Since there are two
 #' # periods we can compute options prices for \code{tt} and
@@ -50,8 +50,8 @@
 #' st = simprice(s0, k, v, r, tt, d, periods=2, trials=3)
 #' callprice1 = exp(-r*tt/2)*mean(pmax(st[st$period==1,] - k, 0))
 #' callprice2 = exp(-r*tt)*mean(pmax(st[st$period==2,] - k, 0))
-#' 
-#' 
+#'
+#'
 #' @export
 simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
                      jump = FALSE, lambda = 0, alphaj = 0, vj = 0,
@@ -73,46 +73,104 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
     }
     if (!is.null(seed)) set.seed(seed)
     ## a row of dimension m is a simulated stock price path
+    ## In this case we need to generate all the random Z's together
+    ## We won't have correlation for anything related to jumps
     h <- tt/periods
-    k <- exp(alphaj) - 1 
-    zc <- matrix(rnorm(periods*trials), nrow = trials, ncol = periods)
-    ## apply function output differs for vectors and dataframes
-    if (periods != 1) zc <- t(apply(zc, 1, cumsum))
-    hmat <- matrix(rep(1:periods, times = trials), nrow = trials,
-                   ncol = periods, byrow = TRUE)
-    log_s <- log(s0) + (r - d - jump*k*lambda - 0.5*v^2)*h*hmat + v*sqrt(h)*zc
-    log_s <- cbind(log(s0), log_s)
-    if (jump) {
-        lambda <- lambda
-        nj <- matrix(rpois(periods*trials, lambda = lambda*h),
-                     nrow = trials, ncol = periods)
-        zj <- matrix(rnorm(periods*trials), nrow = trials, ncol = periods)
-        jumpfactor <- (alphaj-0.5*vj^2)*nj + vj*sqrt(nj)*zj
-        jumpfactor <- apply(jumpfactor, 1, cumsum)
-        if (periods != 1) jumpfactor <- t(jumpfactor)
-        nj <- cbind(0, nj)
-        log_s <- log_s + cbind(0, jumpfactor)
-    } else {
-        nj <- matrix(0, nrow = trials,  ncol = periods + 1)
+
+    ## make sure that vectorizable parameters (vparams) are length 1
+    ## or length(v)
+    ##r <- .08;d <- 0;alphaj <- c(.2, .4);vj <- .4;lambda <- c(2, 8)
+    ##    v <- matrix(c(1, .4, .4, 1), nrow = 2)
+    numassets <- ifelse(length(v) > 1, ncol(v), 1)
+    if (numassets == 1) v <- v^2
+    vparams <- list(r = r, d = d, alphaj = alphaj, vj = vj, lambda = lambda)
+    test <- lapply(vparams, function(x) length(x) %in% c(numassets, 1))
+    stopifnot(length(vparams) == sum(test == TRUE))
+    for (i in names(vparams)) {
+        if (length(get(i)) != numassets) {
+            assign(i, rep(vparams[[i]], numassets))
+        }
     }
+    k <- exp(alphaj) - 1
+    zraw <- array(rnorm(periods*trials*numassets),
+                  dim = c(trials, periods, numassets))
+    zall <- array(NA, dim = c(trials, periods, numassets))
+    for (i in 1:periods) {
+##        for (j in 1:trials)
+            zall[, i, ] <- zraw[, i, ] %*% chol(v)
+    }
+    if (numassets == 1) {
+        vi <- sqrt(v)
+    } else {
+        vi <- sqrt(diag(v))
+    }
+    ##if (numassets > 1) v <- sqrt(diag(v))
+    sall <- list()
+
+    for (i in 1:numassets) {
+        log_s <- matrix(NA,  nrow = trials,  ncol = periods+1)
+        log_s[, 1] <- log(s0)
+        for (j in 1:periods) {
+            ##print(j)
+            ##print(zall[, j, i])
+            log_s[, j+1] <- log_s[, j] +
+                (r[i]-d[i]-jump*k[i]*lambda[i]-0.5*vi[i]^2)*h +
+                zall[, j, i]*sqrt(h)
+        }
+        runthis <- FALSE
+        if (runthis) {
+        ## apply function output differs for vectors and dataframes
+        if (periods != 1) zc <- t(apply(zall[,,i], 2, cumsum))
+        hmat <- matrix(rep(1:periods, times = trials), nrow = trials,
+                        ncol = periods, byrow = TRUE)
+        log_s <- log(s0) +
+            (r[i] - d[i] - jump*k[i]*lambda[i] - 0.5*vi[i]^2)*h*hmat +
+            sqrt(h)*zc
+        log_s <- cbind(log(s0), log_s)
+        }
+        if (jump) {
+            nj <- matrix(rpois(periods*trials, lambda = lambda[i]*h),
+                         nrow = trials, ncol = periods)
+            zj <- matrix(rnorm(periods*trials), nrow = trials, ncol = periods)
+            jumpfactor <- (alphaj[i]-0.5*vj[i]^2)*nj + vj[i]*sqrt(nj)*zj
+            jumpfactor <- apply(jumpfactor, 1, cumsum)
+            if (periods != 1) jumpfactor <- t(jumpfactor)
+            nj <- cbind(0, nj)
+            log_s <- log_s + cbind(0, jumpfactor)
+        } else {
+            nj <- matrix(0, nrow = trials,  ncol = periods + 1)
+        }
+        if (long == FALSE) {s <- data.frame(exp(log_s))
+            colnames(s) <- paste0('h', 0:periods)
+            sall[[i]] <- cbind(asset = i, s)
+            ##print(sall[[i]])
+        } else {
+            sall[[i]] <- data.frame(asset = i, trial = 1:trials,
+                                    njump = nj, smat = exp(log_s))
+            ##print(sall[[i]])
+        }
+    }
+
     if (savedseed) .Random.seed <- oldseed
     if (long == FALSE) {
-        s <- data.frame(exp(log_s))
-        colnames(s) <- paste0('h', 0:periods)
-        return(s)
+        return(do.call(rbind, sall))
     } else {
-        s <- data.frame(trial = 1:trials, njump = nj, smat = exp(log_s))
+        s <- do.call(rbind, sall)
         slong <- stats::reshape(s,
                                 direction = 'long',
-                                varying = list(grep('njump', names(s), value = TRUE),
-                                               grep('smat', names(s), value = TRUE)),
-                                ##varying = colnames(s)[-1],
+                                varying = list(
+                                    grep('njump', names(s), value = TRUE),
+                                    grep('smat', names(s), value = TRUE)),
                                 v.names = c('numjumps', 'price'),
                                 timevar = 'period',
-                                idvar = 'trial',
+                                idvar = c('asset','trial'),
                                 new.row.names = NULL)
         slong$period <- slong$period - 1
-        return(slong[order(slong$trial, slong$period), ])
-    } 
+        return(slong[order(slong$asset, slong$trial, slong$period), ])
+    }
 }
 
+.makePrice <- function(s0, v, r, tt, d, trials, periods = 1,
+                       jump = jump, lambda = lambda, alphaj = alphaj, vj = vj,
+                       zs, zj, pj) {
+}
