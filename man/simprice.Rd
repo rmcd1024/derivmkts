@@ -4,14 +4,19 @@
 \alias{simprice}
 \title{Simulate asset prices}
 \usage{
-simprice(s0, v, r, tt, d, trials, periods=1, jump=FALSE,
-    lambda=0, alphaj=0, vj=0, seed=NULL, long=TRUE)
+simprice(s0, v, r, tt, d, trials, periods, jump, lambda,
+    alphaj, vj, seed, long, scalar_v_is_stddev)
 }
 \arguments{
 \item{s0}{Initial price of the underlying asset}
 
-\item{v}{Volatility of the asset price, defined as the annualized
-standard deviation of the continuously-compounded return}
+\item{v}{If scalar, default is volatility of the asset price,
+defined as the annualized standard deviation of the
+continuously-compounded return. The parameter
+\code{scalar_v_is_stddev} controls this behavior. If \code{v}
+is a square \code{n x n} matrix, it is assumed to be the
+covariance matrix and \code{simprice} will return \code{n}
+simulated price series.}
 
 \item{r}{Annual continuously-compounded risk-free interest rate}
 
@@ -39,6 +44,11 @@ path}
 columns indicating the price, trial, and period. If
 \code{FALSE}, the returned data is wide, containing only
 prices: each row is a trial and each column is a period}
+
+\item{scalar_v_is_stddev}{if \code{TRUE}, scalar v is interpreted
+as the standard devaition; if \code{FALSE}, it is
+variance. Non-scalar V is always interpreted as a covariance
+matrix}
 }
 \value{
 A dataframe with \code{trials} simulated stock price paths
@@ -48,15 +58,16 @@ A dataframe with \code{trials} simulated stock price paths
     paths, with or without jumps. Saves and restores random number
     seed.
 
-\code{simprice(s0, v, r, tt, d, trials, periods = 1,  jump = FALSE,
-lambda = 0, alphaj = 0, vj = 0, seed = NULL, long = TRUE)}
+\code{simprice(s0, v, r, tt, d, trials, periods = 1, jump = FALSE,
+lambda = 0, alphaj = 0, vj = 0, seed = NULL, long = TRUE,
+scalar_v_is_stddev = TRUE)}
 }
 \examples{
 # simple Monte Carlo option price example. Since there are two
 # periods we can compute options prices for \\code{tt} and
 # \\code{tt/2}
 s0=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
-st = simprice(s0, k, v, r, tt, d, periods=2, trials=3)
+st = simprice(s0, k, v, r, tt, d,  trials=3, periods=2, jump=FALSE)
 callprice1 = exp(-r*tt/2)*mean(pmax(st[st$period==1,] - k, 0))
 callprice2 = exp(-r*tt)*mean(pmax(st[st$period==2,] - k, 0))
 

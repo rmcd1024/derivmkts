@@ -29,3 +29,5 @@ bbl$
 blg$
 presentations/
 R/testsim.R
+R/simprice_test.R
+R/simprice_old.R

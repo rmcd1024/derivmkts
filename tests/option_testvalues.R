@@ -216,6 +216,7 @@ keeplist <- c('barriervals', 'barriertestfns',
               )
 
 save(list=keeplist,
-     file='~/git/derivmkts/tests/testthat/option_testvalues.Rdata')
+     file='~/git/derivmkts/tests/testthat/option_testvalues.Rdata',
+     version = 2)
 
 

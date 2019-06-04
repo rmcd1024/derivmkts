@@ -1,31 +1,28 @@
-##' purpose of this test file is to add a period 0 with the intitial
-##' price. We need to vet the results in this file against those of
-##' simprice to be sure we haven't broken anything...
-##'
-##' The script `test_simprice_outputs` verifies that this produces the
-##' same output as simprice.R in 4 test cases, with and without jumps
-##'
-##' @title Simulate asset prices
+#' @title Simulate asset prices
 #'
 #' @description \code{simprice} computes simulated lognormal price
 #'     paths, with or without jumps. Saves and restores random number
 #'     seed.
 #'
-#' \code{simprice(s0, v, r, tt, d, trials, periods = 1,  jump = FALSE,
-#' lambda = 0, alphaj = 0, vj = 0, seed = NULL, long = TRUE)}
+#' \code{simprice(s0, v, r, tt, d, trials, periods = 1, jump = FALSE,
+#' lambda = 0, alphaj = 0, vj = 0, seed = NULL, long = TRUE,
+#' scalar_v_is_stddev = TRUE)}
 #'
 #' @name simprice
 #' @importFrom stats rnorm rpois
 #' @return A dataframe with \code{trials} simulated stock price paths
 #'
-#' @usage simprice(s0, v, r, tt, d, trials, periods=1, jump=FALSE,
-#'     lambda=0, alphaj=0, vj=0, seed=NULL, long=TRUE)
+#' @usage simprice(s0, v, r, tt, d, trials, periods, jump, lambda,
+#'     alphaj, vj, seed, long, scalar_v_is_stddev)
 #'
 #' @param s0 Initial price of the underlying asset
 #' @param v If scalar, default is volatility of the asset price,
 #'     defined as the annualized standard deviation of the
-#'     continuously-compounded return. If a matrix, it is the
-#'     covariance matrix
+#'     continuously-compounded return. The parameter
+#'     \code{scalar_v_is_stddev} controls this behavior. If \code{v}
+#'     is a square \code{n x n} matrix, it is assumed to be the
+#'     covariance matrix and \code{simprice} will return \code{n}
+#'     simulated price series.
 #' @param r Annual continuously-compounded risk-free interest rate
 #' @param tt Time to maturity in years
 #' @param d Dividend yield, annualized, continuously-compounded
@@ -52,11 +49,12 @@
 #' # periods we can compute options prices for \code{tt} and
 #' # \code{tt/2}
 #' s0=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
-#' st = simprice(s0, k, v, r, tt, d, periods=2, trials=3)
+#' st = simprice(s0, k, v, r, tt, d,  trials=3, periods=2, jump=FALSE)
 #' callprice1 = exp(-r*tt/2)*mean(pmax(st[st$period==1,] - k, 0))
 #' callprice2 = exp(-r*tt)*mean(pmax(st[st$period==2,] - k, 0))
 #'
 #'
+
 #' @export
 simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
                      jump = FALSE, lambda = 0, alphaj = 0, vj = 0,
@@ -123,17 +121,17 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
                 (r[i]-d[i]-jump*k[i]*lambda[i]-0.5*vi[i]^2)*h +
                 zall[, j, i]*sqrt(h)
         }
-        runthis <- FALSE
-        if (runthis) {
-        ## apply function output differs for vectors and dataframes
-        if (periods != 1) zc <- t(apply(zall[,,i], 2, cumsum))
-        hmat <- matrix(rep(1:periods, times = trials), nrow = trials,
-                        ncol = periods, byrow = TRUE)
-        log_s <- log(s0) +
-            (r[i] - d[i] - jump*k[i]*lambda[i] - 0.5*vi[i]^2)*h*hmat +
-            sqrt(h)*zc
-        log_s <- cbind(log(s0), log_s)
-        }
+##        runthis <- FALSE
+##        if (runthis) {
+##        ## apply function output differs for vectors and dataframes
+##        if (periods != 1) zc <- t(apply(zall[,,i], 2, cumsum))
+##        hmat <- matrix(rep(1:periods, times = trials), nrow = trials,
+##                        ncol = periods, byrow = TRUE)
+##        log_s <- log(s0) +
+##            (r[i] - d[i] - jump*k[i]*lambda[i] - 0.5*vi[i]^2)*h*hmat +
+##            sqrt(h)*zc
+##        log_s <- cbind(log(s0), log_s)
+##        }
         if (jump) {
             nj <- matrix(rpois(periods*trials, lambda = lambda[i]*h),
                          nrow = trials, ncol = periods)
@@ -149,12 +147,10 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
         if (long == FALSE) {s <- data.frame(exp(log_s))
             colnames(s) <- paste0('h', 0:periods)
             sall[[i]] <- cbind(asset = i, s)
-            ##print(sall[[i]])
-        } else {
+          } else {
             sall[[i]] <- data.frame(asset = i, trial = 1:trials,
                                     njump = nj, smat = exp(log_s))
-            ##print(sall[[i]])
-        }
+         }
     }
 
     if (savedseed) .Random.seed <- oldseed
@@ -174,9 +170,4 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
         slong$period <- slong$period - 1
         return(slong[order(slong$asset, slong$trial, slong$period), ])
     }
-}
-
-.makePrice <- function(s0, v, r, tt, d, trials, periods = 1,
-                       jump = jump, lambda = lambda, alphaj = alphaj, vj = vj,
-                       zs, zj, pj) {
 }
