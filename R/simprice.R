@@ -22,8 +22,10 @@
 #'     lambda=0, alphaj=0, vj=0, seed=NULL, long=TRUE)
 #'
 #' @param s0 Initial price of the underlying asset
-#' @param v Volatility of the asset price, defined as the annualized
-#'     standard deviation of the continuously-compounded return
+#' @param v If scalar, default is volatility of the asset price,
+#'     defined as the annualized standard deviation of the
+#'     continuously-compounded return. If a matrix, it is the
+#'     covariance matrix
 #' @param r Annual continuously-compounded risk-free interest rate
 #' @param tt Time to maturity in years
 #' @param d Dividend yield, annualized, continuously-compounded
@@ -40,7 +42,10 @@
 #'     columns indicating the price, trial, and period. If
 #'     \code{FALSE}, the returned data is wide, containing only
 #'     prices: each row is a trial and each column is a period
-#'
+#' @param scalar_v_is_stddev if \code{TRUE}, scalar v is interpreted
+#'     as the standard devaition; if \code{FALSE}, it is
+#'     variance. Non-scalar V is always interpreted as a covariance
+#'     matrix
 #'
 #' @examples
 #' # simple Monte Carlo option price example. Since there are two
@@ -55,7 +60,8 @@
 #' @export
 simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
                      jump = FALSE, lambda = 0, alphaj = 0, vj = 0,
-                     seed = NULL, long = TRUE) {
+                     seed = NULL, long = TRUE,
+                     scalar_v_is_stddev = TRUE) {
     testing <- FALSE
     ##testing <- TRUE
     if (testing) {
@@ -82,7 +88,7 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
     ##r <- .08;d <- 0;alphaj <- c(.2, .4);vj <- .4;lambda <- c(2, 8)
     ##    v <- matrix(c(1, .4, .4, 1), nrow = 2)
     numassets <- ifelse(length(v) > 1, ncol(v), 1)
-    if (numassets == 1) v <- v^2
+    if (numassets == 1 & scalar_v_is_stddev) v <- v^2
     vparams <- list(r = r, d = d, alphaj = alphaj, vj = vj, lambda = lambda)
     test <- lapply(vparams, function(x) length(x) %in% c(numassets, 1))
     stopifnot(length(vparams) == sum(test == TRUE))
