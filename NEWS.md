@@ -1,18 +1,25 @@
 # derivmkts 0.2.3.990
 
-* New function `simprice`, which simulates lognormal price paths, with
-  or without jumps
+* New function `simprice`, which produces simulated lognormal price
+  paths, with or without jumps.
+  * Paths can be split into subperiods, e.g. to value Asian options
+  * By supplying a covariance matrix, simprice will return multiple
+    correlated price paths.
 
 * In `greeks`, specifying `long=TRUE` now also implies `complete=TRUE`
   (#3)
+
+* The `mertonjump` function now returns a dataframe, has a `complete`
+  option and handles vectorized `lambda`
 
 # derivmkts 0.2.3
 
 * greeks `tidy` option renamed to `complete`
 
 * Added options to `greeks`: 
-  * `complete` if `TRUE`, return all inputs and greeks for each case 
-* greeks `tidy` option renamed to `complete`. By default, this returns wide form results
+  * `complete` if `TRUE`, return all inputs and greeks for each case
+* greeks `tidy` option renamed to `complete`. By default, this returns
+  wide form results
   * `long` (if `complete=TRUE`, return long form output)
   * `initcaps`: capitalize "Delta", "Gamma", etc.
 

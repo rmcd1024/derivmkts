@@ -148,7 +148,7 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
             colnames(s) <- paste0('h', 0:periods)
             sall[[i]] <- cbind(asset = i, s)
           } else {
-            sall[[i]] <- data.frame(asset = i, trial = 1:trials,
+            sall[[i]] <- data.frame(asset = i, trial = factor(1:trials),
                                     njump = nj, smat = exp(log_s))
          }
     }
@@ -168,6 +168,7 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
                                 idvar = c('asset','trial'),
                                 new.row.names = NULL)
         slong$period <- slong$period - 1
+        slong$trial <- as.factor(slong$trial)
         return(slong[order(slong$asset, slong$trial, slong$period), ])
     }
 }
