@@ -1,4 +1,4 @@
-# derivmkts 0.2.3.990
+# derivmkts 0.2.4
 
 * New function `simprice`, which produces simulated lognormal price
   paths, with or without jumps.
