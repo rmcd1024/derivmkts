@@ -64,6 +64,7 @@ R, but this package has several distinguishing features:
   Markets}.
 * vectorized Greek calculations are convenient both for individual
   options and for portfolios
+* the `simprice` function produces simulated asset prices
 * the `quincunx` function illustrates the workings of a
   quincunx (Galton board).
 * binomial functions include a plotting function that provides a
@@ -521,11 +522,16 @@ convexity(price, coupon, mat, principal, freq)
 
 ``` 
 
-# Simulated prices
+# Monte Carlo simulation of prices
 
 The function `simprice` provides a flexible way to generate prices
-that can be used for Monte Carlo or any other purpose. 
-
+that can be used for Monte Carlo valuation or just to illustrate
+sample paths. This function implements "naive" Monte Carlo, not making
+use of any variance reduction techniques. When supplied with a
+covariance matrix, `simprice` produces correlated asset prices.
+For more information on Monte Carlo see @mcdonald:derivs:13, Chapter
+19, and @glasserman:mc:04, especially Chapter 4.
+ 
 
 ## Simulated price paths
 
