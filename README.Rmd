@@ -44,6 +44,7 @@ The package includes functions for computing
 
 * Analytical and Monte Carlo pricing of Asian options 
 
+* Simulation of stock price paths, with and without jumps
 
 ## Calculation of Greeks
 

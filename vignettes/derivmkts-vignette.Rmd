@@ -6,7 +6,7 @@ output:
   pdf_document:
     toc: true
     number_sections: true
-bibliography: "/home/rmcd/texmf/bibtex/bib/rmcd.bib"
+bibliography: "derivmkts.bib"
 header-includes:
   \usepackage{tikz}
   \usetikzlibrary{positioning}
