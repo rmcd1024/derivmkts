@@ -100,7 +100,6 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
                   dim = c(trials, periods, numassets))
     zall <- array(NA, dim = c(trials, periods, numassets))
     for (i in 1:periods) {
-##        for (j in 1:trials)
             zall[, i, ] <- zraw[, i, ] %*% chol(v)
     }
     if (numassets == 1) {
@@ -121,17 +120,6 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
                 (r[i]-d[i]-jump*k[i]*lambda[i]-0.5*vi[i]^2)*h +
                 zall[, j, i]*sqrt(h)
         }
-##        runthis <- FALSE
-##        if (runthis) {
-##        ## apply function output differs for vectors and dataframes
-##        if (periods != 1) zc <- t(apply(zall[,,i], 2, cumsum))
-##        hmat <- matrix(rep(1:periods, times = trials), nrow = trials,
-##                        ncol = periods, byrow = TRUE)
-##        log_s <- log(s0) +
-##            (r[i] - d[i] - jump*k[i]*lambda[i] - 0.5*vi[i]^2)*h*hmat +
-##            sqrt(h)*zc
-##        log_s <- cbind(log(s0), log_s)
-##        }
         if (jump) {
             nj <- matrix(rpois(periods*trials, lambda = lambda[i]*h),
                          nrow = trials, ncol = periods)

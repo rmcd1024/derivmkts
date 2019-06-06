@@ -10,6 +10,11 @@ bibliography: "/home/rmcd/texmf/bibtex/bib/rmcd.bib"
 header-includes:
   \usepackage{tikz}
   \usetikzlibrary{positioning}
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown} 
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Option Pricing Functions to Accompany *Derivatives Markets*}
+
 geometry: 'margin=1.25in'
 fontsize: 12pt  
 ---
@@ -525,9 +530,9 @@ that can be used for Monte Carlo or any other purpose.
 ## Simulated price paths
 
 A simple example is to generate 5 random sample paths of daily stock
-prices for a year:
+prices for a year; see Figure \ref{fig:fivepaths}:
 
-```{r, fig.cap='Five simulated paths for the same stock, no jumps.' }
+```{r fivepaths, fig.cap='Five simulated paths for the same stock, no jumps.' }
 s0 <- 100; v <- 0.3; r <- 0.10; d <- 0; tt <- 1
 trials <- 5; periods <- 365; set.seed(1)
 s <- simprice(s0 = s0, v = v, r = r, tt = tt, d = d, trials = trials,
@@ -535,9 +540,9 @@ s <- simprice(s0 = s0, v = v, r = r, tt = tt, d = d, trials = trials,
 ggplot(s, aes(x = period, y = price, color = trial, group = trial)) + geom_line()
 ```
 
-We can do the same exercise adding jumps:
+We can do the same exercise adding jumps; see Figure \ref{fig:fivejumpers}.
 
-```{r, fig.cap='Five simulated paths for the same stock, which can jump.'}
+```{r fivejumpers, fig.cap='Five simulated paths for the same stock, which can jump.'}
 s0 <- 100; v <- 0.3; r <- 0.10; d <- 0; tt <- 1
 trials <- 5; periods <- 365; jump <- TRUE; lambda <- 2;
 alphaj <- -0.1; vj <- 0.2; set.seed(1)
@@ -557,7 +562,7 @@ three correlated stocks with standard deviations of 60%, 20%, and
 45%., with the covariance matrix given by `v`. Compare the estimated
 covariance matrix with `v`:
 
-```{r}
+```{r, eval=FALSE}
 set.seed(1)
 vi <- diag(3)
 diag(vi) <- c(.6, .2, .45)
@@ -618,7 +623,7 @@ and the various trees, which it then uses in plotting:
 
 The first plot, figure \ref{fig:binomplot1}, is basic:
 
-```{r binomplot1, fig.cap='Basic option plot showing stock prices and nodes at which the option is exercised.\\label{fig:binomplot1}'}
+```{r binomplot1, fig.cap='Basic option plot showing stock prices and nodes at which the option is exercised.'}
 s0 <- 100; k <- 100; v <- 0.3; r <- 0.08; tt <- 2; d <- 0
 binomplot(s0, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE)
 
@@ -627,7 +632,7 @@ binomplot(s0, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE)
 The second plot, figure \ref{fig:binomplot2}, adds a display of stock
 prices and arrows connecting the nodes.
 
-```{r binomplot2, fig.cap='Same plot as Figure \\ref{fig:binomplot1} except that values and arrows are added to the plot.\\label{fig:binomplot2}'}
+```{r binomplot2, fig.cap='Same plot as Figure \\ref{fig:binomplot1} except that values and arrows are added to the plot.'}
 binomplot(s0, k, v, r, tt, d, nstep=6, american=TRUE, putopt=TRUE,
     plotvalues=TRUE, plotarrows=TRUE)
 ```
@@ -636,7 +641,7 @@ As a final example, consider an American call when the dividend yield
 is positive and `nstep` has a larger value. Figure
 \ref{fig:binomplot3} shows the plot, with early exercise evident.
 
-```{r binomplot3, fig.cap="Binomial plot when nstep is 40.\\label{fig:binomplot3}"}
+```{r binomplot3, fig.cap="Binomial plot when nstep is 40."}
 d <- 0.06
 binomplot(s0, k, v, r, tt, d, nstep=40, american=TRUE)
 ```
@@ -646,7 +651,7 @@ price, which makes details hard to discern in the boundary region
 where exercise first occurrs. We can zoom in on that region by
 selecting values for `ylimval`; the result is in Figure \ref{fig:binomplot4}.
 
-```{r binomplot4, fig.cap="Binomial plot when nstep is 40 using the argument ylimval to focus on a subset.\\label{fig:binomplot4}"}
+```{r binomplot4, fig.cap="Binomial plot when nstep is 40 using the argument ylimval to focus on a subset."}
 d <- 0.06
 binomplot(s0, k, v, r, tt, d, nstep=40, american=TRUE, ylimval=c(75, 225))
 ```

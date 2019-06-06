@@ -11,8 +11,9 @@ Imports: graphics, stats, grDevices, mnormt, testthat
 Depends: R (>= 3.0.0)
 Suggests: highlight, markdown, knitr, rmarkdown, ggplot2, dplyr, tidyr
 License: MIT + file LICENSE
-VignetteBuilder: knitr
+VignetteBuilder: knitr, ggplot2, dplyr, tidyr
 LazyData: true
+Encoding: UTF-8
 RoxygenNote: 6.1.1
 NeedsCompilation: no
 Packaged: 2016-09-05 00:19:54 UTC; rmcd

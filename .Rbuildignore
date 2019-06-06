@@ -32,3 +32,4 @@ R/testsim.R
 R/simprice_test.R
 R/simprice_old.R
 vignettes/Notes-on-vectorization*
+vignettes/derivmkts-vignette.Rnw
