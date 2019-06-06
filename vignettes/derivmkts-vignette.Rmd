@@ -552,6 +552,7 @@ s <- simprice(s0 = s0, v = v, r = r, tt = tt, d = d, trials = trials,
 ggplot(s, aes(x = period, y = price, color = trial, group = trial)) + geom_line()
 ```
 
+\newpage 
 
 ## Multiple correlated stocks
 
@@ -562,16 +563,18 @@ three correlated stocks with standard deviations of 60%, 20%, and
 45%., with the covariance matrix given by `v`. Compare the estimated
 covariance matrix with `v`:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 set.seed(1)
 vi <- diag(3)
+tt <- 2; periods <- tt*365
 diag(vi) <- c(.6, .2, .45)
 vc <- matrix(c(1, .4, -.3,
               .4, 1, .25,
               -.3, .25, 1), nrow = 3) 
 v <- vi %*% vc %*% vi
-s <- simprice(s0 = s0, v = v, r = r, tt = 1, d = d, trials = 1,
-              periods = 365, jump = FALSE, long = TRUE)
+s <- simprice(s0 = s0, v = v, r = r, tt = tt, d = d, trials = 1,
+              periods = periods, jump = FALSE, long = TRUE)
+
 threestocks <- s %>%
     filter(trial == 1) %>%
     group_by(asset) %>%
@@ -579,6 +582,7 @@ threestocks <- s %>%
            row = row_number()) %>%
     select(asset, period, ret) %>%
     spread(key = asset, value = ret )
+
 var(threestocks[2:4], na.rm = TRUE)*365
 v
 ```
