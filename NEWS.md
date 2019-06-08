@@ -1,3 +1,9 @@
+# derivmkts 0.2.4.1 (development)
+
+* `simprice` did not properly restore random number seed
+* `quincunx` and asian Monte Carlo functions now save and restore
+  random number seed
+
 # derivmkts 0.2.4
 
 * New function `simprice`, which produces simulated lognormal price

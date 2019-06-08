@@ -182,6 +182,12 @@ arithavgpricecv <- function(s, k, v, r, tt, d, m, numsim=1000) {
     ## control variate version
     numsim <- numsim + 250
     truegeom <- geomavgprice(s, k, v, r, tt, d, m)["Call"]
+    if (exists(".Random.seed", .GlobalEnv)) {
+        oldseed <- .Random.seed
+        savedseed <- TRUE
+    } else {
+        savedseed <- FALSE
+    }
     z <- matrix(rnorm(m*numsim), numsim, m)
     h <- tt/m
     hmat <- matrix((1:m)*h,numsim,m,byrow=TRUE)
@@ -195,12 +201,19 @@ arithavgpricecv <- function(s, k, v, r, tt, d, m, numsim=1000) {
         var(geomprice[1:250])
     corrected <- avgpricecall +
         betahat*(rep(truegeom, length(geomprice)) - geomprice)
+    if (savedseed) .GlobalEnv$.Random.seed <- oldseed
     return(c(price=mean(corrected), beta=betahat))
 }
 
 
 .computeavgprice <- function(s, k, v, r, tt, d, m, numsim,
-                            avgtype='arith') {
+                             avgtype='arith') {
+    if (exists(".Random.seed", .GlobalEnv)) {
+        oldseed <- .Random.seed
+        savedseed <- TRUE
+    } else {
+        savedseed <- FALSE
+    }
     z <- matrix(rnorm(m*numsim), numsim, m)
     zcum <- t(apply(z, 1, cumsum))
     h <- tt/m
@@ -223,6 +236,7 @@ arithavgpricecv <- function(s, k, v, r, tt, d, m, numsim=1000) {
            arith = apply(S, 1, sum)/m,
            geom = apply(S, 1, prod)^(1/m)
            )
+    if (savedseed) .GlobalEnv$.Random.seed <- oldseed
     return(list(S=S, Savg=Savg))
 }
     

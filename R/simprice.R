@@ -67,9 +67,9 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
         s0=40; k=40; v=0.30; r=0.08; tt=0.25; d=0; periods <- 2;
         trials <- 3; lambda=2; alphaj=-.2; vj=.4; jump=TRUE
         long <- TRUE;
-##        jump <- FALSE
+        ## jump <- FALSE
     }
-    if (exists(".Random.seed")) {
+    if (exists(".Random.seed", .GlobalEnv)) {
         oldseed <- .Random.seed
         savedseed <- TRUE
     } else {
@@ -141,7 +141,7 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
          }
     }
 
-    if (savedseed) .Random.seed <- oldseed
+    if (savedseed) .GlobalEnv$.Random.seed <- oldseed
     if (long == FALSE) {
         return(do.call(rbind, sall))
     } else {
