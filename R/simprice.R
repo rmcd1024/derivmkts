@@ -4,9 +4,9 @@
 #'     paths, with or without jumps. Saves and restores random number
 #'     seed.
 #'
-#' \code{simprice(s0, v, r, tt, d, trials, periods = 1, jump = FALSE,
-#' lambda = 0, alphaj = 0, vj = 0, seed = NULL, long = TRUE,
-#' scalar_v_is_stddev = TRUE)}
+#' \code{simprice(s0 = 100, v = 0.3, r = .08, tt = 1, d = 0, trials =
+#' 2, periods = 3, jump = FALSE, lambda = 0, alphaj = 0, vj = 0, seed
+#' = NULL, long = TRUE, scalar_v_is_stddev = TRUE)}
 #'
 #' @name simprice
 #' @importFrom stats rnorm rpois
@@ -56,7 +56,9 @@
 #'
 
 #' @export
-simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
+
+simprice <- function(s0 = 100, v = .3, r = 0.08, tt = 1, d = 0,
+                     trials = 2, periods = 3,
                      jump = FALSE, lambda = 0, alphaj = 0, vj = 0,
                      seed = NULL, long = TRUE,
                      scalar_v_is_stddev = TRUE) {
@@ -115,7 +117,6 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
         log_s[, 1] <- log(s0)
         for (j in 1:periods) {
             ##print(j)
-            ##print(zall[, j, i])
             log_s[, j+1] <- log_s[, j] +
                 (r[i]-d[i]-jump*k[i]*lambda[i]-0.5*vi[i]^2)*h +
                 zall[, j, i]*sqrt(h)
@@ -134,11 +135,12 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
         }
         if (long == FALSE) {s <- data.frame(exp(log_s))
             colnames(s) <- paste0('h', 0:periods)
-            sall[[i]] <- cbind(asset = i, s)
-          } else {
-            sall[[i]] <- data.frame(asset = i, trial = factor(1:trials),
+            sall[[i]] <- cbind(asset = factor(i), s)
+        } else {
+            sall[[i]] <- data.frame(asset = i,
+                                    trial = as.factor(1:trials),
                                     njump = nj, smat = exp(log_s))
-         }
+        }
     }
 
     if (savedseed) .GlobalEnv$.Random.seed <- oldseed
@@ -157,6 +159,7 @@ simprice <- function(s0, v, r, tt, d,  trials, periods = 1,
                                 new.row.names = NULL)
         slong$period <- slong$period - 1
         slong$trial <- as.factor(slong$trial)
+        slong$asset <- as.factor(slong$asset)
         return(slong[order(slong$asset, slong$trial, slong$period), ])
     }
 }

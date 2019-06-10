@@ -526,12 +526,39 @@ convexity(price, coupon, mat, principal, freq)
 
 The function `simprice` provides a flexible way to generate prices
 that can be used for Monte Carlo valuation or just to illustrate
-sample paths. This function implements "naive" Monte Carlo, not making
-use of any variance reduction techniques. When supplied with a
-covariance matrix, `simprice` produces correlated asset prices.
-For more information on Monte Carlo see @mcdonald:derivs:13, Chapter
-19, and @glasserman:mc:04, especially Chapter 4.
+sample paths.^[For more information on Monte Carlo see
+@mcdonald:derivs:13, Chapter 19, and @glasserman:mc:04, especially
+Chapter 4.] This function implements "naive" Monte Carlo, not using
+any variance reduction techniques. When supplied with a covariance
+matrix, `simprice` produces simulations of multiple assets with
+correlated returns. There are default values for all inputs.
+
+Other option pricing functions in this package assume that you specify
+volatility as the annualized return standard deviation. With a scalar
+volatility input, the `simprice` function also interprets the value as
+a standard deviation. A matrix, however, is interpreted as a
+covariance matrix, which means that the individual stock volatilities
+are square root of the diagonal elements. Because scalar and matrix
+inputs are treated differently, there is an option To change the
+behavior for a scalar input. To interpret the value as a variance,
+specify `scalar_v_is_stddev = FALSE`.  
+
  
+## Long vs wide output
+
+The function `simprice` can produce either long or wide output. Here
+are examples of each, using the default parameters.^[The `simprice`
+function save and restores the random number seed, so repeated
+invocations without intermediate seed-changing actions will produce
+the same result.]
+
+```{r}
+args(simprice)
+simprice(long = TRUE)
+simprice(long = FALSE)
+```
+
+
 
 ## Simulated price paths
 
@@ -543,7 +570,8 @@ s0 <- 100; v <- 0.3; r <- 0.10; d <- 0; tt <- 1
 trials <- 5; periods <- 365; set.seed(1)
 s <- simprice(s0 = s0, v = v, r = r, tt = tt, d = d, trials = trials,
               periods = periods, jump = FALSE, long = TRUE)
-ggplot(s, aes(x = period, y = price, color = trial, group = trial)) + geom_line()
+ggplot(s, aes(x = period, y = price, color = trial, group = trial)) +
+    geom_line()
 ```
 
 We can do the same exercise adding jumps; see Figure \ref{fig:fivejumpers}.
@@ -555,29 +583,60 @@ alphaj <- -0.1; vj <- 0.2; set.seed(1)
 s <- simprice(s0 = s0, v = v, r = r, tt = tt, d = d, trials = trials,
               periods = periods, jump = jump, alphaj = alphaj,
               lambda = lambda, vj = vj, long = TRUE)
-ggplot(s, aes(x = period, y = price, color = trial, group = trial)) + geom_line()
+ggplot(s, aes(x = period, y = price, color = trial, group = trial)) +
+    geom_line()
 ```
 
 \newpage 
 
 ## Multiple correlated stocks
 
+When you supply an $n\times n$  covariance matrix as the volatility input,
+`simprice` produces simulations for $n$ stocks using the specified
+covariances. This makes it convenient to use an esimated covariance
+matrix to produce a simulation.
+
+### Negatively correlated assets
+
+To illustrate the use of a covariance matrix, Figure
+\ref{fig:negcoorsim} plots two stocks which are highly negatively
+correlated.
+
+```{r negcoorsim, fig.cap='Two stocks for which the returns have a correlation of -.99.' }
+set.seed(1)
+s0 <- 100; r <- 0.08; tt <- 1;  d <- 0; jump <- FALSE
+trials <- 1; periods <- 52;
+v <- .3^2*matrix(c(1, -.99, -.99, 1), nrow = 2)
+s <- simprice(s0 = s0, v = v, r = r, tt = tt, d = d, trials = trials,
+              periods = periods, jump = jump, long = TRUE)
+ggplot(s, aes(x = period, y = price, group = asset, color = asset)) +
+    geom_line()
+
+```
+
+
+
+### Three correlated assets
 
 Here is an example using a three-asset covariance matrix, showing that
 the simulated series have the correct variance structure. We have
 three correlated stocks with standard deviations of 60%, 20%, and
-45%., with the covariance matrix given by `v`. Compare the estimated
-covariance matrix with `v`:
+45%., with the covariance matrix given by `v`. We can compare the
+estimated covariance matrix with the input,`v`:
 
 ```{r, eval=TRUE}
 set.seed(1)
-vi <- diag(3)
 tt <- 2; periods <- tt*365
-diag(vi) <- c(.6, .2, .45)
-vc <- matrix(c(1, .4, -.3,
-              .4, 1, .25,
-              -.3, .25, 1), nrow = 3) 
-v <- vi %*% vc %*% vi
+
+vc <- vols <- diag(3)
+diag(vols) <- c(.6, .2, .45)   ## volatilities
+corrs <- c(.4, -.3, .25)
+vc[lower.tri(vc)] <- corrs  ## correlations
+vc <- t(vc) ## lower triangular becomes upper triangular
+vc[lower.tri(vc)] <- corrs
+v <- vols %*% vc %*% vols
+v
+
 s <- simprice(s0 = s0, v = v, r = r, tt = tt, d = d, trials = 1,
               periods = periods, jump = FALSE, long = TRUE)
 
@@ -590,13 +649,10 @@ threestocks <- s %>%
     spread(key = asset, value = ret )
 
 var(threestocks[2:4], na.rm = TRUE)*365
-v
 ```
 
 
-
 # Functions with Graphical Output
-
 
 Several functions provide visual illustrations of some aspects of the
 material.

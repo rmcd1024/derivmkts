@@ -3,6 +3,7 @@
 * `simprice` did not properly restore random number seed
 * `quincunx` and asian Monte Carlo functions now save and restore
   random number seed
+* Vignette revisions
 
 # derivmkts 0.2.4
 
