@@ -9,6 +9,9 @@ output:
   html_document:
     toc: true
     number_sections: true
+  md_document:
+    variant: gfm
+    toc: true
 bibliography: "derivmkts.bib"
 header-includes:
   \usepackage{tikz}
