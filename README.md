@@ -29,6 +29,8 @@ The package includes functions for computing
 
   - Analytical and Monte Carlo pricing of Asian options
 
+  - Simulation of stock price paths, with and without jumps
+
 ## Calculation of Greeks
 
 The function `greeks()` accepts an option pricing function call as an
@@ -108,6 +110,11 @@ options:
 ``` r
 library(derivmkts)
 library(ggplot2)
+Registered S3 methods overwritten by 'ggplot2':
+  method         from 
+  [.quosures     rlang
+  c.quosures     rlang
+  print.quosures rlang
 s <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 k <- seq(.5, 250, by=.5)
 yc <- greeks(bscall(s, k, v, r, tt, d), long=TRUE)
@@ -119,6 +126,20 @@ ggplot(rbind(yc, yp), aes(x=k, y=value, color=funcname)) +
 ```
 
 ![](README_files/figure-gfm/greekplot-1.png)<!-- -->
+
+## Simulating stock prices
+
+The `simprice` function produces simulated price paths, with output
+either in wide or long form.
+
+``` r
+s <- simprice(s0 = 100, v = 0.3, r = 0.08, tt = 1, d = 0, trials = 5,
+              periods = 365, jump = FALSE, long = TRUE, seed = 1)
+ggplot(s, aes(x = period, y = price, color = trial)) +
+    geom_line()
+```
+
+![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ## Binomial calculations
 
@@ -210,7 +231,7 @@ occurs at that node.
 binomplot(41, 40, .3, .08, 1, 0, 3, putopt=TRUE, american=TRUE)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ## Galton board or quincunx
 
@@ -229,7 +250,7 @@ You can see the Galton board in action with `quincunx()`:
 quincunx(n=11, numballs=250, delay=0, probright=0.5)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ## Feedback
 

@@ -114,6 +114,18 @@ ggplot(rbind(yc, yp), aes(x=k, y=value, color=funcname)) +
     facet_wrap(~ greek, scales='free_y')
 ```
 
+## Simulating stock prices
+
+The `simprice` function produces simulated price paths, with output
+either in wide or long form.
+
+```{r}
+s <- simprice(s0 = 100, v = 0.3, r = 0.08, tt = 1, d = 0, trials = 5,
+              periods = 365, jump = FALSE, long = TRUE, seed = 1)
+ggplot(s, aes(x = period, y = price, color = trial)) +
+    geom_line()
+```
+
 
 ## Binomial calculations
 
