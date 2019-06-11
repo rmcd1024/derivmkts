@@ -1,8 +1,8 @@
 # derivmkts 0.2.4.1 (development)
 
-* `simprice` did not properly restore random number seed
-* `quincunx` and asian Monte Carlo functions now save and restore
-  random number seed
+* Saving and restoring random number seed should now work properly in
+  `simprice`, `quincunx`, and Asian Monte Carlo functions 
+* `simprice` now returns `asset` and `trial` as factors
 * Vignette revisions
 
 # derivmkts 0.2.4
