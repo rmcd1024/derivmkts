@@ -9,9 +9,10 @@ Description: A set of pricing and expository functions that should
     be useful in teaching a course on financial derivatives.
 Imports: graphics, stats, grDevices, mnormt
 Depends: R (>= 3.0.0)
-Suggests: highlight, markdown, knitr, rmarkdown, ggplot2, dplyr, tidyr
+Suggests: highlight, markdown, knitr, rmarkdown, ggplot2, dplyr, 
+	tidyr, pander, bookdown
 License: MIT + file LICENSE
-VignetteBuilder: knitr, ggplot2, dplyr, tidyr
+VignetteBuilder: knitr, ggplot2, dplyr, tidyr, pander, bookdown
 LazyData: true
 Encoding: UTF-8
 RoxygenNote: 6.1.1

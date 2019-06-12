@@ -33,3 +33,7 @@ R/simprice_test.R
 R/simprice_old.R
 vignettes/Notes-on-vectorization*
 vignettes/derivmkts-vignette.Rnw
+vignettes/*.log
+vignettes/*.aux
+vignettes/*.out
+vignettes/*.toc

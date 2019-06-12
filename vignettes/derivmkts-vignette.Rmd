@@ -3,15 +3,15 @@ title: Option Pricing Functions to Accompany *Derivatives Markets*
 author: Robert McDonald
 date: "`r Sys.Date()`"
 output:
+  bookdown::pdf_document2:
+    toc: true
+    number_sections: true
   bookdown::html_document2:
     toc: true
     number_sections: true
 #  pdf_document:
 #    toc: true
 #    number_sections: true
-  bookdown::pdf_document2:
-    toc: true
-    number_sections: true
   md_document:
     variant: gfm
     toc: true
@@ -31,6 +31,7 @@ fontsize: 12pt
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 rm(list=ls())
 library(pander)
+library(bookdown)
 library(knitr)
 library(ggplot2)
 library(dplyr)
