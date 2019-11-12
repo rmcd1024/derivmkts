@@ -13,8 +13,8 @@
 \usage{
 bscallimpvol(s, k, r, tt, d, price)
 bsputimpvol(s, k, r, tt, d, price)
-bscallimps(s, k, v, r, tt, d, price)
-bsputimps(s, k, v, r, tt, d, price)
+bscallimps(s, k, v, r, tt, d, price, lower=0.001, upper=1e04)
+bsputimps(s, k, v, r, tt, d, price, lower=0.001, upper=1e04)
 }
 \arguments{
 \item{s}{Stock price}
@@ -31,6 +31,10 @@ standard deviation of the continuously-compounded return}
 \item{d}{Dividend yield, annualized, continuously-compounded}
 
 \item{price}{Option price when computing an implied value}
+
+\item{lower}{minimum stock price in implied price calculation}
+
+\item{upper}{maximum stock price in implied price calculation}
 }
 \value{
 Implied volatility (for the "impvol" functions) or implied

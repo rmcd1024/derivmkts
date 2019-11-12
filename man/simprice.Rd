@@ -58,9 +58,9 @@ A dataframe with \code{trials} simulated stock price paths
     paths, with or without jumps. Saves and restores random number
     seed.
 
-\code{simprice(s0, v, r, tt, d, trials, periods = 1, jump = FALSE,
-lambda = 0, alphaj = 0, vj = 0, seed = NULL, long = TRUE,
-scalar_v_is_stddev = TRUE)}
+\code{simprice(s0 = 100, v = 0.3, r = .08, tt = 1, d = 0, trials =
+2, periods = 3, jump = FALSE, lambda = 0, alphaj = 0, vj = 0, seed
+= NULL, long = TRUE, scalar_v_is_stddev = TRUE)}
 }
 \examples{
 # simple Monte Carlo option price example. Since there are two

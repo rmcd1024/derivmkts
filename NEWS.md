@@ -4,6 +4,7 @@
   `simprice`, `quincunx`, and Asian Monte Carlo functions 
 * `simprice` now returns `asset` and `trial` as factors
 * Vignette revisions
+* Configurable `upper` and `lower` bounds in `bscallimps` and `bsputimps`
 
 # derivmkts 0.2.4
 

@@ -16,8 +16,8 @@
 #' @usage
 #' bscallimpvol(s, k, r, tt, d, price)
 #' bsputimpvol(s, k, r, tt, d, price)
-#' bscallimps(s, k, v, r, tt, d, price)
-#' bsputimps(s, k, v, r, tt, d, price)
+#' bscallimps(s, k, v, r, tt, d, price, lower=0.001, upper=1e04)
+#' bsputimps(s, k, v, r, tt, d, price, lower=0.001, upper=1e04)
 #' 
 #'
 #' @param s Stock price
@@ -28,6 +28,8 @@
 #' @param tt Time to maturity in years
 #' @param d Dividend yield, annualized, continuously-compounded
 #' @param price Option price when computing an implied value
+#' @param lower minimum stock price in implied price calculation
+#' @param upper maximum stock price in implied price calculation
 #' 
 #' @details Returns a scalar or vector of option prices, depending on
 #' the inputs
@@ -73,20 +75,20 @@ bsputimpvol <- function(s, k, r, tt, d, price) {
 }
 
 #' @export
-bscallimps <- function(s, k, v, r, tt, d, price) {
+bscallimps <- function(s, k, v, r, tt, d, price, lower=0.001, upper=1e04) {
     f <- function(s, k, v, r, tt, d, price) {
         return(bscall(s, k, v, r, tt, d) - price)
     }
-    x <- uniroot(f, c(0.001,10000), k, v, r, tt, d, price, tol=.tol)
+    x <- uniroot(f, c(lower, upper), k, v, r, tt, d, price, tol=.tol)
     return(x$root)
 }
 
 #' @export
-bsputimps <- function(s, k, v, r, tt, d, price) {
+bsputimps <- function(s, k, v, r, tt, d, price, lower=0.001, upper=1e04) {
     f <- function(s, k, v, r, tt, d, price) {
         return(bsput(s, k, v, r, tt, d) - price)
     }
-    x <- uniroot(f, c(0.001,10000), k, v, r, tt, d, price, tol=.tol)
+    x <- uniroot(f, c(lower, upper), k, v, r, tt, d, price, tol=.tol)
     return(x$root)
 }
 

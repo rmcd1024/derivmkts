@@ -37,3 +37,4 @@ vignettes/*.log
 vignettes/*.aux
 vignettes/*.out
 vignettes/*.toc
+misc/*
