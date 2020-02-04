@@ -3,9 +3,8 @@
 * Saving and restoring random number seed should now work properly in
   `simprice`, `quincunx`, and Asian Monte Carlo functions 
 * `simprice` now returns `asset` and `trial` as factors
-* implied stock price functions now permit user-specifed `min_s` and
-  `max_s` values for the implied price range
 * Vignette revisions
+* Configurable `upper` and `lower` bounds in `bscallimps` and `bsputimps`
 
 # derivmkts 0.2.4
 
