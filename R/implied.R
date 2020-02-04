@@ -73,20 +73,22 @@ bsputimpvol <- function(s, k, r, tt, d, price) {
 }
 
 #' @export
-bscallimps <- function(s, k, v, r, tt, d, price) {
+bscallimps <- function(s, k, v, r, tt, d, price, min_s = 0.001,
+                       max_s = 1e06) {
     f <- function(s, k, v, r, tt, d, price) {
         return(bscall(s, k, v, r, tt, d) - price)
     }
-    x <- uniroot(f, c(0.001,10000), k, v, r, tt, d, price, tol=.tol)
+    x <- uniroot(f, c(min_s, max_s), k, v, r, tt, d, price, tol=.tol)
     return(x$root)
 }
 
 #' @export
-bsputimps <- function(s, k, v, r, tt, d, price) {
+bsputimps <- function(s, k, v, r, tt, d, price , min_s = 0.001,
+                       max_s = 1e06) {
     f <- function(s, k, v, r, tt, d, price) {
         return(bsput(s, k, v, r, tt, d) - price)
     }
-    x <- uniroot(f, c(0.001,10000), k, v, r, tt, d, price, tol=.tol)
+    x <- uniroot(f, c(min_s, max_s), k, v, r, tt, d, price, tol=.tol)
     return(x$root)
 }
 
