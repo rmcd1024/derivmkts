@@ -160,7 +160,7 @@ greeks <- function(f, complete=FALSE, long=FALSE, initcaps=TRUE) {
                     -.FirstDer(funcname, 'tt', x)/365,
                     NA)
     Psi   <-  .FirstDer(funcname, 'd', x)/100
-    Elast <-  ifelse(Premium > 1e-06, x[['s']]*Delta/Premium, NA)
+    Elast <-  ifelse(abs(Premium) > 1e-06, x[['s']]*Delta/Premium, NA)
     Gamma <-  .SecondDer(funcname, 's', x)
     if (long) complete <- TRUE
     if (complete) {
