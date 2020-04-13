@@ -5,6 +5,7 @@
 * `simprice` now returns `asset` and `trial` as factors
 * Vignette revisions
 * Configurable `upper` and `lower` bounds in `bscallimps` and `bsputimps`
+* Compute elast (greeks.R) for negative premium positions
 
 # derivmkts 0.2.4
 
