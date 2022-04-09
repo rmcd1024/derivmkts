@@ -15,6 +15,6 @@ License: MIT + file LICENSE
 VignetteBuilder: knitr, ggplot2, dplyr, tidyr, pander, bookdown
 LazyData: true
 Encoding: UTF-8
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.2
 NeedsCompilation: no
 Packaged: 2016-09-05 00:19:54 UTC; rmcd

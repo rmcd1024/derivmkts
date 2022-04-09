@@ -9,7 +9,9 @@
 \alias{bscallimps}
 \alias{bsputimps}
 \title{Black-Scholes implied volatility and price}
-\format{An object of class \code{numeric} of length 1.}
+\format{
+An object of class \code{numeric} of length 1.
+}
 \usage{
 bscallimpvol(s, k, r, tt, d, price)
 bsputimpvol(s, k, r, tt, d, price)

@@ -4,8 +4,7 @@
 \alias{quincunx}
 \title{Quincunx simulation}
 \usage{
-quincunx(n = 3, numballs = 20, delay = 0.1, probright = 0.5,
-  plottrue = TRUE)
+quincunx(n = 3, numballs = 20, delay = 0.1, probright = 0.5, plottrue = TRUE)
 }
 \arguments{
 \item{n}{Integer The number of peg levels, default is 3}

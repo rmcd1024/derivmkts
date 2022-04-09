@@ -79,7 +79,6 @@
 #'     function returns just the options price (the default) or the
 #'     option price along with the asset price above or below which
 #'     the compound option is exercised.
-#' @inheritParams bscall
 #'
 #' @importFrom stats uniroot
 #' @importFrom mnormt pmnorm

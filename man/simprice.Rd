@@ -64,8 +64,8 @@ A dataframe with \code{trials} simulated stock price paths
 }
 \examples{
 # simple Monte Carlo option price example. Since there are two
-# periods we can compute options prices for \\code{tt} and
-# \\code{tt/2}
+# periods we can compute options prices for \code{tt} and
+# \code{tt/2}
 s0=40; k=40; v=0.30; r=0.08; tt=0.25; d=0;
 st = simprice(s0, k, v, r, tt, d,  trials=3, periods=2, jump=FALSE)
 callprice1 = exp(-r*tt/2)*mean(pmax(st[st$period==1,] - k, 0))
