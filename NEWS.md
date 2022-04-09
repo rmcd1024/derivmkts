@@ -1,10 +1,15 @@
-# derivmkts 0.2.4.1 (development)
+# derivmkts 0.2.4.1
 
 * Saving and restoring random number seed should now work properly in
   `simprice`, `quincunx`, and Asian Monte Carlo functions 
 * `simprice` now returns `asset` and `trial` as factors
 * Vignette revisions
-* Configurable `upper` and `lower` bounds in `bscallimps` and `bsputimps`
+* Configurable tolerance for zero finding implied price and volatility
+  functions
+* Configurable `upper` and `lower` bounds in `bscallimps` and
+  `bsputimps`
+* Configurable `highvol` and `lowvol` bounds for `bscallimpvol` and
+  `bsputimpvol`
 * Compute elast (greeks.R) for negative premium positions
 
 # derivmkts 0.2.4

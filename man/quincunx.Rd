@@ -29,7 +29,7 @@ bin levels if the distribution were normal. Default is TRUE}
 pegboard with a 50\% chance of bouncing right or left at each
 level. The balls accumulate in bins. If enough balls are dropped,
 the distribution approaches normality. This device is called a
-quincunx. See \url{http://www.mathsisfun.com/data/quincunx.html}
+quincunx. See \url{https://www.mathsisfun.com/data/quincunx.html}
 }
 \examples{
 
