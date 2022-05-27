@@ -1,6 +1,6 @@
 Package: derivmkts
 Title: Functions and R Code to Accompany Derivatives Markets
-Version: 0.2.4.1
+Version: 0.2.5
 Author: Robert McDonald [aut, cre, cph]
 Authors@R: c(person("Robert", "McDonald", email = "rmcd1024@gmail.com",
      role = c("aut", "cre", "cph")))
@@ -13,8 +13,8 @@ Suggests: markdown, knitr, rmarkdown, ggplot2, dplyr,
 	tidyr, pander, bookdown
 License: MIT + file LICENSE
 VignetteBuilder: knitr, ggplot2, dplyr, tidyr, pander, bookdown
-LazyData: true
 Encoding: UTF-8
+URL: https://github.com/rmcd1024/derivmkts
 RoxygenNote: 7.1.2
 NeedsCompilation: no
 Packaged: 2016-09-05 00:19:54 UTC; rmcd

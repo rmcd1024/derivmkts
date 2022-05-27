@@ -1,4 +1,8 @@
-# derivmkts 0.2.4.1
+# derivmkts 0.2.6.9000 (development)
+
+* Need ability to turn random number seed restoration on and off in the functions that do this. Should be false by default (not yet implemented)
+
+# derivmkts 0.2.5
 
 * Saving and restoring random number seed should now work properly in
   `simprice`, `quincunx`, and Asian Monte Carlo functions 
