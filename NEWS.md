@@ -2,6 +2,10 @@
 
 * Need ability to turn random number seed restoration on and off in the functions that do this. Should be false by default (not yet implemented)
 
+# derivmkts 0.2.5.1
+
+* In documentation, change "\\$" to "\$" per CRAN request (escape not necessary)
+
 # derivmkts 0.2.5
 
 * Saving and restoring random number seed should now work properly in
