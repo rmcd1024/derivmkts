@@ -124,7 +124,7 @@ the barrier is below the current asset price.
 For binary barrier options, "ui", "di" "uo", and "do" refer to
 up-and-in, down-and-in, up-and-out, and down-and-out options.
 
-Rebate options pay \$1 if a barrier is reached. The barrier can be
+Rebate options pay $1 if a barrier is reached. The barrier can be
 reached from above ("d") or below ("d"), and the payment can occur
 immediately ("ur" or "dr") or at expiration ("drdeferred" and
 "urdeferred")
