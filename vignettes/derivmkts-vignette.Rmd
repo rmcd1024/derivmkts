@@ -351,10 +351,7 @@ invocation of the pricing function will start with a different random
 number seed, resulting in price variation that is due solely to random
 variation. Moreover, random number generation changes the random
 number seed globally. In a future release I hope to address this by
-saving and restoring the seed within the greeks function. For the
-curious, [a Stackoverflow
-post](http://stackoverflow.com/questions/14324096/setting-seed-locally-not-globally-in-r)
-discusses this issue.]
+saving and restoring the seed within the greeks function.] 
 
 ### Geometric Asian Options
 
