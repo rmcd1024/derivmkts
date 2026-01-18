@@ -129,7 +129,7 @@ reached from above ("d") or below ("d"), and the payment can occur
 immediately ("ur" or "dr") or at expiration ("drdeferred" and
 "urdeferred")
 
-\code{callupin(s, k, v, r, tt, d, H) =  
+\code{callupin(s, k, v, r, tt, d, H) =
 assetuicall(s, k, v, r, tt, d, H) - k*cashuicall(s, k, v, r, tt, d, H)
 }
 }

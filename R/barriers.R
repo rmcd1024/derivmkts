@@ -22,12 +22,12 @@
 #' For binary barrier options, "ui", "di" "uo", and "do" refer to
 #' up-and-in, down-and-in, up-and-out, and down-and-out options.
 #'
-#' Rebate options pay \$1 if a barrier is reached. The barrier can be
+#' Rebate options pay $1 if a barrier is reached. The barrier can be
 #' reached from above ("d") or below ("d"), and the payment can occur
 #' immediately ("ur" or "dr") or at expiration ("drdeferred" and
 #' "urdeferred")
-#' 
-#' \code{callupin(s, k, v, r, tt, d, H) =  
+#'
+#' \code{callupin(s, k, v, r, tt, d, H) =
 #' assetuicall(s, k, v, r, tt, d, H) - k*cashuicall(s, k, v, r, tt, d, H)
 #' }
 #'
@@ -41,7 +41,7 @@
 #' @importFrom stats pnorm
 #' @return The pricing functions return the price of a barrier
 #' claim. If more than one argument is a vector, the recycling rule
-#' determines the handling of the inputs. 
+#' determines the handling of the inputs.
 #'
 #' @usage
 #' callupin(s, k, v, r, tt, d, H)
@@ -81,7 +81,7 @@
 #' drdeferred(s, v, r, tt, d, H)
 #' urdeferred(s, v, r, tt, d, H)
 #'
-#' 
+#'
 #' @param s Stock price
 #' @param k Strike price of the option
 #' @param v Volatility of the stock, defined as the annualized
@@ -192,7 +192,7 @@ calldownin <- function(s, k, v, r, tt, d, H) {
 #' @export
 #' @family Barriers
 dicall <- function(s, k, v, r, tt, d, H)
-    calldownin(s, k, v, r, tt, d, H) 
+    calldownin(s, k, v, r, tt, d, H)
 
 #' @export
 #' @family Barriers

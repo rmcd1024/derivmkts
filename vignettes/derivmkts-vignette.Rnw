@@ -336,9 +336,7 @@ this in a future release.\footnote{As the functions are currently
   due solely to random variation. Moreover, random number generation
   changes the random number seed globally. In a future release I
   hope to address this by saving and restoring the seed within the
-  greeks function. For the curious,
-  \href{http://stackoverflow.com/questions/14324096/setting-seed-locally-not-globally-in-r}{a
-    Stackoverflow post} discusses this issue.}
+  greeks function.} 
 
 \subsection{Geometric Asian Options}
 
