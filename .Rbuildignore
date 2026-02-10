@@ -9,11 +9,12 @@ stuff/
 ^.*/.*~$
 README.tex
 README.log
-^.git
+.git
 tests/option_testvalues.R
 .travis.yml
 vignettes/figure/
 ./derivmkts.pdf
+how_to_build_for_CRAN.qmd
 README.Rmd
 README.md
 README.html

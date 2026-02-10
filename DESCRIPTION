@@ -10,9 +10,9 @@ Description: A set of pricing and expository functions that should
 Imports: graphics, stats, grDevices, mnormt
 Depends: R (>= 3.0.0)
 Suggests: markdown, knitr, rmarkdown, ggplot2, dplyr, 
-	tidyr, pander, bookdown
+	tidyr, pander, bookdown, kableExtra, formatR
 License: MIT + file LICENSE
-VignetteBuilder: knitr, ggplot2, dplyr, tidyr, pander, bookdown
+VignetteBuilder: knitr, rmarkdown, ggplot2, dplyr, tidyr, bookdown
 Encoding: UTF-8
 URL: https://github.com/rmcd1024/derivmkts
 RoxygenNote: 7.3.3

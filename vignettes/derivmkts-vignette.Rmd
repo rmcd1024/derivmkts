@@ -30,12 +30,12 @@ fontsize: 12pt
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 rm(list=ls())
-library(pander)
 library(bookdown)
 library(knitr)
 library(ggplot2)
 library(dplyr)
 library(tidyr)
+library(kableExtra)
 ##homedir <- '/home/rmcd/tex/d67/Rtutorial/'
 options(digits=4)
 figsize <- 4.5
@@ -69,7 +69,7 @@ opts_chunk$set(collapse=TRUE)
 
 This vignette is an overview to the functions in the *derivmkts*
 package, which was conceived as a companion to my book
-*Derivatives Markets* @mcdonald:derivs:13. The material
+*Derivatives Markets* [@mcdonald:derivs:13]. The material
 has an educational focus. There are other option pricing packages for
 R, but this package has several distinguishing features:
 
@@ -112,9 +112,9 @@ bstbl <- data.frame(
             vega, theta, rho, psi, and elasticity', 'Asset-or-nothing call',
             'Asset-or-nothing put', 'Cash-or-nothing call',
             'Cash-or-nothing put'))
-pander(bstbl,
-       caption = 'Black-Scholes related option pricing functions\\label{tab:bslist}',
-      split.cell = 60, justify = c('center', 'left'))
+kbl(bstbl, caption = 'Black-Scholes related option pricing functions',
+    booktabs=TRUE) |>
+    kable_styling()
 ```
 
 ```{block2, include=FALSE}
