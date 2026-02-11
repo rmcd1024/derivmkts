@@ -1,3 +1,6 @@
+derivmkts: An option pricing package
+================
+
 [![Build
 Status](https://travis-ci.org/rmcd1024/derivmkts.svg?branch=master)](https://travis-ci.org/rmcd1024/derivmkts)[![](http://www.r-pkg.org/badges/version/derivmkts)](http://www.r-pkg.org/pkg/derivmkts)
 
@@ -17,19 +20,19 @@ a quincunx function.
 
 The package includes functions for computing
 
-  - Black-Scholes prices and greeks for European options
+- Black-Scholes prices and greeks for European options
 
-  - Option pricing and plotting using the binomial model
+- Option pricing and plotting using the binomial model
 
-  - Barrier options
+- Barrier options
 
-  - Compound options
+- Compound options
 
-  - Pricing of options with jumps using the Merton model
+- Pricing of options with jumps using the Merton model
 
-  - Analytical and Monte Carlo pricing of Asian options
+- Analytical and Monte Carlo pricing of Asian options
 
-  - Simulation of stock price paths, with and without jumps
+- Simulation of stock price paths, with and without jumps
 
 ## Calculation of Greeks
 
@@ -104,17 +107,12 @@ x3
 24 40 45 0.3 0.08 0.25 0   bscall   Gamma  0.05629794
 ```
 
-The following computes and plots all call and put Greeks for 500
-options:
+The following computes and plots all call and put Greeks for 500 strike
+prices:
 
 ``` r
 library(derivmkts)
 library(ggplot2)
-Registered S3 methods overwritten by 'ggplot2':
-  method         from 
-  [.quosures     rlang
-  c.quosures     rlang
-  print.quosures rlang
 s <- 100; r <- 0.08; v <- 0.30; tt <- 2; d <- 0
 k <- seq(.5, 250, by=.5)
 yc <- greeks(bscall(s, k, v, r, tt, d), long=TRUE)
@@ -123,6 +121,8 @@ ggplot(rbind(yc, yp), aes(x=k, y=value, color=funcname)) +
     geom_line() +
     labs(x='Strike price') +
     facet_wrap(~ greek, scales='free_y')
+Warning: Removed 28 rows containing missing values or values outside the scale
+range (`geom_line()`).
 ```
 
 ![](README_files/figure-gfm/greekplot-1.png)<!-- -->
@@ -148,16 +148,16 @@ ggplot(s, aes(x = period, y = price, color = trial)) +
 By default the binomopt function returns the price of an American call.
 In adddition:
 
-  - `putopt=TRUE` returns the price of an American put.
+- `putopt=TRUE` returns the price of an American put.
 
-  - `returngreeks=TRUE` returns a subset of the Greeks along with the
-    binomial parameters.
+- `returngreeks=TRUE` returns a subset of the Greeks along with the
+  binomial parameters.
 
-  - `returntrees=TRUE` returns as a list all of the above plus the full
-    binomial tree ($stree), the probability of reaching each node
-    ($probtree), whether or not the option is exercised at each node
-    ($exertree), and the replicating portfolio at each node ($deltatree
-    and $bondtree).
+- `returntrees=TRUE` returns as a list all of the above plus the full
+  binomial tree (\$stree), the probability of reaching each node
+  (\$probtree), whether or not the option is exercised at each node
+  (\$exertree), and the replicating portfolio at each node (\$deltatree
+  and \$bondtree).
 
 Here is an example illustrating everything that the `binomopt` function
 can return:
@@ -175,10 +175,10 @@ $greeks
 -0.331656818  0.037840906 -0.005106465 
 
 $params
-         s          k          v          r         tt          d 
-41.0000000 40.0000000  0.3000000  0.0800000  1.0000000  0.0000000 
-     nstep          p         up         dn          h 
- 3.0000000  0.4568067  1.2212461  0.8636926  0.3333333 
+         s          k          v          r         tt          d      nstep 
+41.0000000 40.0000000  0.3000000  0.0800000  1.0000000  0.0000000  3.0000000 
+         p         up         dn          h 
+ 0.4568067  1.2212461  0.8636926  0.3333333 
 
 $oppricetree
          [,1]      [,2]     [,3]      [,4]
