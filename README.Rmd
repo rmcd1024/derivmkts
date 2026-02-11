@@ -98,7 +98,7 @@ for (i in names(y)) {
 ```
 
 The following computes and plots all call and put Greeks for
-500 options:
+500 strike prices:
 
 
 ```{r greekplot, warnings=FALSE, eval=TRUE}
