@@ -1,8 +1,7 @@
 derivmkts: An option pricing package
 ================
 
-[![Build
-Status](https://travis-ci.org/rmcd1024/derivmkts.svg?branch=master)](https://travis-ci.org/rmcd1024/derivmkts)[![](http://www.r-pkg.org/badges/version/derivmkts)](http://www.r-pkg.org/pkg/derivmkts)
+[![](http://www.r-pkg.org/badges/version/derivmkts)](http://www.r-pkg.org/pkg/derivmkts)
 
 This is a collection of option pricing functions for a course in
 financial derivatives. The names of the functions mostly match those in
@@ -121,8 +120,6 @@ ggplot(rbind(yc, yp), aes(x=k, y=value, color=funcname)) +
     geom_line() +
     labs(x='Strike price') +
     facet_wrap(~ greek, scales='free_y')
-Warning: Removed 28 rows containing missing values or values outside the scale
-range (`geom_line()`).
 ```
 
 ![](README_files/figure-gfm/greekplot-1.png)<!-- -->

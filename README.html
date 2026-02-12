@@ -1,0 +1,210 @@
+<h1 id="derivmkts-an-option-pricing-package">derivmkts: An option
+pricing package</h1>
+<p><a href="http://www.r-pkg.org/pkg/derivmkts"><img
+src="http://www.r-pkg.org/badges/version/derivmkts" /></a></p>
+<p>This is a collection of option pricing functions for a course in
+financial derivatives. The names of the functions mostly match those in
+my book <em>Derivatives Markets</em>, which explains the package name.
+This should be useful for students comfortable with R. In any case, I
+hope it will be helpful for instructors.</p>
+<p>There are of course other option pricing packages in R, notably <a
+href="https://cran.r-project.org/package=RQuantLib">RQuantLib</a> and <a
+href="https://cran.r-project.org/package=RQuantLib">fOptions</a>. I
+don’t add significant pricing functionality to those. This package does,
+however, have a few aspects that might be unique, which I describe
+below: calculation of greeks; display of binomial formula output and
+trees; and a quincunx function.</p>
+<p>The package includes functions for computing</p>
+<ul>
+<li><p>Black-Scholes prices and greeks for European options</p></li>
+<li><p>Option pricing and plotting using the binomial model</p></li>
+<li><p>Barrier options</p></li>
+<li><p>Compound options</p></li>
+<li><p>Pricing of options with jumps using the Merton model</p></li>
+<li><p>Analytical and Monte Carlo pricing of Asian options</p></li>
+<li><p>Simulation of stock price paths, with and without jumps</p></li>
+</ul>
+<h2 id="calculation-of-greeks">Calculation of Greeks</h2>
+<p>The function <code>greeks()</code> accepts an option pricing function
+call as an argument, and returns a vectorized set of greeks for any
+pricing function that uses the input names standard in the package
+(i.e., the asset price is <code>s</code>, the volatility is
+<code>v</code>, the interest rate is <code>r</code>, the dividend yield
+is <code>d</code>, and the time to maturity is <code>tt</code>).</p>
+<p>As an example, the following calculation will produce the full
+complement of greeks for a call, for each of three strike prices. You
+can access the delta values, for example, using
+<code>x['Delta', ]</code>.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">greeks</span>(<span class="fu">bscall</span>(<span class="at">s=</span><span class="dv">40</span>, <span class="at">k=</span><span class="fu">c</span>(<span class="dv">35</span>, <span class="dv">40</span>, <span class="dv">45</span>), <span class="at">v=</span><span class="fl">0.3</span>, <span class="at">r=</span><span class="fl">0.08</span>, <span class="at">tt=</span><span class="fl">0.25</span>, <span class="at">d=</span><span class="dv">0</span>))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>x1</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>             bscall_35   bscall_40   bscall_45</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>Premium     <span class="fl">6.13481997</span>  <span class="fl">2.78473666</span>  <span class="fl">0.97436823</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>Delta       <span class="fl">0.86401619</span>  <span class="fl">0.58251565</span>  <span class="fl">0.28200793</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>Gamma       <span class="fl">0.03636698</span>  <span class="fl">0.06506303</span>  <span class="fl">0.05629794</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>Vega        <span class="fl">0.04364029</span>  <span class="fl">0.07807559</span>  <span class="fl">0.06755753</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>Rho         <span class="fl">0.07106457</span>  <span class="fl">0.05128972</span>  <span class="fl">0.02576487</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>Theta      <span class="sc">-</span><span class="fl">0.01340407</span> <span class="sc">-</span><span class="fl">0.01733098</span> <span class="sc">-</span><span class="fl">0.01336419</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>Psi        <span class="sc">-</span><span class="fl">0.08640162</span> <span class="sc">-</span><span class="fl">0.05825156</span> <span class="sc">-</span><span class="fl">0.02820079</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>Elasticity  <span class="fl">5.63352271</span>  <span class="fl">8.36726367</span> <span class="fl">11.57705764</span></span></code></pre></div>
+<p>There is a new <code>complete</code> option which produces one row
+containing all inputs and outputs for each case. The option
+<code>long=TRUE</code> produces the same output in long form.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> <span class="fu">greeks</span>(<span class="fu">bscall</span>(<span class="at">s=</span><span class="dv">40</span>, <span class="at">k=</span><span class="fu">c</span>(<span class="dv">35</span>, <span class="dv">40</span>, <span class="dv">45</span>), <span class="at">v=</span><span class="fl">0.3</span>, <span class="at">r=</span><span class="fl">0.08</span>, <span class="at">tt=</span><span class="fl">0.25</span>, <span class="at">d=</span><span class="dv">0</span>),</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">complete=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>x2</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>   s  k   v    r   tt d funcname   Premium     Delta       Vega        Rho</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="dv">40</span> <span class="dv">35</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall <span class="fl">6.1348200</span> <span class="fl">0.8640162</span> <span class="fl">0.04364029</span> <span class="fl">0.07106457</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> <span class="dv">40</span> <span class="dv">40</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall <span class="fl">2.7847367</span> <span class="fl">0.5825156</span> <span class="fl">0.07807559</span> <span class="fl">0.05128972</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span> <span class="dv">40</span> <span class="dv">45</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall <span class="fl">0.9743682</span> <span class="fl">0.2820079</span> <span class="fl">0.06755753</span> <span class="fl">0.02576487</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        Theta         Psi     Elast      Gamma</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">-</span><span class="fl">0.01340407</span> <span class="sc">-</span><span class="fl">0.08640162</span>  <span class="fl">5.633523</span> <span class="fl">0.03636698</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span> <span class="sc">-</span><span class="fl">0.01733098</span> <span class="sc">-</span><span class="fl">0.05825156</span>  <span class="fl">8.367264</span> <span class="fl">0.06506303</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span> <span class="sc">-</span><span class="fl">0.01336419</span> <span class="sc">-</span><span class="fl">0.02820079</span> <span class="fl">11.577058</span> <span class="fl">0.05629794</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>x3 <span class="ot">&lt;-</span> <span class="fu">greeks</span>(<span class="fu">bscall</span>(<span class="at">s=</span><span class="dv">40</span>, <span class="at">k=</span><span class="fu">c</span>(<span class="dv">35</span>, <span class="dv">40</span>, <span class="dv">45</span>), <span class="at">v=</span><span class="fl">0.3</span>, <span class="at">r=</span><span class="fl">0.08</span>, <span class="at">tt=</span><span class="fl">0.25</span>, <span class="at">d=</span><span class="dv">0</span>),</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>             <span class="at">long=</span><span class="cn">TRUE</span>)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>x3</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    s  k   v    r   tt d funcname   greek       value</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span>  <span class="dv">40</span> <span class="dv">35</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall Premium  <span class="fl">6.13481997</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="dv">2</span>  <span class="dv">40</span> <span class="dv">40</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall Premium  <span class="fl">2.78473666</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="dv">3</span>  <span class="dv">40</span> <span class="dv">45</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall Premium  <span class="fl">0.97436823</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="dv">4</span>  <span class="dv">40</span> <span class="dv">35</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall   Delta  <span class="fl">0.86401619</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span>  <span class="dv">40</span> <span class="dv">40</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall   Delta  <span class="fl">0.58251565</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="dv">6</span>  <span class="dv">40</span> <span class="dv">45</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall   Delta  <span class="fl">0.28200793</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="dv">7</span>  <span class="dv">40</span> <span class="dv">35</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall    Vega  <span class="fl">0.04364029</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="dv">8</span>  <span class="dv">40</span> <span class="dv">40</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall    Vega  <span class="fl">0.07807559</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="dv">9</span>  <span class="dv">40</span> <span class="dv">45</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall    Vega  <span class="fl">0.06755753</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span> <span class="dv">40</span> <span class="dv">35</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall     Rho  <span class="fl">0.07106457</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="dv">11</span> <span class="dv">40</span> <span class="dv">40</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall     Rho  <span class="fl">0.05128972</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="dv">12</span> <span class="dv">40</span> <span class="dv">45</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall     Rho  <span class="fl">0.02576487</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="dv">13</span> <span class="dv">40</span> <span class="dv">35</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall   Theta <span class="sc">-</span><span class="fl">0.01340407</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="dv">14</span> <span class="dv">40</span> <span class="dv">40</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall   Theta <span class="sc">-</span><span class="fl">0.01733098</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="dv">15</span> <span class="dv">40</span> <span class="dv">45</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall   Theta <span class="sc">-</span><span class="fl">0.01336419</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="dv">16</span> <span class="dv">40</span> <span class="dv">35</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall     Psi <span class="sc">-</span><span class="fl">0.08640162</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="dv">17</span> <span class="dv">40</span> <span class="dv">40</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall     Psi <span class="sc">-</span><span class="fl">0.05825156</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a><span class="dv">18</span> <span class="dv">40</span> <span class="dv">45</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall     Psi <span class="sc">-</span><span class="fl">0.02820079</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="dv">19</span> <span class="dv">40</span> <span class="dv">35</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall   Elast  <span class="fl">5.63352271</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="dv">20</span> <span class="dv">40</span> <span class="dv">40</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall   Elast  <span class="fl">8.36726367</span></span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a><span class="dv">21</span> <span class="dv">40</span> <span class="dv">45</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall   Elast <span class="fl">11.57705764</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a><span class="dv">22</span> <span class="dv">40</span> <span class="dv">35</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall   Gamma  <span class="fl">0.03636698</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a><span class="dv">23</span> <span class="dv">40</span> <span class="dv">40</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall   Gamma  <span class="fl">0.06506303</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a><span class="dv">24</span> <span class="dv">40</span> <span class="dv">45</span> <span class="fl">0.3</span> <span class="fl">0.08</span> <span class="fl">0.25</span> <span class="dv">0</span>   bscall   Gamma  <span class="fl">0.05629794</span></span></code></pre></div>
+<p>The following computes and plots all call and put Greeks for 500
+strike prices:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(derivmkts)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="dv">100</span>; r <span class="ot">&lt;-</span> <span class="fl">0.08</span>; v <span class="ot">&lt;-</span> <span class="fl">0.30</span>; tt <span class="ot">&lt;-</span> <span class="dv">2</span>; d <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="fu">seq</span>(.<span class="dv">5</span>, <span class="dv">250</span>, <span class="at">by=</span>.<span class="dv">5</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>yc <span class="ot">&lt;-</span> <span class="fu">greeks</span>(<span class="fu">bscall</span>(s, k, v, r, tt, d), <span class="at">long=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>yp <span class="ot">&lt;-</span> <span class="fu">greeks</span>(<span class="fu">bsput</span>(s, k, v, r, tt, d), <span class="at">long=</span><span class="cn">TRUE</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="fu">rbind</span>(yc, yp), <span class="fu">aes</span>(<span class="at">x=</span>k, <span class="at">y=</span>value, <span class="at">color=</span>funcname)) <span class="sc">+</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x=</span><span class="st">&#39;Strike price&#39;</span>) <span class="sc">+</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">facet_wrap</span>(<span class="sc">~</span> greek, <span class="at">scales=</span><span class="st">&#39;free_y&#39;</span>)</span></code></pre></div>
+<p><img src="README_files/figure-gfm/greekplot-1.png" /><!-- --></p>
+<h2 id="simulating-stock-prices">Simulating stock prices</h2>
+<p>The <code>simprice</code> function produces simulated price paths,
+with output either in wide or long form.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>s <span class="ot">&lt;-</span> <span class="fu">simprice</span>(<span class="at">s0 =</span> <span class="dv">100</span>, <span class="at">v =</span> <span class="fl">0.3</span>, <span class="at">r =</span> <span class="fl">0.08</span>, <span class="at">tt =</span> <span class="dv">1</span>, <span class="at">d =</span> <span class="dv">0</span>, <span class="at">trials =</span> <span class="dv">5</span>,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">periods =</span> <span class="dv">365</span>, <span class="at">jump =</span> <span class="cn">FALSE</span>, <span class="at">long =</span> <span class="cn">TRUE</span>, <span class="at">seed =</span> <span class="dv">1</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(s, <span class="fu">aes</span>(<span class="at">x =</span> period, <span class="at">y =</span> price, <span class="at">color =</span> trial)) <span class="sc">+</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_line</span>()</span></code></pre></div>
+<p><img
+src="README_files/figure-gfm/unnamed-chunk-5-1.png" /><!-- --></p>
+<h2 id="binomial-calculations">Binomial calculations</h2>
+<h3 id="binomopt">binomopt</h3>
+<p>By default the binomopt function returns the price of an American
+call. In adddition:</p>
+<ul>
+<li><p><code>putopt=TRUE</code> returns the price of an American
+put.</p></li>
+<li><p><code>returngreeks=TRUE</code> returns a subset of the Greeks
+along with the binomial parameters.</p></li>
+<li><p><code>returntrees=TRUE</code> returns as a list all of the above
+plus the full binomial tree ($stree), the probability of reaching each
+node ($probtree), whether or not the option is exercised at each node
+($exertree), and the replicating portfolio at each node ($deltatree and
+$bondtree).</p></li>
+</ul>
+<p>Here is an example illustrating everything that the
+<code>binomopt</code> function can return:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">binomopt</span>(<span class="dv">41</span>, <span class="dv">40</span>, .<span class="dv">3</span>, .<span class="dv">08</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">3</span>, <span class="at">putopt=</span><span class="cn">TRUE</span>, <span class="at">american=</span><span class="cn">TRUE</span>,</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>              <span class="at">returntrees=</span><span class="cn">TRUE</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>x</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>price</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>   price </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fl">3.292948</span> </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>greeks</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>       delta        gamma        theta </span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="sc">-</span><span class="fl">0.331656818</span>  <span class="fl">0.037840906</span> <span class="sc">-</span><span class="fl">0.005106465</span> </span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>params</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>         s          k          v          r         tt          d      nstep </span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="fl">41.0000000</span> <span class="fl">40.0000000</span>  <span class="fl">0.3000000</span>  <span class="fl">0.0800000</span>  <span class="fl">1.0000000</span>  <span class="fl">0.0000000</span>  <span class="fl">3.0000000</span> </span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>         p         up         dn          h </span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a> <span class="fl">0.4568067</span>  <span class="fl">1.2212461</span>  <span class="fl">0.8636926</span>  <span class="fl">0.3333333</span> </span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>oppricetree</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>         [,<span class="dv">1</span>]      [,<span class="dv">2</span>]     [,<span class="dv">3</span>]      [,<span class="dv">4</span>]</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,] <span class="fl">3.292948</span> <span class="fl">0.7409412</span> <span class="fl">0.000000</span>  <span class="fl">0.000000</span></span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,] <span class="fl">0.000000</span> <span class="fl">5.6029294</span> <span class="fl">1.400911</span>  <span class="fl">0.000000</span></span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,] <span class="fl">0.000000</span> <span class="fl">0.0000000</span> <span class="fl">9.415442</span>  <span class="fl">2.648727</span></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,] <span class="fl">0.000000</span> <span class="fl">0.0000000</span> <span class="fl">0.000000</span> <span class="fl">13.584345</span></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>stree</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>]     [,<span class="dv">2</span>]     [,<span class="dv">3</span>]     [,<span class="dv">4</span>]</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]   <span class="dv">41</span> <span class="fl">50.07109</span> <span class="fl">61.14913</span> <span class="fl">74.67813</span></span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">0</span> <span class="fl">35.41139</span> <span class="fl">43.24603</span> <span class="fl">52.81404</span></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">0</span>  <span class="fl">0.00000</span> <span class="fl">30.58456</span> <span class="fl">37.35127</span></span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">0</span>  <span class="fl">0.00000</span>  <span class="fl">0.00000</span> <span class="fl">26.41565</span></span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>probtree</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>     [,<span class="dv">1</span>]      [,<span class="dv">2</span>]      [,<span class="dv">3</span>]       [,<span class="dv">4</span>]</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,]    <span class="dv">1</span> <span class="fl">0.4568067</span> <span class="fl">0.2086723</span> <span class="fl">0.09532291</span></span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]    <span class="dv">0</span> <span class="fl">0.5431933</span> <span class="fl">0.4962687</span> <span class="fl">0.34004825</span></span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]    <span class="dv">0</span> <span class="fl">0.0000000</span> <span class="fl">0.2950590</span> <span class="fl">0.40435476</span></span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,]    <span class="dv">0</span> <span class="fl">0.0000000</span> <span class="fl">0.0000000</span> <span class="fl">0.16027409</span></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>exertree</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a>      [,<span class="dv">1</span>]  [,<span class="dv">2</span>]  [,<span class="dv">3</span>]  [,<span class="dv">4</span>]</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,] <span class="cn">FALSE</span> <span class="cn">FALSE</span> <span class="cn">FALSE</span> <span class="cn">FALSE</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,] <span class="cn">FALSE</span> <span class="cn">FALSE</span> <span class="cn">FALSE</span> <span class="cn">FALSE</span></span>
+<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,] <span class="cn">FALSE</span> <span class="cn">FALSE</span>  <span class="cn">TRUE</span>  <span class="cn">TRUE</span></span>
+<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>[<span class="dv">4</span>,] <span class="cn">FALSE</span> <span class="cn">FALSE</span> <span class="cn">FALSE</span>  <span class="cn">TRUE</span></span>
+<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>deltatree</span>
+<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a>           [,<span class="dv">1</span>]        [,<span class="dv">2</span>]       [,<span class="dv">3</span>]</span>
+<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,] <span class="sc">-</span><span class="fl">0.3316568</span> <span class="sc">-</span><span class="fl">0.07824964</span>  <span class="fl">0.0000000</span></span>
+<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]  <span class="fl">0.0000000</span> <span class="sc">-</span><span class="fl">0.63298582</span> <span class="sc">-</span><span class="fl">0.1712971</span></span>
+<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]  <span class="fl">0.0000000</span>  <span class="fl">0.00000000</span> <span class="sc">-</span><span class="fl">1.0000000</span></span>
+<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a><span class="sc">$</span>bondtree</span>
+<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>         [,<span class="dv">1</span>]      [,<span class="dv">2</span>]      [,<span class="dv">3</span>]</span>
+<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>[<span class="dv">1</span>,] <span class="fl">16.89088</span>  <span class="fl">4.658986</span>  <span class="fl">0.000000</span></span>
+<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a>[<span class="dv">2</span>,]  <span class="fl">0.00000</span> <span class="fl">28.017840</span>  <span class="fl">8.808828</span></span>
+<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a>[<span class="dv">3</span>,]  <span class="fl">0.00000</span>  <span class="fl">0.000000</span> <span class="fl">38.947430</span></span></code></pre></div>
+<h3 id="binomplot">binomplot</h3>
+<p>This function plots the binomial tree, providing a visual depiction
+of the nodes, the probability of reaching each node, and whether
+exercise occurs at that node.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">binomplot</span>(<span class="dv">41</span>, <span class="dv">40</span>, .<span class="dv">3</span>, .<span class="dv">08</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">3</span>, <span class="at">putopt=</span><span class="cn">TRUE</span>, <span class="at">american=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<p><img
+src="README_files/figure-gfm/unnamed-chunk-7-1.png" /><!-- --></p>
+<h2 id="galton-board-or-quincunx">Galton board or quincunx</h2>
+<p>The <a href="http://mathworld.wolfram.com/GaltonBoard.html">Galton
+board</a> is a pegboard that illustrates the central limit theorem.
+Balls drop from the top and randomly fall right or left, providing a
+physical simulation of a binomial distribution. (My physicist
+brother-in-law tells me that real-life Galton boards don’t typically
+generate a normal distribution because, among other things, balls
+acquire momentum in the direction of their original travel. The
+distribution is thus likely to be fatter-tailed than normal.)</p>
+<p>You can see the Galton board in action with
+<code>quincunx()</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">quincunx</span>(<span class="at">n=</span><span class="dv">11</span>, <span class="at">numballs=</span><span class="dv">250</span>, <span class="at">delay=</span><span class="dv">0</span>, <span class="at">probright=</span><span class="fl">0.5</span>)</span></code></pre></div>
+<p><img
+src="README_files/figure-gfm/unnamed-chunk-8-1.png" /><!-- --></p>
+<h2 id="feedback">Feedback</h2>
+<p>Please feel free to contact me with bug reports or suggestions. Best
+would be to file an issue on Github, but email is fine as well.</p>
